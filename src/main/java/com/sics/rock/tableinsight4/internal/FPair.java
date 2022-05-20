@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 /**
  * Same as javafx.util.Pair.
- * Some jdks do not contain javafx package.
+ * Some jdks do not contain javafx package,
+ * so implement it in case.
  *
  * @author zhaorx
  */

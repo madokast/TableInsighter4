@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 
 /**
+ * A container holds constant.
  * @param <T> constant type
  * @author zhaorx
  */
@@ -13,6 +14,9 @@ public class FConstant<T> implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FTableInfo.class);
 
+    /**
+     * Nullable
+     */
     private final T constant;
 
     private final long occurrence;

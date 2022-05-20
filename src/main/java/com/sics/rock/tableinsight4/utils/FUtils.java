@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.function.BinaryOperator;
 
 /**
+ *
  * @author zhaorx
  */
 public class FUtils {

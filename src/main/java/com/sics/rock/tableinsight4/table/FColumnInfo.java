@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * meta info of a table column
+ * Meta info of a table column
  *
  * @author zhaorx
  */
@@ -16,7 +16,6 @@ public class FColumnInfo implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(FColumnInfo.class);
 
     private final String columnName;
-
 
     private final FColumnType columnType;
 
