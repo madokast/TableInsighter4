@@ -14,7 +14,7 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.Objects;
 
-public class FSparkEnv {
+public abstract class FSparkEnv extends TestTools {
     private static final Logger logger = LoggerFactory.getLogger(FSparkEnv.class);
 
     public SparkSession spark;
@@ -28,16 +28,20 @@ public class FSparkEnv {
     }
 
     @After
-    public void after() {
+    public void closeSpark() {
         this.sc = null;
         this.spark.close();
         this.spark = null;
-        logger.info("Close SparkSession");
+        logger.debug("Close SparkSession");
     }
 
     // --------------- hadoop env ------------------------
 
-    @BeforeClass
+    static {
+        // run once
+        setHadoopEnv();
+    }
+
     public static void setHadoopEnv() {
         if (!System.getProperty("HADOOP_HOME", "null").equals("null")) {
             return;
@@ -45,7 +49,7 @@ public class FSparkEnv {
 
         File hadoopDir = new File(findRootDir(), "hadoop");
         String hadoopHome = hadoopDir.getAbsolutePath();
-        logger.info("hadoopHome={}", hadoopHome);
+        logger.debug("hadoopHome={}", hadoopHome);
         System.setProperty("HADOOP_HOME", hadoopHome);
         System.setProperty("hadoop.home.dir", hadoopHome);
     }
