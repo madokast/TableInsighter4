@@ -54,7 +54,7 @@ public class FSparkUtils {
             unionRDD = unionRDD.union(RDDs.get(i));
             logger.debug("### union count {}", unionRDD.count());
         }
-        unionRDD = unionRDD.cache().setName("swapKey_" + UUID.randomUUID().toString());
+        unionRDD = unionRDD.cache().setName("swapKey_" + UUID.randomUUID());
 
         // 3. Get the number of RK keys
         final List<RK> keys = unionRDD.map(t -> t._1).distinct().collect();

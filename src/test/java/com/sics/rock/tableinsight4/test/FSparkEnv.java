@@ -1,8 +1,11 @@
-package com.sics.rock.tableinsight4;
+package com.sics.rock.tableinsight4.test;
 
-import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.InitializationError;
+import com.sics.rock.tableinsight4.utils.FSparkUtils;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.SparkSession;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,21 +14,31 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.Objects;
 
-public class HadoopEnv4Junit extends BlockJUnit4ClassRunner {
+public class FSparkEnv {
+    private static final Logger logger = LoggerFactory.getLogger(FSparkEnv.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(HadoopEnv4Junit.class);
+    public SparkSession spark;
 
-    public HadoopEnv4Junit(Class<?> klass) throws InitializationError {
-        super(klass);
+    public JavaSparkContext sc;
+
+    @Before
+    public void setSpark() {
+        this.spark = FSparkUtils.localSparkSession();
+        this.sc = JavaSparkContext.fromSparkContext(spark.sparkContext());
     }
 
-    @Override
-    public void run(RunNotifier notifier) {
-        setHadoopEnv();
-        super.run(notifier);
+    @After
+    public void after() {
+        this.sc = null;
+        this.spark.close();
+        this.spark = null;
+        logger.info("Close SparkSession");
     }
 
-    private static void setHadoopEnv() {
+    // --------------- hadoop env ------------------------
+
+    @BeforeClass
+    public static void setHadoopEnv() {
         if (!System.getProperty("HADOOP_HOME", "null").equals("null")) {
             return;
         }
@@ -56,5 +69,4 @@ public class HadoopEnv4Junit extends BlockJUnit4ClassRunner {
             return rootDir;
         }
     }
-
 }
