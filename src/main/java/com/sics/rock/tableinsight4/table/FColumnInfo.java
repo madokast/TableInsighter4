@@ -17,13 +17,14 @@ public class FColumnInfo implements Serializable {
 
     private final String columnName;
 
-    private final FColumnType columnType;
-
     /**
      * Type of values in the column
      * Str、int、double ...
      */
-    private Class<?> valueType;
+    private final Class<?> valueType;
+
+
+    private FColumnType columnType = FColumnType.NORMAL;
 
     /**
      * When skip, the column is not used in rule mining
@@ -43,7 +44,7 @@ public class FColumnInfo implements Serializable {
     /**
      * Does this column generate range-constant predicate
      */
-    private boolean rangeConstant = true;
+    private boolean rangeConstant = false;
 
     /**
      * Does this column generate null-constant predicate
@@ -55,9 +56,9 @@ public class FColumnInfo implements Serializable {
      */
     private ArrayList<FConstant<?>> constants = new ArrayList<>();
 
-    public FColumnInfo(String columnName, FColumnType columnType) {
+    public FColumnInfo(String columnName, Class<?> valueType) {
         this.columnName = columnName;
-        this.columnType = columnType;
+        this.valueType = valueType;
     }
 
     public void addConstant(FConstant<?> constant) {
@@ -66,20 +67,21 @@ public class FColumnInfo implements Serializable {
 
     // ----------------- getter setter -----------------------
 
+
     public String getColumnName() {
         return columnName;
-    }
-
-    public FColumnType getColumnType() {
-        return columnType;
     }
 
     public Class<?> getValueType() {
         return valueType;
     }
 
-    public void setValueType(Class<?> valueType) {
-        this.valueType = valueType;
+    public FColumnType getColumnType() {
+        return columnType;
+    }
+
+    public void setColumnType(FColumnType columnType) {
+        this.columnType = columnType;
     }
 
     public boolean isSkip() {

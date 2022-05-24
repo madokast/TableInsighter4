@@ -1,25 +1,30 @@
 package com.sics.rock.tableinsight4.test;
 
 import com.sics.rock.tableinsight4.utils.FSparkUtils;
+import com.sics.rock.tableinsight4.utils.FUtils;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-public abstract class FSparkEnv extends TestTools {
-    private static final Logger logger = LoggerFactory.getLogger(FSparkEnv.class);
+public abstract class FSparkEnv extends FTestTools {
 
-    public SparkSession spark;
+    protected SparkSession spark;
 
-    public JavaSparkContext sc;
+    protected JavaSparkContext sc;
 
     @Before
     public void setSpark() {
@@ -35,6 +40,20 @@ public abstract class FSparkEnv extends TestTools {
         logger.debug("Close SparkSession");
     }
 
+    public <E> JavaRDD<E> randRDD(Supplier<E> supplier, int size) {
+        List<E> data = Stream.generate(supplier).limit(size).collect(Collectors.toList());
+        return sc.parallelize(data);
+    }
+
+    public JavaRDD<Integer> randIntRdd(int size) {
+        return randRDD(random::nextInt, size);
+    }
+
+    @SafeVarargs
+    public final <E> JavaRDD<E> rddOf(E... es){
+        return sc.parallelize(FUtils.listOf(es));
+    }
+
     // --------------- hadoop env ------------------------
 
     static {
@@ -42,7 +61,7 @@ public abstract class FSparkEnv extends TestTools {
         setHadoopEnv();
     }
 
-    public static void setHadoopEnv() {
+    private static void setHadoopEnv() {
         if (!System.getProperty("HADOOP_HOME", "null").equals("null")) {
             return;
         }

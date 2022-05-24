@@ -43,7 +43,7 @@ public class FPrePartitionerTest extends FSparkEnv {
             final Double key = list.get(0)._1;
             final int prePartitionId = prePartitioner.getPartition(key);
             final int curPid = TaskContext.get().partitionId();
-            logger.info("key {} prePid {} curPid {}", key, prePartitionId, curPid);
+            logger.debug("key {} prePid {} curPid {}", key, prePartitionId, curPid);
             assertEquals(prePartitionId, curPid);
         });
     }
