@@ -40,4 +40,18 @@ public class FUtils {
     public static <E> List<E> listOf(E... es) {
         return Arrays.asList(es);
     }
+
+    public static <T> Map<T, Integer> indexArray(T[] array) {
+
+        FAssertUtils.require(() -> Arrays.stream(array).distinct().count() == (long) array.length,
+                () -> "Cannot index an array containing duplicate elements. " + Arrays.toString(array));
+
+        Map<T, Integer> m = new HashMap<>();
+
+        for (int i = 0; i < array.length; i++) {
+            m.put(array[i], i);
+        }
+
+        return m;
+    }
 }

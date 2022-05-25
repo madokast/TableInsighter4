@@ -13,24 +13,24 @@ import java.nio.charset.StandardCharsets;
 
 public class FTempFile {
 
-    private static final Logger logger = LoggerFactory.getLogger(FPrePartitionerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(FTempFile.class);
 
-    private static final File TEMP_DIR = new File("./tmp");
+    public static final File TEMP_DIR = new File("./tmp");
 
     private String name;
 
     private File path;
 
-    public static FTempFile create(String content) {
-        return create("TI4", content);
+    public static FTempFile create(String content, String suffix) {
+        return createCsv("TI4", content, suffix);
     }
 
-    public static FTempFile create(String name, String content) {
+    public static FTempFile createCsv(String name, String content, String suffix) {
         if (name.length() < 3) name = name + "_TI4";
 
         try {
             final FTempFile t = new FTempFile();
-            final File file = File.createTempFile(name, ".tmp", TEMP_DIR);
+            final File file = File.createTempFile(name, suffix, TEMP_DIR);
             file.deleteOnExit();
             final BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(file));
             os.write(content.getBytes(StandardCharsets.UTF_8));
@@ -52,7 +52,7 @@ public class FTempFile {
     }
 
     static {
-        logger.info("Init temp dir {}", TEMP_DIR.getAbsolutePath());
+        logger.debug("Init temp dir {}", TEMP_DIR.getAbsolutePath());
         if (TEMP_DIR.exists()) {
             try {
                 FileUtils.deleteDirectory(TEMP_DIR);

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 /**
  * Meta info of a table
@@ -19,12 +20,17 @@ public class FTableInfo implements Serializable {
      * User-defined table name.
      * For output and logging
      */
-    private String tableName;
+    private final String tableName;
 
     /**
      * Inner table name
      */
-    private String innerTableName;
+    private final String innerTableName;
+
+    /**
+     * Data path
+     */
+    private final String tableDataPath;
 
     /**
      * Length of the table
@@ -40,12 +46,40 @@ public class FTableInfo implements Serializable {
      */
     private ArrayList<FColumnInfo> columns = new ArrayList<>();
 
-    public FTableInfo(String tableName, String innerTableName) {
+    public FTableInfo(String tableName, String innerTableName, String tableDataPath) {
         this.tableName = tableName;
         this.innerTableName = innerTableName;
+        this.tableDataPath = tableDataPath;
     }
 
     public void addColumnInfo(FColumnInfo columnInfo) {
         this.columns.add(columnInfo);
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public String getInnerTableName() {
+        return innerTableName;
+    }
+
+    public String getTableDataPath() {
+        return tableDataPath;
+    }
+
+    public long getLength(Supplier<Long> lengthSupplier) {
+        if (length == -1) {
+            length = lengthSupplier.get();
+        }
+        return length;
+    }
+
+    public ArrayList<FColumnInfo> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(ArrayList<FColumnInfo> columns) {
+        this.columns = columns;
     }
 }

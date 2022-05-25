@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 
 
 public class FPrePartitionerTest extends FSparkEnv {
+
     private static final Logger logger = LoggerFactory.getLogger(FPrePartitionerTest.class);
 
     @Test

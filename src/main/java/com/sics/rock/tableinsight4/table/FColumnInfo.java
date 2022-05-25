@@ -23,7 +23,6 @@ public class FColumnInfo implements Serializable {
      */
     private final Class<?> valueType;
 
-
     private FColumnType columnType = FColumnType.NORMAL;
 
     /**

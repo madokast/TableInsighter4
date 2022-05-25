@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 /**
  * Asset utils
+ *
  * @author zhaorx
  */
 public class FAssertUtils {

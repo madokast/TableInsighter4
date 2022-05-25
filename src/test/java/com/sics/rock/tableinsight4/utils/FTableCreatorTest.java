@@ -2,16 +2,16 @@ package com.sics.rock.tableinsight4.utils;
 
 import com.sics.rock.tableinsight4.test.FSparkEnv;
 import com.sics.rock.tableinsight4.test.FTableCreator;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 import org.junit.Test;
+
+import java.io.File;
 
 public class FTableCreatorTest extends FSparkEnv {
 
     @Test
     public void test() {
-        final Dataset<Row> table = FTableCreator.use(spark).create("name,age", "a,30", "b, 40");
-        table.show();
+        final File table = FTableCreator.createCsv("name,age", "a,30", "b, 40");
+        spark.read().option("header", "true").csv(table.getAbsolutePath()).show();
     }
 
 }

@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 /**
  * A container holds constant.
+ *
  * @param <T> constant type
  * @author zhaorx
  */
