@@ -1,9 +1,10 @@
-package com.sics.rock.tableinsight4.processor;
+package com.sics.rock.tableinsight4.procedure;
 
 import com.sics.rock.tableinsight4.table.FTable;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.test.FExamples;
-import com.sics.rock.tableinsight4.test.FSparkEnv;
+import com.sics.rock.tableinsight4.test.FSparkTestEnv;
+import com.sics.rock.tableinsight4.test.FTableInsightTestEnv;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.junit.Test;
@@ -11,7 +12,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
-public class FTableDataLoaderTest extends FSparkEnv {
+public class FTableDataLoaderTest extends FTableInsightTestEnv {
 
     @Test
     public void prepareData() {

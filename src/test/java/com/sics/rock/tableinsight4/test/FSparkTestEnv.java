@@ -20,37 +20,37 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public abstract class FSparkEnv extends FTestTools {
+public abstract class FSparkTestEnv extends FTestTools {
 
     protected SparkSession spark;
 
     protected JavaSparkContext sc;
 
     @Before
-    public void setSpark() {
+    public void __setSpark() {
         this.spark = FSparkUtils.localSparkSession();
         this.sc = JavaSparkContext.fromSparkContext(spark.sparkContext());
     }
 
     @After
-    public void closeSpark() {
+    public void __closeSpark() {
         this.sc = null;
         this.spark.close();
         this.spark = null;
         logger.debug("Close SparkSession");
     }
 
-    public <E> JavaRDD<E> randRDD(Supplier<E> supplier, int size) {
+    protected <E> JavaRDD<E> randRDD(Supplier<E> supplier, int size) {
         List<E> data = Stream.generate(supplier).limit(size).collect(Collectors.toList());
         return sc.parallelize(data);
     }
 
-    public JavaRDD<Integer> randIntRdd(int size) {
+    protected JavaRDD<Integer> randIntRdd(int size) {
         return randRDD(random::nextInt, size);
     }
 
     @SafeVarargs
-    public final <E> JavaRDD<E> rddOf(E... es){
+    protected final <E> JavaRDD<E> rddOf(E... es) {
         return sc.parallelize(FUtils.listOf(es));
     }
 

@@ -52,7 +52,7 @@ public class FSparkUtils {
         JavaPairRDD<RK, Tuple2<MK, V>> unionRDD = RDDs.get(0);
         for (int i = 1; i < RDDs.size(); i++) {
             unionRDD = unionRDD.union(RDDs.get(i));
-            logger.debug("### union count {}", unionRDD.count());
+            logger.debug("Union count {}", unionRDD.count());
         }
         unionRDD = unionRDD.cache().setName("swapKey_" + UUID.randomUUID());
 
@@ -67,7 +67,7 @@ public class FSparkUtils {
                 final Tuple2<RK, Tuple2<MK, V>> tt = iter.next();
                 if (rk == null) rk = tt._1;
                 FAssertUtils.require(_rk -> _rk.equals(tt._1),
-                        _rk -> "swapKey error RK[" + _rk + "] != [" + tt._1 + "]", rk);
+                        _rk -> "SwapKey error RK[" + _rk + "] != [" + tt._1 + "]", rk);
                 final Tuple2<MK, V> kv = tt._2;
                 map.put(tt._2._1, kv._2);
             }
@@ -149,6 +149,7 @@ public class FSparkUtils {
     }
 
     public static <K> Optional<JavaPairRDD<K, Long>> unionReduceLong(List<JavaPairRDD<K, Long>> RDDs) {
+
         return FUtils.mergeReduce(RDDs, (r1, r2) -> r1.union(r2).reduceByKey(Long::sum));
     }
 

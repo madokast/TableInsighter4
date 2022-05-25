@@ -1,5 +1,7 @@
-package com.sics.rock.tableinsight4.processor;
+package com.sics.rock.tableinsight4.procedure;
 
+import com.sics.rock.tableinsight4.procedure.load.FTableLoader;
+import com.sics.rock.tableinsight4.procedure.preproces.FIdColumnAdder;
 import com.sics.rock.tableinsight4.table.*;
 import com.sics.rock.tableinsight4.utils.FSparkSqlUtils;
 import com.sics.rock.tableinsight4.utils.FTypeUtils;
@@ -24,23 +26,21 @@ public class FTableDataLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(FTableDataLoader.class);
 
-    private final SparkSession spark;
-
     private final String idColumnName;
 
     public List<FTable> prepareData(List<FTableInfo> tableInfos) {
-
         return tableInfos.parallelStream().map(tableInfo -> {
 
             String tableName = tableInfo.getTableName();
             String tableDataPath = tableInfo.getTableDataPath();
 
             logger.info("Load table {} data from {}", tableName, tableDataPath);
-            Dataset<Row> dataset = loadData(tableName, tableDataPath);
+            Dataset<Row> dataset = new FTableLoader().load(tableDataPath);
 
             logger.info("Add row_id {} if absent on {}", idColumnName, tableName);
-            dataset = FSparkSqlUtils.addRowIdIfAbsent(dataset, idColumnName);
-            ArrayList<FColumnInfo> columns = addRowIdColumnIfAbsent(tableInfo.getColumns(), idColumnName);
+            FIdColumnAdder idColumnAdder = new FIdColumnAdder(idColumnName);
+            dataset = idColumnAdder.addOnDatasetIfAbsent(dataset);
+            ArrayList<FColumnInfo> columns = idColumnAdder.addToColumnInfoIfAbsent(tableInfo.getColumns());
             tableInfo.setColumns(columns);
 
             logger.info("Remove columns not found in table {} data", tableName);
@@ -55,17 +55,6 @@ public class FTableDataLoader {
         }).collect(Collectors.toList());
     }
 
-    private ArrayList<FColumnInfo> addRowIdColumnIfAbsent(ArrayList<FColumnInfo> columns, String idColumnName) {
-        for (FColumnInfo column : columns) {
-            if (column.getColumnName().equals(idColumnName)) {
-                column.setColumnType(FColumnType.ID);
-                return columns;
-            }
-        }
-
-        columns.add(0, FColumnInfoFactory.createIdColumn(idColumnName));
-        return columns;
-    }
 
     private ArrayList<FColumnInfo> removeNotFoundColumn(
             String tableName, final String[] dataColumns, final List<FColumnInfo> infoColumns) {
@@ -84,29 +73,8 @@ public class FTableDataLoader {
         return (ArrayList<FColumnInfo>) filteredColumns;
     }
 
-    private Dataset<Row> loadData(String tableName, String dataPath) {
-        Dataset<Row> tab;
-        try {
-            if (dataPath.toLowerCase().contains("csv")) {
-                tab = spark.read().format("csv")
-                        .option("header", true)
-                        // Do not infer type. All are string.
-                        .option("inferSchema", false)
-                        .load(dataPath);
-            } else {
-                tab = spark.read().orc(dataPath);
-            }
-        } catch (Throwable t) {
-            logger.error("### Can not load table {} from {}. Use empty table.", tableName, dataPath);
-            t.printStackTrace();
-            tab = spark.emptyDataFrame();
-        }
-        return tab;
-    }
-
 
     public FTableDataLoader(SparkSession spark, String idColumnName) {
-        this.spark = spark;
         this.idColumnName = idColumnName;
 
         logger.info("Register spark udf");

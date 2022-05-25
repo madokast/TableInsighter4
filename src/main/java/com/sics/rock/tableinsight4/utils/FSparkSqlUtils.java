@@ -17,26 +17,13 @@ public class FSparkSqlUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(FSparkSqlUtils.class);
 
-    /**
-     * Add an unique id column to the table.
-     * Note that it does not start from 0.
-     */
-    public static Dataset<Row> addRowIdIfAbsent(Dataset<Row> table, String idColumn) {
-
-        for (String column : table.columns()) {
-            if (idColumn.equals(column)) return table;
-        }
-
-        return table.withColumn(idColumn, functions.monotonically_increasing_id());
-    }
-
     public static Dataset<Row> retainColumnAndCastType(
             String tableName, String innerTableName,
             Dataset<Row> dataset, ArrayList<FColumnInfo> columns) {
         String cast = columns.stream().map(columnInfo -> {
             String columnName = columnInfo.getColumnName();
             Class<?> valueType = columnInfo.getValueType();
-            return FTypeUtils.cast(columnName, valueType);
+            return FTypeUtils.castSQLClause(columnName, valueType);
         }).collect(Collectors.joining(", "));
 
         logger.info("Table {} do cast {}", tableName, cast);
