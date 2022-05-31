@@ -1,13 +1,14 @@
 package com.sics.rock.tableinsight4.procedure;
 
+import com.sics.rock.tableinsight4.FTiEnvironment;
 import com.sics.rock.tableinsight4.procedure.load.FTableLoader;
+import com.sics.rock.tableinsight4.procedure.preproces.FDatasetCastHandler;
 import com.sics.rock.tableinsight4.procedure.preproces.FIdColumnAdder;
-import com.sics.rock.tableinsight4.table.*;
-import com.sics.rock.tableinsight4.utils.FSparkSqlUtils;
-import com.sics.rock.tableinsight4.utils.FTypeUtils;
+import com.sics.rock.tableinsight4.table.FColumnInfo;
+import com.sics.rock.tableinsight4.table.FTableDatasetMap;
+import com.sics.rock.tableinsight4.table.FTableInfo;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,23 +23,34 @@ import java.util.stream.Collectors;
  *
  * @author zhaorx
  */
-public class FTableDataLoader {
+public class FTableDataLoader implements FTiEnvironment {
 
     private static final Logger logger = LoggerFactory.getLogger(FTableDataLoader.class);
 
-    private final String idColumnName;
+    private final String idColumnName = config().idColumnName;
 
-    public List<FTable> prepareData(List<FTableInfo> tableInfos) {
-        return tableInfos.parallelStream().map(tableInfo -> {
+    private final FTableLoader tableLoader = new FTableLoader();
+
+    private final FIdColumnAdder idColumnAdder = new FIdColumnAdder(idColumnName);
+
+    private final FDatasetCastHandler datasetCastHandler = new FDatasetCastHandler();
+
+    private final Thread environmentOwner = Thread.currentThread();
+
+    public FTableDatasetMap prepareData(List<FTableInfo> tableInfos) {
+
+        final FTableDatasetMap tableDatasetMap = new FTableDatasetMap();
+
+        tableInfos.parallelStream().forEach(tableInfo -> {
+            FTiEnvironment.shareFrom(environmentOwner);
 
             String tableName = tableInfo.getTableName();
             String tableDataPath = tableInfo.getTableDataPath();
 
             logger.info("Load table {} data from {}", tableName, tableDataPath);
-            Dataset<Row> dataset = new FTableLoader().load(tableDataPath);
+            Dataset<Row> dataset = tableLoader.load(tableDataPath);
 
             logger.info("Add row_id {} if absent on {}", idColumnName, tableName);
-            FIdColumnAdder idColumnAdder = new FIdColumnAdder(idColumnName);
             dataset = idColumnAdder.addOnDatasetIfAbsent(dataset);
             ArrayList<FColumnInfo> columns = idColumnAdder.addToColumnInfoIfAbsent(tableInfo.getColumns());
             tableInfo.setColumns(columns);
@@ -48,13 +60,27 @@ public class FTableDataLoader {
             tableInfo.setColumns(filteredColumns);
 
             logger.info("Type cast in table {}. Only retain columns in request", tableName);
-            dataset = FSparkSqlUtils.retainColumnAndCastType(tableName, tableInfo.getInnerTableName(), dataset, filteredColumns);
+            dataset = datasetCastHandler.retainColumnAndCastType(tableName, tableInfo.getInnerTableName(), dataset, filteredColumns);
 
-            return new FTable(tableInfo, dataset);
+            debug(tableName, dataset);
 
-        }).collect(Collectors.toList());
+            tableDatasetMap.put(tableInfo, dataset);
+
+            FTiEnvironment.returnBack(environmentOwner);
+        });
+
+
+        return tableDatasetMap;
     }
 
+    private void debug(String tableName, Dataset<Row> dataset) {
+        if (logger.isDebugEnabled()) {
+            synchronized (FTableDataLoader.class) {
+                logger.debug("Show table {}", tableName);
+                dataset.show();
+            }
+        }
+    }
 
     private ArrayList<FColumnInfo> removeNotFoundColumn(
             String tableName, final String[] dataColumns, final List<FColumnInfo> infoColumns) {
@@ -71,13 +97,5 @@ public class FTableDataLoader {
         }).collect(Collectors.toList());
 
         return (ArrayList<FColumnInfo>) filteredColumns;
-    }
-
-
-    public FTableDataLoader(SparkSession spark, String idColumnName) {
-        this.idColumnName = idColumnName;
-
-        logger.info("Register spark udf");
-        FTypeUtils.registerSparkUDF(spark.sqlContext());
     }
 }

@@ -37,7 +37,6 @@ public class FJDBCTableLoader implements FITableLoader {
     @Override
     public Dataset<Row> load(String tablePath) {
         return spark.read().jdbc(url, tablePath, properties);
-
     }
 
     public static boolean canLoad(String tablePath, Map<String, String> options) {

@@ -4,37 +4,45 @@ import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 
 import java.io.File;
+import java.util.Random;
 
 /**
  * Example data
  */
 public class FExamples {
 
-    public static FTableInfo relation() {
-        String tabName = "relation";
-        String header = "cc,ac,pn,nm,str,ct,zip";
+    private static long rowId = new Random().nextLong();
 
-        String[] contents = ("01, 908, 1111111, Mike, Tree Ave, MH, 07974\n" +
-                "01, 908, 1111111, Rick, Tree Ave, MH, 07974\n" +
-                "01, 212, 2222222, Joe, 5th Ave, NYC, 01202\n" +
-                "01, 908, 2222222, Jim, Elm Str, MH, 07974\n" +
-                "01, 131, 2222222, Sean, 3rd Str, UN, 01202\n" +
-                "44, 131, 3333333, Ben, High St, EDI, EH4 1DT\n" +
-                "44, 131, 4444444, Ian, High St, EDI, EH4 1DT\n" +
-                "44, 908, 4444444, Ian, Port PI, MH, W1B 1JH").split("\n");
+    public static FTableInfo relation() {
+        return relation("relation", "tab001");
+    }
+
+    public static FTableInfo relation(String tabName, String innerTabName) {
+        String header = "cc,ac,pn,nm,str,ct,zip,row_id";
+
+        String[] contents = {"01, 908, 1111111, Mike, Tree Ave, MH, 07974," + (++rowId),
+                "01, 908, 1111111, Rick, Tree Ave, MH, 07974," + (++rowId),
+                "01, 212, 2222222, Joe, 5th Ave, NYC, 01202," + (++rowId),
+                "01, 908, 2222222, Jim, Elm Str, MH, 07974," + (++rowId),
+                "01, 131, 2222222, Sean, 3rd Str, UN, 01202," + (++rowId),
+                "44, 131, 3333333, Ben, High St, EDI, EH4 1DT," + (++rowId),
+                "44, 131, 4444444, Ian, High St, EDI, EH4 1DT," + (++rowId),
+                "44, 908, 4444444, Ian, Port PI, MH, W1B 1JH," + (++rowId)};
 
         File tab = FTableCreator.createCsv(header, contents);
 
-        FTableInfo tableInfo = new FTableInfo(tabName, "tab01", tab.getAbsolutePath());
+        FTableInfo tableInfo = new FTableInfo(tabName, innerTabName, tab.getAbsolutePath());
         for (String colName : header.split(",")) {
-            tableInfo.addColumnInfo(new FColumnInfo(colName, String.class));
+            Class<?> type = String.class;
+            if (colName.equals("row_id")) type = Long.class;
+            tableInfo.addColumnInfo(new FColumnInfo(colName, type));
         }
 
         return tableInfo;
     }
 
 
-    public static FTableInfo doubleNumberNullColumn7(){
+    public static FTableInfo doubleNumberNullColumn7() {
         String tabName = "doubleNumberColumn7";
         String header = "allsalary,realsalary,alltax,tax1,tax2,tax3,tax4";
 

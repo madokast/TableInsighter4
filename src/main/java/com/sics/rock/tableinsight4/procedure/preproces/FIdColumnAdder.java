@@ -30,6 +30,9 @@ public class FIdColumnAdder {
         return table.withColumn(idColumnName, functions.monotonically_increasing_id());
     }
 
+    /**
+     * Add id column into columnInfos
+     */
     public ArrayList<FColumnInfo> addToColumnInfoIfAbsent(ArrayList<FColumnInfo> columns) {
         for (FColumnInfo column : columns) {
             if (column.getColumnName().equals(idColumnName)) {

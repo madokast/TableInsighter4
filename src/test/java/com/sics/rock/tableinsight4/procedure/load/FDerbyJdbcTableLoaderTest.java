@@ -1,6 +1,6 @@
 package com.sics.rock.tableinsight4.procedure.load;
 
-import com.sics.rock.tableinsight4.test.FTableInsightTestEnv;
+import com.sics.rock.tableinsight4.test.FTiTestEnv;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +15,7 @@ import java.sql.Statement;
 import java.util.Map;
 
 
-public class FDerbyJdbcTableLoaderTest extends FTableInsightTestEnv {
+public class FDerbyJdbcTableLoaderTest extends FTiTestEnv {
 
     private static final String JDBC_URL = "jdbc:derby:derbyDB;create=true";
     private static final String DRIVER_CLASS = "org.apache.derby.jdbc.EmbeddedDriver";

@@ -18,26 +18,29 @@ public class FTiConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(FTiConfig.class);
 
-    @FConfigItemAnnotation(name = "ti.rule.cover", description = "Cover rate of rules")
+    @FConfigItem(name = "ti.rule.cover", description = "Cover rate of rules")
     public Double cover = 0.05;
 
-    @FConfigItemAnnotation(name = "ti.rule.confidence", description = "Confidence rate of rules")
+    @FConfigItem(name = "ti.rule.confidence", description = "Confidence rate of rules")
     public Double confidence = 0.8;
 
-    @FConfigItemAnnotation(name = "ti.data.load.orders", description = "If two or move ti.data.load.xxx.options are provided, attempt to load data in this order")
-    public String tableLoadOrders = "JDBC,ORC,CSV";
+    @FConfigItem(name = "ti.data.load.orders", description = "If two or move ti.data.load.xxx.options are provided, attempt to load data in this order")
+    public String tableLoadOrders = "JDBC,CSV,ORC";
 
-    @FConfigItemAnnotation(name = "ti.data.load.csv.options", description = "Options in csv file load by spark. See https://spark.apache.org/docs/3.2.0/sql-data-sources-csv.html")
+    @FConfigItem(name = "ti.data.load.csv.options", description = "Options in csv file loaded by spark. See https://spark.apache.org/docs/3.2.0/sql-data-sources-csv.html")
     public Map<String, String> csvTableLoadOptions = FUtils.mapOf("header", "true", "inferSchema", "false");
 
-    @FConfigItemAnnotation(name = "ti.data.load.orc.options", description = "Options in orc file load by spark")
-    public Map<String, String> orcTableLoadOptions = FUtils.mapOf("spark.sql.orc.impl", "native");
+    @FConfigItem(name = "ti.data.load.orc.options", description = "Options in orc file loaded by spark")
+    public Map<String, String> orcTableLoadOptions = new HashMap<>();
 
-    @FConfigItemAnnotation(name = "ti.data.load.jdbc.options", description = "Options in table load by jdbc in spark")
+    @FConfigItem(name = "ti.data.load.jdbc.options", description = "Options in table loaded by jdbc in spark")
     public Map<String, String> jdbcTableLoadOptions = FUtils.mapOf("url", "jdbc:", "user", "root", "password", "root");
 
-    @FConfigItemAnnotation(name = "ti.data.idColumnName", description = "ID column name. Used in identify positive/negative examples of rules")
+    @FConfigItem(name = "ti.data.idColumnName", description = "ID column name. Used in identify positive/negative examples of rules")
     public String idColumnName = "row_id";
+
+    @FConfigItem(name = "ti.external.binaryModelDerivedColumnSuffix", description = "Derived column suffix for external binary model. Rename it only when conflicting with other column names.")
+    public String externalBinaryModelDerivedColumnSuffix = "$EX_";
 
 
     public static FTiConfig defaultConfig() {
@@ -49,8 +52,8 @@ public class FTiConfig {
         List<String> configs = new ArrayList<>();
         try {
             for (Field f : FTiConfig.class.getDeclaredFields()) {
-                if (f.isAnnotationPresent(FConfigItemAnnotation.class)) {
-                    FConfigItemAnnotation annotation = f.getAnnotation(FConfigItemAnnotation.class);
+                if (f.isAnnotationPresent(FConfigItem.class)) {
+                    FConfigItem annotation = f.getAnnotation(FConfigItem.class);
                     Class<?> type = f.getType();
                     Object val = f.get(this);
                     String key = annotation.name();
@@ -75,8 +78,8 @@ public class FTiConfig {
 
         Map<String, Field> keyFieldMap = new HashMap<>();
         for (Field f : FTiConfig.class.getDeclaredFields()) {
-            if (f.isAnnotationPresent(FConfigItemAnnotation.class)) {
-                FConfigItemAnnotation annotation = f.getAnnotation(FConfigItemAnnotation.class);
+            if (f.isAnnotationPresent(FConfigItem.class)) {
+                FConfigItem annotation = f.getAnnotation(FConfigItem.class);
                 String key = annotation.name();
                 keyFieldMap.put(key, f);
             }
@@ -102,7 +105,6 @@ public class FTiConfig {
                         throw new FConfigParseException("Expect " + val + " is " + FTypeUtils.toString(type));
                     }
                 } else {// map
-                    // TODO 递归
                     int lastDot = key.lastIndexOf(".");
                     if (lastDot == -1) {
                         throw new FConfigParseException("No conf matches " + key);

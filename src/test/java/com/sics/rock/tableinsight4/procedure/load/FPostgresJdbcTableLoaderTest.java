@@ -1,13 +1,13 @@
 package com.sics.rock.tableinsight4.procedure.load;
 
-import com.sics.rock.tableinsight4.test.FTableInsightTestEnv;
+import com.sics.rock.tableinsight4.test.FTiTestEnv;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Map;
 
 @Ignore
-public class FPostgresJdbcTableLoaderTest extends FTableInsightTestEnv {
+public class FPostgresJdbcTableLoaderTest extends FTiTestEnv {
 
     @Test
     public void test_jdbc() {

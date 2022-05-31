@@ -2,8 +2,12 @@ package com.sics.rock.tableinsight4.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -15,11 +19,14 @@ import java.util.Optional;
  */
 public class FTypeUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(FTypeUtils.class);
+
     private static final String castStr = "asS";
     private static final String castLong = "asL";
     private static final String castDouble = "asD";
 
-    public static void registerSparkUDF(SQLContext sqlContext) {
+    public synchronized static void registerSparkUDF(SQLContext sqlContext) {
+        logger.info("Register spark udf");
         sqlContext.udf().register(castStr, FTypeUtils::castStr, DataTypes.StringType);
         sqlContext.udf().register(castLong, FTypeUtils::castLong, DataTypes.LongType);
         sqlContext.udf().register(castDouble, FTypeUtils::castDouble, DataTypes.DoubleType);
@@ -122,5 +129,16 @@ public class FTypeUtils {
         int lastDot = str.lastIndexOf(".");
         if (lastDot == -1) return str;
         else return str.substring(lastDot + 1);
+    }
+
+    public static DataType toSparkDataType(Class<?> klass) {
+        if (klass == null) throw new NullPointerException("Can not infer a type of null");
+        if (klass.equals(String.class)) return DataTypes.StringType;
+        else if (klass.equals(Double.class)) return DataTypes.DoubleType;
+        else if (klass.equals(Long.class)) return DataTypes.LongType;
+        else if (klass.equals(Integer.class)) return DataTypes.IntegerType;
+        else if (klass.equals(Boolean.class)) return DataTypes.BooleanType;
+        else if (klass.equals(Float.class)) return DataTypes.FloatType;
+        else throw new IllegalArgumentException("Unknown type " + klass);
     }
 }

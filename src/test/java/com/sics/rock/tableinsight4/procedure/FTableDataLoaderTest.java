@@ -1,48 +1,36 @@
 package com.sics.rock.tableinsight4.procedure;
 
-import com.sics.rock.tableinsight4.table.FTable;
+import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.test.FExamples;
-import com.sics.rock.tableinsight4.test.FSparkTestEnv;
-import com.sics.rock.tableinsight4.test.FTableInsightTestEnv;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
+import com.sics.rock.tableinsight4.test.FTiTestEnv;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.List;
 
-public class FTableDataLoaderTest extends FTableInsightTestEnv {
+public class FTableDataLoaderTest extends FTiTestEnv {
 
     @Test
     public void prepareData() {
 
-        FTableDataLoader preprocess = new FTableDataLoader(spark, "row_id");
+        FTableDataLoader preprocess = new FTableDataLoader();
 
         FTableInfo relation = FExamples.relation();
 
-        List<FTable> tabs = preprocess.prepareData(Collections.singletonList(relation));
+        final FTableDatasetMap tableDatasetMap = preprocess.prepareData(Collections.singletonList(relation));
 
-        FTable tab = tabs.get(0);
-
-        Dataset<Row> dataset = tab.getDataset();
-
-        dataset.show();
+        tableDatasetMap.getDatasetByInnerTableName(relation.getInnerTableName()).show();
     }
 
     @Test
     public void prepareData2() {
 
-        FTableDataLoader preprocess = new FTableDataLoader(spark, "row_id");
+        FTableDataLoader preprocess = new FTableDataLoader();
 
         FTableInfo doubleNumberNullColumn7 = FExamples.doubleNumberNullColumn7();
 
-        List<FTable> tabs = preprocess.prepareData(Collections.singletonList(doubleNumberNullColumn7));
+        final FTableDatasetMap tableDatasetMap = preprocess.prepareData(Collections.singletonList(doubleNumberNullColumn7));
 
-        FTable tab = tabs.get(0);
-
-        Dataset<Row> dataset = tab.getDataset();
-
-        dataset.show();
+        tableDatasetMap.getDatasetByTableName(doubleNumberNullColumn7.getTableName()).show();
     }
 }

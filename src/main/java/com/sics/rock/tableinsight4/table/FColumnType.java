@@ -40,16 +40,16 @@ public enum FColumnType {
     RANGE,
 
     /**
-     * Derived model column. Like
-     * address                                              $MD001
+     * Derived external binary model column. Like
+     * address                                              $EX_001
      * 1600 Pennsylvania Avenue, Washington                 0
      * 1600 Pennsylvania Avenue, Washington, DC             0
      * Cedars-Sinai Medical Center, RD                      1
      * Cedars-Sinai Medical Center                          1
      *
-     * The column "$MD001" derived by results of outer model,
+     * The column "$EX_001" derived by results of external binary model,
      * tell the address is the same or not.
      */
-    MODEL
+    EXTERNAL_BINARY_MODEL
 
 }

@@ -28,7 +28,9 @@ public abstract class FSparkTestEnv extends FTestTools {
 
     @Before
     public void __setSpark() {
-        this.spark = FSparkUtils.localSparkSession();
+        // org.apache.spark.sql.AnalysisException: Hive built-in ORC data source must be used with Hive support enabled.
+        // Please use the native ORC data source by setting 'spark.sql.orc.impl' to 'native';
+        this.spark = FSparkUtils.localSparkSession("spark.sql.orc.impl", "native");
         this.sc = JavaSparkContext.fromSparkContext(spark.sparkContext());
     }
 

@@ -5,7 +5,7 @@ import com.sics.rock.tableinsight4.conf.FTiConfig;
 import org.junit.After;
 import org.junit.Before;
 
-public abstract class FTableInsightTestEnv extends FSparkTestEnv implements FTiEnvironment {
+public abstract class FTiTestEnv extends FSparkTestEnv implements FTiEnvironment {
 
     @Before()
     public void __createTiEnv() {
@@ -14,7 +14,7 @@ public abstract class FTableInsightTestEnv extends FSparkTestEnv implements FTiE
 
     @After
     public void __closeTiEnv() {
-        FTiEnvironment.clean();
+        FTiEnvironment.destroy();
     }
 
 }

@@ -1,10 +1,13 @@
 package com.sics.rock.tableinsight4.utils;
 
+import com.sics.rock.tableinsight4.internal.FPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author zhaorx
@@ -26,6 +29,68 @@ public class FUtils {
                     mergeReduce0(array, op, startIn, startIn + length / 2),
                     mergeReduce0(array, op, startIn + length / 2, endEx)
             );
+    }
+
+    public static <E> Map<E, Long> createUnionFindSet(List<FPair<E, E>> unionCases) {
+        // 所有元素
+        final List<E> allElements = unionCases.stream().flatMap(p -> Stream.of(p._k, p._v))
+                .distinct().collect(Collectors.toList());
+
+        // 编号
+        Map<E, Integer> elementIndex = new HashMap<>();
+        for (int i = 0; i < allElements.size(); i++) {
+            elementIndex.put(allElements.get(i), i);
+        }
+
+        final List<FPair<Integer, Integer>> unionIndexes = unionCases.stream()
+                .filter(p -> !p._k.equals(p._v))
+                .map(p -> new FPair<>(elementIndex.get(p._k), elementIndex.get(p._v))).collect(Collectors.toList());
+
+
+        final int[] ufs = createUnionFindSet(unionIndexes, allElements.size());
+
+        Map<E, Long> result = new HashMap<>();
+
+        for (int i = 0; i < ufs.length; i++) {
+            int root = ufs[i];
+            while (root != ufs[root]) root = ufs[root];
+            result.put(allElements.get(i), (long) root);
+        }
+
+        return result;
+    }
+
+    private static int[] createUnionFindSet(List<FPair<Integer, Integer>> unionCases, int size) {
+
+        class UFS {
+            private int[] arr;
+
+            private UFS(int size) {
+                this.arr = new int[size];
+                for (int i = 0; i < this.arr.length; i++) {
+                    this.arr[i] = i;
+                }
+            }
+
+            private int find(int e) {
+                if (e == arr[e]) return e;
+                else {
+                    arr[e] = find(arr[e]);
+                    return arr[e];
+                }
+            }
+
+            private void union(int k, int v) {
+                arr[find(k)] = find(v);
+            }
+        }
+
+        final UFS ufs = new UFS(size);
+
+        // union
+        unionCases.forEach(pair -> ufs.union(pair._k, pair._v));
+
+        return ufs.arr;
     }
 
     public static <E> List<E> collect(Iterator<E> iter) {
