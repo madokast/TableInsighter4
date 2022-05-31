@@ -1,6 +1,6 @@
 package com.sics.rock.tableinsight4.test;
 
-import com.sics.rock.tableinsight4.FTiEnvironment;
+import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.conf.FTiConfig;
 import org.junit.After;
 import org.junit.Before;
