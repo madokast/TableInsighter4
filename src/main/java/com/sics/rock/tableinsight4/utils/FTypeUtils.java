@@ -139,6 +139,7 @@ public class FTypeUtils {
         else if (klass.equals(Integer.class)) return DataTypes.IntegerType;
         else if (klass.equals(Boolean.class)) return DataTypes.BooleanType;
         else if (klass.equals(Float.class)) return DataTypes.FloatType;
+        else if (klass.equals(Double[].class)) return DataTypes.createArrayType(DataTypes.DoubleType);
         else throw new IllegalArgumentException("Unknown type " + klass);
     }
 }

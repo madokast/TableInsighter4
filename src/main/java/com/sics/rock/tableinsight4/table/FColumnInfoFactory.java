@@ -1,6 +1,6 @@
 package com.sics.rock.tableinsight4.table;
 
-import com.sics.rock.tableinsight4.procedure.external.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.core.external.FExternalBinaryModelInfo;
 
 /**
  * @author zhaorx

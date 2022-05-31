@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.procedure;
+package com.sics.rock.tableinsight4.core;
 
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;

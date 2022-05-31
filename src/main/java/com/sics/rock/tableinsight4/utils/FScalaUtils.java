@@ -5,6 +5,9 @@ import scala.collection.immutable.Seq;
 import scala.collection.mutable.ListBuffer;
 import scala.jdk.CollectionConverters;
 
+/**
+ * @author zhaorx
+ */
 public class FScalaUtils {
 
     public static <E> Seq<E> seqOf(E... es) {

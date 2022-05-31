@@ -39,8 +39,11 @@ public class FTiConfig {
     @FConfigItem(name = "ti.data.idColumnName", description = "ID column name. Used in identify positive/negative examples of rules")
     public String idColumnName = "row_id";
 
-    @FConfigItem(name = "ti.external.binaryModelDerivedColumnSuffix", description = "Derived column suffix for external binary model. Rename it only when conflicting with other column names.")
+    @FConfigItem(name = "ti.derived.binaryModelDerivedColumnSuffix", description = "Derived column suffix for external binary model. Rename it only when conflicting with other column names.")
     public String externalBinaryModelDerivedColumnSuffix = "$EX_";
+
+    @FConfigItem(name = "ti.derived.rangeDerivedColumnSuffix", description = "Derived column suffix for range column. Rename it only when conflicting with other column names.")
+    public String rangeDerivedColumnSuffix = "$RG_";
 
 
     public static FTiConfig defaultConfig() {

@@ -1,5 +1,8 @@
 package com.sics.rock.tableinsight4.conf;
 
+/**
+ * @author zhaorx
+ */
 public class FConfigIllegalException extends RuntimeException {
 
     public FConfigIllegalException(String message) {

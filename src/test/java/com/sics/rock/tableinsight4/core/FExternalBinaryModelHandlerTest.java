@@ -1,9 +1,9 @@
-package com.sics.rock.tableinsight4.procedure;
+package com.sics.rock.tableinsight4.core;
 
 import com.sics.rock.tableinsight4.internal.FPair;
-import com.sics.rock.tableinsight4.procedure.external.FExternalBinaryModelInfo;
-import com.sics.rock.tableinsight4.procedure.external.FIExternalBianryModelPredicateNameFormatter;
-import com.sics.rock.tableinsight4.procedure.external.FIExternalBinaryModelCalculator;
+import com.sics.rock.tableinsight4.core.external.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.core.external.FIExternalBianryModelPredicateNameFormatter;
+import com.sics.rock.tableinsight4.core.external.FIExternalBinaryModelCalculator;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.test.FExamples;
@@ -13,7 +13,6 @@ import com.sics.rock.tableinsight4.utils.FUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.junit.Test;
-import scala.collection.immutable.Seq;
 
 import java.util.ArrayList;
 import java.util.Collections;

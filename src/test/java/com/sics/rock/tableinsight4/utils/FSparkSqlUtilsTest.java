@@ -7,6 +7,10 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+/**
+ *
+ * @author zhaorx
+ */
 public class FSparkSqlUtilsTest extends FSparkTestEnv {
 
 
@@ -18,6 +22,18 @@ public class FSparkSqlUtilsTest extends FSparkTestEnv {
                 "Zhang San", 37, 1.84,
                 "Li Si", null, 1.85,
                 "Wang Wu", 47, null
+        );
+
+        table.show();
+    }
+
+    @Test
+    public void test_createTable2() {
+        final Dataset<Row> table = FSparkSqlUtils.createTable(spark, 1,
+                "range",
+                new Double[]{Double.NEGATIVE_INFINITY, -1D},
+                new Double[]{-1D, 0D},
+                new Double[]{0D, Double.POSITIVE_INFINITY}
         );
 
         table.show();

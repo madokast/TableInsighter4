@@ -1,7 +1,7 @@
-package com.sics.rock.tableinsight4.procedure.load.impl;
+package com.sics.rock.tableinsight4.core.load.impl;
 
 
-import com.sics.rock.tableinsight4.procedure.load.FITableLoader;
+import com.sics.rock.tableinsight4.core.load.FITableLoader;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;

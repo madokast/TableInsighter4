@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.procedure.preproces;
+package com.sics.rock.tableinsight4.core.preproces;
 
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FColumnInfoFactory;
@@ -9,6 +9,9 @@ import org.apache.spark.sql.functions;
 
 import java.util.ArrayList;
 
+/**
+ * @author zhaorx
+ */
 public class FIdColumnAdder {
 
     private final String idColumnName;

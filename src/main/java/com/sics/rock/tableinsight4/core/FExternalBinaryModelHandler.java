@@ -1,8 +1,8 @@
-package com.sics.rock.tableinsight4.procedure;
+package com.sics.rock.tableinsight4.core;
 
 import com.sics.rock.tableinsight4.internal.FPair;
-import com.sics.rock.tableinsight4.procedure.external.FExternalBinaryModelInfo;
-import com.sics.rock.tableinsight4.procedure.external.FIExternalBinaryModelCalculator;
+import com.sics.rock.tableinsight4.core.external.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.core.external.FIExternalBinaryModelCalculator;
 import com.sics.rock.tableinsight4.table.FColumnInfoFactory;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author zhaorx
+ */
 public class FExternalBinaryModelHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(FExternalBinaryModelHandler.class);
@@ -33,7 +36,7 @@ public class FExternalBinaryModelHandler {
     private final String idColumn;
 
     public void appendDerivedColumn(FTableDatasetMap tables, List<FExternalBinaryModelInfo> externalBinaryModelInfos) {
-        externalBinaryModelInfos.forEach(ex->appendDerivedColumn(tables, ex));
+        externalBinaryModelInfos.forEach(ex -> appendDerivedColumn(tables, ex));
     }
 
     // thread unsafe
@@ -61,12 +64,20 @@ public class FExternalBinaryModelHandler {
         leftTableInfo.addColumnInfo(FColumnInfoFactory.createExternalDerivedColumn(externalDerivedColumn, externalPairInfo));
         tables.updateDataset(leftTableInfo, mainLeftTable);
 
+        debugShow(mainLeftTable);
+
         // Main right table left join externalTable
         if (!leftTableName.equals(rightTableName)) {
             mainRightTable = FSparkSqlUtils.leftOuterJoin(mainRightTable, externalTable, Collections.singletonList(idColumn));
             rightTableInfo.addColumnInfo(FColumnInfoFactory.createExternalDerivedColumn(externalDerivedColumn, externalPairInfo));
             tables.updateDataset(rightTableInfo, mainRightTable);
+
+            debugShow(mainRightTable);
         }
+    }
+
+    private void debugShow(Dataset<Row> table) {
+        if (logger.isDebugEnabled()) table.show();
     }
 
     private Dataset<Row> buildClassificationTableFromCalculatedModel(FIExternalBinaryModelCalculator calculator, String derivedColumn) {

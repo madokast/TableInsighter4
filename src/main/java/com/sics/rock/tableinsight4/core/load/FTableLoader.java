@@ -1,16 +1,19 @@
-package com.sics.rock.tableinsight4.procedure.load;
+package com.sics.rock.tableinsight4.core.load;
 
 import com.sics.rock.tableinsight4.FTiEnvironment;
 import com.sics.rock.tableinsight4.conf.FConfigIllegalException;
-import com.sics.rock.tableinsight4.procedure.load.impl.FCsvTableLoader;
-import com.sics.rock.tableinsight4.procedure.load.impl.FJDBCTableLoader;
-import com.sics.rock.tableinsight4.procedure.load.impl.FOrcTableLoader;
+import com.sics.rock.tableinsight4.core.load.impl.FCsvTableLoader;
+import com.sics.rock.tableinsight4.core.load.impl.FJDBCTableLoader;
+import com.sics.rock.tableinsight4.core.load.impl.FOrcTableLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author zhaorx
+ */
 public class FTableLoader implements FITableLoader, FTiEnvironment {
 
     private static final Logger logger = LoggerFactory.getLogger(FTableLoader.class);

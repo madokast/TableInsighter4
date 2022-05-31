@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.procedure.external;
+package com.sics.rock.tableinsight4.core.external;
 
 import com.sics.rock.tableinsight4.internal.FPair;
 

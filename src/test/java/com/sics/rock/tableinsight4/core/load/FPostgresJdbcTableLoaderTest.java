@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.procedure.load;
+package com.sics.rock.tableinsight4.core.load;
 
 import com.sics.rock.tableinsight4.test.FTiTestEnv;
 import org.junit.Ignore;

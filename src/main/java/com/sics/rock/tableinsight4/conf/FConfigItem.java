@@ -8,6 +8,9 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.*;
 
+/**
+ * @author zhaorx
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {FIELD})

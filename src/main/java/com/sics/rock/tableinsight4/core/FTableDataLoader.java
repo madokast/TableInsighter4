@@ -1,9 +1,9 @@
-package com.sics.rock.tableinsight4.procedure;
+package com.sics.rock.tableinsight4.core;
 
 import com.sics.rock.tableinsight4.FTiEnvironment;
-import com.sics.rock.tableinsight4.procedure.load.FTableLoader;
-import com.sics.rock.tableinsight4.procedure.preproces.FDatasetCastHandler;
-import com.sics.rock.tableinsight4.procedure.preproces.FIdColumnAdder;
+import com.sics.rock.tableinsight4.core.load.FTableLoader;
+import com.sics.rock.tableinsight4.core.preproces.FDatasetCastHandler;
+import com.sics.rock.tableinsight4.core.preproces.FIdColumnAdder;
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;

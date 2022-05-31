@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Key is inner tableName
+ *
+ * @author zhaorx
  */
 public class FTableDatasetMap {
 
