@@ -1,5 +1,8 @@
 package com.sics.rock.tableinsight4.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -11,6 +14,8 @@ import java.util.function.Supplier;
  * @author zhaorx
  */
 public class FAssertUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(FAssertUtils.class);
 
     private static final boolean ASSERT = true;
 
@@ -54,4 +59,11 @@ public class FAssertUtils {
         }
     }
 
+    static {
+        if (ASSERT) {
+            logger.info("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■");
+            logger.info("■■■■■■ asset 未关闭，性能损失较大！■■■■■■");
+            logger.info("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■");
+        }
+    }
 }

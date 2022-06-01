@@ -1,5 +1,6 @@
 package com.sics.rock.tableinsight4.core;
 
+import com.sics.rock.tableinsight4.env.FEnvironmentOwner;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.core.load.FTableLoader;
 import com.sics.rock.tableinsight4.core.preproces.FDatasetCastHandler;
@@ -35,7 +36,7 @@ public class FTableDataLoader implements FTiEnvironment {
 
     private final FDatasetCastHandler datasetCastHandler = new FDatasetCastHandler();
 
-    private final Thread environmentOwner = Thread.currentThread();
+    private final FEnvironmentOwner environmentOwner = FEnvironmentOwner.current();
 
     public FTableDatasetMap prepareData(List<FTableInfo> tableInfos) {
 

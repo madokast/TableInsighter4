@@ -24,6 +24,12 @@ public class FTiConfig {
     @FConfigItem(name = "ti.rule.confidence", description = "Confidence rate of rules")
     public Double confidence = 0.8;
 
+    @FConfigItem(name = "ti.rule.syntax.and", description = "The symbol of logical operation AND in rule (e.g., ^, ⋀, &)")
+    public String syntaxAnd = "⋀";
+
+    @FConfigItem(name = "ti.rule.syntax.implication", description = "The symbol of logical operation implication in rule (e.g. ->, =>")
+    public String syntaxImplication = "->";
+
     @FConfigItem(name = "ti.data.load.orders", description = "If two or move ti.data.load.xxx.options are provided, attempt to load data in this order")
     public String tableLoadOrders = "JDBC,CSV,ORC";
 
