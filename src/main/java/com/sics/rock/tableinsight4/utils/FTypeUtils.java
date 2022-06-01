@@ -1,17 +1,19 @@
 package com.sics.rock.tableinsight4.utils;
 
+import com.sics.rock.tableinsight4.internal.FSerializableFunction;
+import com.sics.rock.tableinsight4.table.FValueType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.UDFRegistration;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 /**
- * Type cast func
+ * Safe type cast func
  * Use in spark-sql
  * Use in config parse
  *
@@ -21,42 +23,26 @@ public class FTypeUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(FTypeUtils.class);
 
-    private static final String castStr = "asS";
-    private static final String castLong = "asL";
-    private static final String castDouble = "asD";
+    private static final List<FCaster<?>> ALL_CASTER = new ArrayList<>();
+    private static final Map<FValueType, FCaster<?>> TYPE_CASTER_MAP = new HashMap<>();
+    private static final Map<Class<?>, FCaster<?>> KLASS_CASTER_MAP = new HashMap<>();
 
     public synchronized static void registerSparkUDF(SQLContext sqlContext) {
         logger.info("Register spark udf");
-        sqlContext.udf().register(castStr, FTypeUtils::castStr, DataTypes.StringType);
-        sqlContext.udf().register(castLong, FTypeUtils::castLong, DataTypes.LongType);
-        sqlContext.udf().register(castDouble, FTypeUtils::castDouble, DataTypes.DoubleType);
+        final UDFRegistration registration = sqlContext.udf();
+        ALL_CASTER.forEach(caster -> registration.register(caster.castFuncName, caster.caster::apply, caster.targetType));
     }
 
-    public static String castSQLClause(String columnName, Class<?> type) {
+    public static String castSQLClause(String columnName, FValueType type) {
+        final String castFuncName = TYPE_CASTER_MAP.get(type).castFuncName;
         // asX(`c`) AS `c`
-        return String.format("%s(`%s`) AS `%s`", udfIdentifierByType(type), columnName, columnName);
+        return String.format("%s(`%s`) AS `%s`", castFuncName, columnName, columnName);
     }
-
-
-    private static String udfIdentifierByType(Class<?> type) {
-        if (type.equals(Long.class)) return castLong;
-        else if (type.equals(Double.class)) return castDouble;
-        else if (type.equals(String.class)) return castStr;
-        else throw new IllegalArgumentException("No cast udf matches type " + type);
-    }
-
 
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> cast(Object value, Class<T> target) {
-        T result;
-        if (target.equals(String.class)) result = (T) castStr(value);
-        else if (target.equals(Long.class)) result = (T) castLong(value);
-        else if (target.equals(Integer.class)) result = (T) castInteger(value);
-        else if (target.equals(Double.class)) result = (T) castDouble(value);
-        else if (target.equals(Boolean.class)) result = (T) castBoolean(value);
-        else throw new IllegalArgumentException("Cannot cast " + value + " to " + target);
-
-        return Optional.ofNullable(result);
+        final T casted = (T) KLASS_CASTER_MAP.get(target).caster.apply(value);
+        return Optional.ofNullable(casted);
     }
 
     private static String castStr(Object val) {
@@ -124,6 +110,39 @@ public class FTypeUtils {
         }
     }
 
+    private static java.sql.Timestamp castTimestamp(Object val) {
+        if (val == null) return null;
+        else {
+            if (val instanceof java.sql.Timestamp) return (java.sql.Timestamp) val;
+            else {
+                try {
+
+                    return java.sql.Timestamp.valueOf(val.toString());
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+    }
+
+    private static java.sql.Date castDate(Object val) {
+        if (val == null) return null;
+        else {
+            if (val instanceof java.sql.Date) return (java.sql.Date) val;
+            else {
+                try {
+                    return java.sql.Date.valueOf(val.toString());
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+    }
+
+    private static Double[] castDoubleArray(Object val) {
+        throw new UnsupportedOperationException("Can not cast to double[] type");
+    }
+
     public static String toString(Class<?> type) {
         String str = type.toString();
         int lastDot = str.lastIndexOf(".");
@@ -131,15 +150,53 @@ public class FTypeUtils {
         else return str.substring(lastDot + 1);
     }
 
-    public static DataType toSparkDataType(Class<?> klass) {
+    static DataType toSparkDataType(Class<?> klass) {
         if (klass == null) throw new NullPointerException("Can not infer a type of null");
-        if (klass.equals(String.class)) return DataTypes.StringType;
-        else if (klass.equals(Double.class)) return DataTypes.DoubleType;
-        else if (klass.equals(Long.class)) return DataTypes.LongType;
-        else if (klass.equals(Integer.class)) return DataTypes.IntegerType;
-        else if (klass.equals(Boolean.class)) return DataTypes.BooleanType;
-        else if (klass.equals(Float.class)) return DataTypes.FloatType;
-        else if (klass.equals(Double[].class)) return DataTypes.createArrayType(DataTypes.DoubleType);
-        else throw new IllegalArgumentException("Unknown type " + klass);
+        return KLASS_CASTER_MAP.get(klass).targetType;
+    }
+
+    private static class FCaster<T> {
+        private final String castFuncName;
+        private final Class<T> targetClass;
+        private final FValueType valueType;
+        private final DataType targetType;
+        private final FSerializableFunction<Object, T> caster;
+
+        FCaster(String castFuncName, Class<T> targetClass, FValueType valueType, DataType targetType, FSerializableFunction<Object, T> caster) {
+            this.castFuncName = castFuncName;
+            this.targetClass = targetClass;
+            this.valueType = valueType;
+            this.targetType = targetType;
+            this.caster = caster;
+        }
+
+        public static <T> FCaster<T> of(String castFuncName, Class<T> targetClass, FValueType valueType, DataType dataType, FSerializableFunction<Object, T> caster) {
+            return new FCaster<>(castFuncName, targetClass, valueType, dataType, caster);
+        }
+    }
+
+    // init
+    static {
+        final FCaster<Boolean> CAST_BOOLEAN = FCaster.of("asB", Boolean.class, FValueType.BOOLEAN, DataTypes.BooleanType, FTypeUtils::castBoolean);
+        final FCaster<Integer> CAST_INTEGER = FCaster.of("asI", Integer.class, FValueType.INTEGER, DataTypes.IntegerType, FTypeUtils::castInteger);
+        final FCaster<Long> CAST_LONG = FCaster.of("asL", Long.class, FValueType.LONG, DataTypes.LongType, FTypeUtils::castLong);
+        final FCaster<Double> CAST_DOUBLE = FCaster.of("asD", Double.class, FValueType.DOUBLE, DataTypes.DoubleType, FTypeUtils::castDouble);
+        final FCaster<String> CAST_STR = FCaster.of("asS", String.class, FValueType.STRING, DataTypes.StringType, FTypeUtils::castStr);
+        final FCaster<java.sql.Date> CAST_DATE = FCaster.of("asDt", java.sql.Date.class, FValueType.DATE, DataTypes.DateType, FTypeUtils::castDate);
+        final FCaster<java.sql.Timestamp> CAST_TIMESTAMP = FCaster.of("asTS", java.sql.Timestamp.class, FValueType.TIMESTAMP, DataTypes.TimestampType, FTypeUtils::castTimestamp);
+
+        final FCaster<Double[]> CAST_DOUBLE_ARRAY = FCaster.of("asD_A", Double[].class, FValueType.createArrayType(FValueType.DOUBLE), DataTypes.createArrayType(DataTypes.DoubleType), FTypeUtils::castDoubleArray);
+
+        ALL_CASTER.add(CAST_BOOLEAN);
+        ALL_CASTER.add(CAST_INTEGER);
+        ALL_CASTER.add(CAST_LONG);
+        ALL_CASTER.add(CAST_DOUBLE);
+        ALL_CASTER.add(CAST_STR);
+        ALL_CASTER.add(CAST_DATE);
+        ALL_CASTER.add(CAST_TIMESTAMP);
+        ALL_CASTER.add(CAST_DOUBLE_ARRAY);
+
+        ALL_CASTER.forEach(caster -> TYPE_CASTER_MAP.put(caster.valueType, caster));
+        ALL_CASTER.forEach(caster -> KLASS_CASTER_MAP.put(caster.targetClass, caster));
     }
 }

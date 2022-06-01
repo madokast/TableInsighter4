@@ -1,5 +1,6 @@
-package com.sics.rock.tableinsight4.table;
+package com.sics.rock.tableinsight4.core.constant;
 
+import com.sics.rock.tableinsight4.table.FTableInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

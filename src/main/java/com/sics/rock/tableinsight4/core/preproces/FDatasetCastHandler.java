@@ -1,6 +1,7 @@
 package com.sics.rock.tableinsight4.core.preproces;
 
 import com.sics.rock.tableinsight4.table.FColumnInfo;
+import com.sics.rock.tableinsight4.table.FValueType;
 import com.sics.rock.tableinsight4.utils.FTypeUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -27,7 +28,7 @@ public class FDatasetCastHandler {
 
         String cast = columnInfos.stream().map(columnInfo -> {
             String columnName = columnInfo.getColumnName();
-            Class<?> valueType = columnInfo.getValueType();
+            FValueType valueType = columnInfo.getValueType();
             return FTypeUtils.castSQLClause(columnName, valueType);
         }).collect(Collectors.joining(", "));
 

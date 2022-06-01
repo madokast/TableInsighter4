@@ -8,7 +8,7 @@ import com.sics.rock.tableinsight4.core.external.FExternalBinaryModelInfo;
 public class FColumnInfoFactory {
 
     public static FColumnInfo createIdColumn(String idColName) {
-        FColumnInfo id = new FColumnInfo(idColName, Long.class);
+        FColumnInfo id = new FColumnInfo(idColName, FValueType.LONG);
         id.setColumnType(FColumnType.ID);
         id.setFindConstant(false);
         id.setNullConstant(false);
@@ -20,7 +20,7 @@ public class FColumnInfoFactory {
 
     public static FColumnInfo createExternalDerivedColumn(
             String externalDerivedColumnName, FExternalBinaryModelInfo externalBinaryModelInfo) {
-        FColumnInfo externalDerivedColumn = new FColumnInfo(externalDerivedColumnName, Long.class);
+        FColumnInfo externalDerivedColumn = new FColumnInfo(externalDerivedColumnName, FValueType.LONG);
         externalDerivedColumn.setColumnType(FColumnType.EXTERNAL_BINARY_MODEL);
         externalDerivedColumn.setFindConstant(false);
         externalDerivedColumn.setNullConstant(false);

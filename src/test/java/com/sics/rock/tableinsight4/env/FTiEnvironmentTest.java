@@ -2,13 +2,17 @@ package com.sics.rock.tableinsight4.env;
 
 import com.sics.rock.tableinsight4.conf.FTiConfig;
 import com.sics.rock.tableinsight4.test.FSparkTestEnv;
+import org.junit.After;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class FTiEnvironmentTest extends FSparkTestEnv {
 
@@ -44,7 +48,7 @@ public class FTiEnvironmentTest extends FSparkTestEnv {
         final FTiConfig config = FTiConfig.defaultConfig();
         FTiEnvironment.create(spark, config);
         final FEnvironmentOwner owner = FEnvironmentOwner.current();
-        IntStream.range(0, 20).parallel().forEach(i->{
+        IntStream.range(0, 20).parallel().forEach(i -> {
             FTiEnvironment.shareFrom(owner);
             final FTiEnvironment env = new FTiEnvironment() {
             };
@@ -60,7 +64,7 @@ public class FTiEnvironmentTest extends FSparkTestEnv {
         final FTiConfig config = FTiConfig.defaultConfig();
         FTiEnvironment.create(spark, config);
         final FEnvironmentOwner owner = FEnvironmentOwner.current();
-        IntStream.range(0, 40).parallel().forEach(i->{
+        IntStream.range(0, 40).parallel().forEach(i -> {
             FTiEnvironment.shareFrom(owner);
             // FTiEnvironment.returnBack(owner);
         });
@@ -73,13 +77,32 @@ public class FTiEnvironmentTest extends FSparkTestEnv {
         final FTiConfig config = FTiConfig.defaultConfig();
         FTiEnvironment.create(spark, config);
         final FEnvironmentOwner owner = FEnvironmentOwner.current();
-        IntStream.range(0, 40).parallel().forEach(i->{
+        IntStream.range(0, 40).parallel().forEach(i -> {
             final FTiEnvironment env = new FTiEnvironment() {
             };
             final FTiConfig nil = env.config();
         });
 
         FTiEnvironment.destroy();
+    }
+
+    /**
+     * Destroy all env because some tests here do not obey the correct specifications.
+     */
+    @After
+    public void destroyAll() throws Throwable {
+        logger.info("destroyAll Env");
+        for (Field field : FTiEnvironmentHolder.class.getDeclaredFields()) {
+            if (Map.class.isAssignableFrom(field.getType())) {
+                field.setAccessible(true);
+                final Map<?, ?> map = (Map) field.get(null);
+                if (map.getClass().equals(ConcurrentHashMap.class)) {
+                    map.clear();
+                    logger.info("Clean {}", field.getName());
+                }
+                field.setAccessible(false);
+            }
+        }
     }
 
 }

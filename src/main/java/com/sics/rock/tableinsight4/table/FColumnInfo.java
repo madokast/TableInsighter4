@@ -1,5 +1,6 @@
 package com.sics.rock.tableinsight4.table;
 
+import com.sics.rock.tableinsight4.core.constant.FConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +20,8 @@ public class FColumnInfo implements Serializable {
 
     /**
      * Type of values in the column
-     * Str、int、double ...
      */
-    private final Class<?> valueType;
+    private final FValueType valueType;
 
     private FColumnType columnType = FColumnType.NORMAL;
 
@@ -55,7 +55,7 @@ public class FColumnInfo implements Serializable {
      */
     private ArrayList<FConstant<?>> constants = new ArrayList<>();
 
-    public FColumnInfo(String columnName, Class<?> valueType) {
+    public FColumnInfo(String columnName, FValueType valueType) {
         this.columnName = columnName;
         this.valueType = valueType;
     }
@@ -71,7 +71,7 @@ public class FColumnInfo implements Serializable {
         return columnName;
     }
 
-    public Class<?> getValueType() {
+    public FValueType getValueType() {
         return valueType;
     }
 

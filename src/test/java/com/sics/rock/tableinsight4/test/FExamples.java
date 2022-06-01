@@ -2,6 +2,7 @@ package com.sics.rock.tableinsight4.test;
 
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableInfo;
+import com.sics.rock.tableinsight4.table.FValueType;
 
 import java.io.File;
 import java.util.Random;
@@ -33,8 +34,8 @@ public class FExamples {
 
         FTableInfo tableInfo = new FTableInfo(tabName, innerTabName, tab.getAbsolutePath());
         for (String colName : header.split(",")) {
-            Class<?> type = String.class;
-            if (colName.equals("row_id")) type = Long.class;
+            FValueType type = FValueType.STRING;
+            if (colName.equals("row_id")) type = FValueType.LONG;
             tableInfo.addColumnInfo(new FColumnInfo(colName, type));
         }
 
@@ -64,7 +65,7 @@ public class FExamples {
 
         FTableInfo tableInfo = new FTableInfo(tabName, "tab01", tab.getAbsolutePath());
         for (String colName : header.split(",")) {
-            tableInfo.addColumnInfo(new FColumnInfo(colName, Double.class));
+            tableInfo.addColumnInfo(new FColumnInfo(colName, FValueType.DOUBLE));
         }
 
         return tableInfo;

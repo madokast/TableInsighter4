@@ -5,7 +5,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Meta info of a table
@@ -56,6 +60,17 @@ public class FTableInfo implements Serializable {
         this.columns.add(columnInfo);
     }
 
+    /*---------------------- column view -----------------------*/
+
+    public List<FColumnInfo> rangeColumns() {
+        final List<FColumnInfo> needFindRanges = columns.stream()
+                .filter(c -> (!c.isSkip()) && c.isRangeConstant())
+                .collect(Collectors.toList());
+        return Collections.unmodifiableList(needFindRanges);
+    }
+
+    /*---------------------- getter setter -----------------------*/
+
     public String getTableName() {
         return tableName;
     }
@@ -82,4 +97,6 @@ public class FTableInfo implements Serializable {
     public void setColumns(ArrayList<FColumnInfo> columns) {
         this.columns = columns;
     }
+
+
 }
