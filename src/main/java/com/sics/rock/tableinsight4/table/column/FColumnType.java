@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.table;
+package com.sics.rock.tableinsight4.table.column;
 
 /**
  * Type of table column

@@ -1,8 +1,8 @@
 package com.sics.rock.tableinsight4.core.preproces;
 
 import com.sics.rock.tableinsight4.table.FColumnInfo;
-import com.sics.rock.tableinsight4.table.FColumnInfoFactory;
-import com.sics.rock.tableinsight4.table.FColumnType;
+import com.sics.rock.tableinsight4.table.column.FColumnInfoFactory;
+import com.sics.rock.tableinsight4.table.column.FColumnType;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;

@@ -1,0 +1,73 @@
+package com.sics.rock.tableinsight4.others;
+
+import com.sics.rock.tableinsight4.test.FTestTools;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+
+/**
+ * It seems a big decimal can not get exponent form string easily.
+ */
+public class FDoubleRoundTest extends FTestTools {
+
+
+    @Test
+    public void test() {
+        //22:25:38.398 [main] INFO  TEST - double a is 1.1
+        //22:25:38.404 [main] INFO  TEST - bigDecimal a is 1.100000000000000
+        //22:25:38.404 [main] INFO  TEST - bigDecimal a toPlainString is 1.100000000000000
+        //22:25:38.404 [main] INFO  TEST - bigDecimal a toEngineeringString is 1.100000000000000
+        double a = 1.1;
+        logger.info("double a is " + a);
+        final BigDecimal bigDecimal = new BigDecimal(a, MathContext.DECIMAL64);
+        logger.info("bigDecimal a is " + bigDecimal);
+        logger.info("bigDecimal a toPlainString is " + bigDecimal.toPlainString());
+        logger.info("bigDecimal a toEngineeringString is " + bigDecimal.toEngineeringString());
+    }
+
+    @Test
+    public void test2() {
+        //22:26:15.292 [main] INFO  TEST - double a is 1.1111111111111112
+        //22:26:15.298 [main] INFO  TEST - bigDecimal a is 1.111111111111111
+        //22:26:15.298 [main] INFO  TEST - bigDecimal a toPlainString is 1.111111111111111
+        //22:26:15.299 [main] INFO  TEST - bigDecimal a toEngineeringString is 1.111111111111111
+        double a = 1.11111111111111111111;
+        logger.info("double a is " + a);
+        final BigDecimal bigDecimal = new BigDecimal(a, MathContext.DECIMAL64);
+        logger.info("bigDecimal a is " + bigDecimal);
+        logger.info("bigDecimal a toPlainString is " + bigDecimal.toPlainString());
+        logger.info("bigDecimal a toEngineeringString is " + bigDecimal.toEngineeringString());
+    }
+
+    @Test
+    public void test_round1() {
+        double a = 1.11111111111111111111;
+        logger.info("double a is " + a);
+        final BigDecimal bigDecimal = new BigDecimal(a, MathContext.DECIMAL64);
+        final BigDecimal a0000 = bigDecimal.multiply(BigDecimal.valueOf(1000), MathContext.DECIMAL64);
+        logger.info("a0000 a is " + a0000);
+        final BigDecimal roundA0000 = a0000.setScale(2, BigDecimal.ROUND_HALF_UP);
+        logger.info("roundA0000 a is " + roundA0000);
+    }
+
+    @Test
+    public void test_round2() {
+        double a = 123.314;
+        logger.info("double a is " + a);
+        final BigDecimal bigDecimal = new BigDecimal(a, MathContext.DECIMAL64);
+        final BigDecimal roundA0000 = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP);
+        logger.info("roundA a is " + roundA0000);
+    }
+
+    @Test
+    public void test_round3() {
+        double a = 123.314e100;
+        logger.info("double a is " + a);
+        final BigDecimal bigDecimal = new BigDecimal(a, MathContext.DECIMAL64);
+        final BigDecimal roundA0000 = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP);
+        logger.info("roundA a is " + roundA0000.toEngineeringString());
+        logger.info("roundA a is " + roundA0000.toPlainString());
+        logger.info("roundA a is " + roundA0000.toString());
+    }
+}

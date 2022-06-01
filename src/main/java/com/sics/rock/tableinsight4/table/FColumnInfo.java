@@ -1,6 +1,9 @@
 package com.sics.rock.tableinsight4.table;
 
 import com.sics.rock.tableinsight4.core.constant.FConstant;
+import com.sics.rock.tableinsight4.table.column.FColumnType;
+import com.sics.rock.tableinsight4.table.column.FValueRangeConfig;
+import com.sics.rock.tableinsight4.table.column.FValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +46,7 @@ public class FColumnInfo implements Serializable {
     /**
      * Does this column generate range-constant predicate
      */
-    private boolean rangeConstant = false;
+    private FValueRangeConfig rangeConstantInfo = FValueRangeConfig.notFind();
 
     /**
      * Does this column generate null-constant predicate
@@ -107,12 +110,12 @@ public class FColumnInfo implements Serializable {
         this.findConstant = findConstant;
     }
 
-    public boolean isRangeConstant() {
-        return rangeConstant;
+    public FValueRangeConfig getRangeConstantInfo() {
+        return rangeConstantInfo;
     }
 
-    public void setRangeConstant(boolean rangeConstant) {
-        this.rangeConstant = rangeConstant;
+    public void setRangeConstantInfo(FValueRangeConfig rangeConstantInfo) {
+        this.rangeConstantInfo = rangeConstantInfo;
     }
 
     public boolean isNullConstant() {

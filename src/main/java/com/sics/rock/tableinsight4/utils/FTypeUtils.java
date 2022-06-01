@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.utils;
 
 import com.sics.rock.tableinsight4.internal.FSerializableFunction;
-import com.sics.rock.tableinsight4.table.FValueType;
+import com.sics.rock.tableinsight4.table.column.FValueType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.UDFRegistration;

@@ -3,7 +3,7 @@ package com.sics.rock.tableinsight4.core;
 import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.core.external.FExternalBinaryModelInfo;
 import com.sics.rock.tableinsight4.core.external.FIExternalBinaryModelCalculator;
-import com.sics.rock.tableinsight4.table.FColumnInfoFactory;
+import com.sics.rock.tableinsight4.table.column.FColumnInfoFactory;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.utils.FSparkSqlUtils;

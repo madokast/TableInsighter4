@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.table;
+package com.sics.rock.tableinsight4.table.column;
 
 import java.io.Serializable;
 import java.util.List;

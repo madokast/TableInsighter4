@@ -140,4 +140,9 @@ public class FUtils {
         map.put(k3, v3);
         return map;
     }
+
+    public static String round(double number, int maxDecimalPlace, boolean allowExponentialForm) {
+        // TODO
+        return String.valueOf(number);
+    }
 }

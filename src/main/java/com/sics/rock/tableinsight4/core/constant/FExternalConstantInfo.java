@@ -3,6 +3,8 @@ package com.sics.rock.tableinsight4.core.constant;
 import java.util.List;
 
 /**
+ * TODO enable inequality
+ *
  * @author zhaorx
  */
 public class FExternalConstantInfo {

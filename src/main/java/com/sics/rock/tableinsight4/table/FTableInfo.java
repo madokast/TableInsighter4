@@ -64,7 +64,7 @@ public class FTableInfo implements Serializable {
 
     public List<FColumnInfo> rangeColumns() {
         final List<FColumnInfo> needFindRanges = columns.stream()
-                .filter(c -> (!c.isSkip()) && c.isRangeConstant())
+                .filter(c -> c.getRangeConstantInfo().isFindRangeConstant())
                 .collect(Collectors.toList());
         return Collections.unmodifiableList(needFindRanges);
     }

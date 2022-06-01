@@ -2,7 +2,7 @@ package com.sics.rock.tableinsight4.test;
 
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableInfo;
-import com.sics.rock.tableinsight4.table.FValueType;
+import com.sics.rock.tableinsight4.table.column.FValueType;
 
 import java.io.File;
 import java.util.Random;

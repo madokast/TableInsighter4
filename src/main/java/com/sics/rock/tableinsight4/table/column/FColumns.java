@@ -1,12 +1,12 @@
-package com.sics.rock.tableinsight4.table;
+package com.sics.rock.tableinsight4.table.column;
 
-public final class FTables {
+public final class FColumns {
 
     public static String columnIdentifier(String tableName, String columnName) {
         return tableName + "." + columnName;
     }
 
 
-    private FTables() {
+    private FColumns() {
     }
 }
