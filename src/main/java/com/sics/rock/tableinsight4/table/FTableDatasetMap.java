@@ -6,6 +6,8 @@ import org.apache.spark.sql.Row;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 /**
  * Key is inner tableName
@@ -66,6 +68,15 @@ public class FTableDatasetMap {
         return innerTableDatasetMap.get(innerTableName);
     }
 
+    public void foreach(BiConsumer<FTableInfo, Dataset<Row>> biConsumer) {
+        for (String key : tableInfoMap.keySet()) {
+            final FTableInfo tableInfo = tableInfoMap.get(key);
+            final Dataset<Row> dataset = datasetMap.get(key);
+            biConsumer.accept(tableInfo, dataset);
+        }
+    }
+
+
     @Override
     public String toString() {
         return "FTableDatasetMap{" +
@@ -75,4 +86,6 @@ public class FTableDatasetMap {
                 ", innerTableDataset=" + innerTableDatasetMap.keySet() +
                 '}';
     }
+
+
 }

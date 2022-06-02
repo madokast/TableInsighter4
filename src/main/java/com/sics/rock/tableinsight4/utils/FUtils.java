@@ -4,6 +4,8 @@ import com.sics.rock.tableinsight4.internal.FPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
@@ -142,7 +144,21 @@ public class FUtils {
     }
 
     public static String round(double number, int maxDecimalPlace, boolean allowExponentialForm) {
-        // TODO
-        return String.valueOf(number);
+        final String s;
+        if (allowExponentialForm || Double.isNaN(number) || Double.isInfinite(number)) {
+            s = Double.toString(number);
+        } else {
+            s = new BigDecimal(number, MathContext.UNLIMITED).toPlainString();
+        }
+        if (maxDecimalPlace < 0) return s;
+
+        final int dot = s.indexOf(".");
+        if (dot == -1) return s;
+        int end = dot + 1;
+        while (end < s.length() && Character.isDigit(s.charAt(end))) ++end;
+
+        if (maxDecimalPlace == 0) return s.substring(0, dot) + s.substring(end);
+        else if (end - dot < maxDecimalPlace + 1) return s;
+        else return s.substring(0, dot + maxDecimalPlace + 1) + s.substring(end);
     }
 }

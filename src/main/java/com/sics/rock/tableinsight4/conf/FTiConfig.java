@@ -51,6 +51,12 @@ public class FTiConfig {
     @FConfigItem(name = "ti.derived.rangeDerivedColumnSuffix", description = "Derived column suffix for range column. Rename it only when conflicting with other column names.")
     public String rangeDerivedColumnSuffix = "$RG_";
 
+    @FConfigItem(name = "ti.rule.constant.maxDecimalPlace", description = "The maximum number of decimal places reserved in rule output.")
+    public int constantNumberMaxDecimalPlace = 2;
+
+    @FConfigItem(name = "ti.rule.constant.allowExponentialForm", description = "Allow exponential form of constant number in rule output.")
+    public boolean constantNumberAllowExponentialForm = true;
+
 
     public static FTiConfig defaultConfig() {
         return new FTiConfig();

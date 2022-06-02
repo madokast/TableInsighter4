@@ -1,6 +1,5 @@
 package com.sics.rock.tableinsight4.core.range;
 
-import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.table.column.FColumns;
 
 import java.util.List;
@@ -14,10 +13,9 @@ public class FColumnValueRange {
 
     private final String columnName;
 
-    // TODO FRange
-    private final List<FPair<Double, Double>> ranges;
+    private final List<FRange> ranges;
 
-    public FColumnValueRange(String tableName, String columnName, List<FPair<Double, Double>> ranges) {
+    public FColumnValueRange(String tableName, String columnName, List<FRange> ranges) {
         this.tableName = tableName;
         this.columnName = columnName;
         this.ranges = ranges;
@@ -31,7 +29,7 @@ public class FColumnValueRange {
         return columnName;
     }
 
-    public List<FPair<Double, Double>> getRanges() {
+    public List<FRange> getRanges() {
         return ranges;
     }
 
