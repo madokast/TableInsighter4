@@ -5,6 +5,7 @@ import com.sics.rock.tableinsight4.test.FTableCreator;
 import org.apache.spark.ml.classification.DecisionTreeClassificationModel;
 import org.apache.spark.ml.classification.DecisionTreeClassifier;
 import org.apache.spark.ml.feature.*;
+import org.apache.spark.ml.tree.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.DataTypes;
@@ -12,6 +13,7 @@ import org.apache.spark.sql.types.StructType;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -44,7 +46,7 @@ public class DecisionTreeClassifierDemoTest extends FSparkTestEnv {
         //|  no| 14.0|  normal|         0|
         //|  no| 81.0|     bad|         2|
         final Dataset<Row> table = spark.read().schema(schema).option("header", "true").csv(csv.getAbsolutePath());
-        table.show();
+        table.show(5, false);
 
         // index the string columns "pass" and "homework"
         //|pass|score|homework|attendance|passIndex|homeworkIndex|
@@ -59,7 +61,7 @@ public class DecisionTreeClassifierDemoTest extends FSparkTestEnv {
         final StringIndexerModel passIndexer = new StringIndexer().setInputCol(pass).setOutputCol(label).fit(table);
         final StringIndexerModel homeworkIndexer = new StringIndexer().setInputCol(homework).setOutputCol(feature1).fit(table);
         final Dataset<Row> tableIndexed = homeworkIndexer.transform(passIndexer.transform(table));
-        tableIndexed.show();
+        tableIndexed.show(5, false);
 
         // create features-vec
         //|pass|score|homework|attendance|passIndex|homeworkIndex|      features|
@@ -70,7 +72,7 @@ public class DecisionTreeClassifierDemoTest extends FSparkTestEnv {
         final String features = "features";
         final VectorAssembler vectorAssembler = new VectorAssembler().setInputCols(new String[]{feature0, feature1, feature2}).setOutputCol(features);
         final Dataset<Row> tableIndexedFeature = vectorAssembler.transform(tableIndexed);
-        tableIndexedFeature.show();
+        tableIndexedFeature.show(5, false);
 
 
         // index the features-vec
@@ -81,7 +83,7 @@ public class DecisionTreeClassifierDemoTest extends FSparkTestEnv {
         final String featuresIndex = features + "Index";
         final VectorIndexerModel featureIndexer = new VectorIndexer().setInputCol(features).setOutputCol(featuresIndex).setMaxCategories(5).fit(tableIndexedFeature);
         final Dataset<Row> tableIndexedFeatureIndex = featureIndexer.transform(tableIndexedFeature);
-        tableIndexedFeatureIndex.show();
+        tableIndexedFeatureIndex.show(5, false);
 
         // model
         final org.apache.spark.ml.classification.DecisionTreeClassifier dt = new DecisionTreeClassifier()
@@ -127,6 +129,53 @@ public class DecisionTreeClassifierDemoTest extends FSparkTestEnv {
         //    Else (feature 2 not in {0.0})
         //     Predict: 1.0
         logger.info(model.toDebugString());
+
+        //09:57:44.331 [main] INFO  TEST - Feature(0) impurity[0.8223233167690127] split = 59.5
+        //09:57:44.331 [main] DEBUG TEST - visiting leaf node
+        //09:57:44.332 [main] INFO  TEST - Feature(1) impurity[0.9408729857346512] split = [2.0]|[0.0, 1.0]
+        //09:57:44.332 [main] INFO  TEST - Feature(0) impurity[0.7706204773916131] split = 89.5
+        //09:57:44.332 [main] DEBUG TEST - visiting leaf node
+        //09:57:44.332 [main] DEBUG TEST - visiting leaf node
+        //09:57:44.333 [main] INFO  TEST - Feature(2) impurity[0.6088031505191881] split = [0.0]|[1.0, 2.0]
+        //09:57:44.333 [main] INFO  TEST - Feature(1) impurity[0.9722944247504209] split = [1.0]|[0.0, 2.0]
+        //09:57:44.333 [main] INFO  TEST - Feature(0) impurity[0.7535884078560637] split = 89.5
+        //09:57:44.333 [main] DEBUG TEST - visiting leaf node
+        //09:57:44.333 [main] DEBUG TEST - visiting leaf node
+        //09:57:44.333 [main] DEBUG TEST - visiting leaf node
+        //09:57:44.333 [main] DEBUG TEST - visiting leaf node
+        traverseTree(model.rootNode());
+
+
+    }
+
+    private void traverseTree(Node node) {
+        if (node instanceof InternalNode) {
+            final double impurity = node.impurity();
+            final Split split = ((InternalNode) node).split();
+            final int featureIndex = split.featureIndex();
+            final String splitStr;
+            if (split instanceof ContinuousSplit) {
+                final double threshold = ((ContinuousSplit) split).threshold();
+                splitStr = Double.toString(threshold);
+            } else if (split instanceof CategoricalSplit) {
+                final double[] leftCategories = ((CategoricalSplit) split).leftCategories();
+                final double[] rightCategories = ((CategoricalSplit) split).rightCategories();
+                splitStr = Arrays.toString(leftCategories) + "|" + Arrays.toString(rightCategories);
+            } else {
+                logger.error("unknown split: " + split.getClass() + " " + split.toString());
+                splitStr = split.toString();
+            }
+            logger.info("Feature({}) impurity[{}] split = {}", featureIndex, impurity, splitStr);
+
+            final Node leftChild = ((InternalNode) node).leftChild();
+            final Node rightChild = ((InternalNode) node).rightChild();
+            traverseTree(leftChild);
+            traverseTree(rightChild);
+        } else if (node instanceof LeafNode) {
+            logger.debug("visiting leaf node");
+        } else if (node != null) {
+            logger.error("unknown tree node: " + node.getClass() + " " + node.toString());
+        }
     }
 
     // score 0-100
@@ -136,7 +185,7 @@ public class DecisionTreeClassifierDemoTest extends FSparkTestEnv {
         if (score > 90) {
             return true;
         } else if (score > 60) {
-                return (homework.equals("good")) || (homework.equals("normal") && attendance > 0) || (homework.equals("bad") && attendance > 2);
+            return (homework.equals("good")) || (homework.equals("normal") && attendance > 0) || (homework.equals("bad") && attendance > 2);
         } else if (score > 40) {
             return homework.equals("good") && attendance > 2;
         } else {
