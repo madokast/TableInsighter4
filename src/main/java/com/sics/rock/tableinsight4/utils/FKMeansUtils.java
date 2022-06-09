@@ -18,21 +18,21 @@ import java.util.List;
 public class FKMeansUtils {
 
 
-    public static List<FPair<Double, Double>> findRanges(JavaRDD<Double> doubleRDD, int clusterNumber, int iterNumber) {
+    public static List<FPair<Double, Double>> findIntervals(JavaRDD<Double> doubleRDD, int clusterNumber, int iterNumber) {
         final List<Double> boundaries = findBoundariesByKMeans(doubleRDD, clusterNumber, iterNumber);
 
         // -inf +inf
         if (boundaries.size() <= 2) return Collections.emptyList();
 
-        List<FPair<Double, Double>> ranges = new ArrayList<>();
+        List<FPair<Double, Double>> intervals = new ArrayList<>();
         for (int bid = 1; bid < boundaries.size(); bid++) {
             final Double left = boundaries.get(bid - 1);
             final Double right = boundaries.get(bid);
             if (left.equals(right)) continue;
-            ranges.add(new FPair<>(left, right));
+            intervals.add(new FPair<>(left, right));
         }
 
-        return ranges;
+        return intervals;
     }
 
 
@@ -53,7 +53,7 @@ public class FKMeansUtils {
         for (int cid = 0; cid < centers.length - 1; cid++) {
             final double left = centers[cid].apply(0);
             final double right = centers[cid + 1].apply(0);
-            final double boundary = (left + right) / 2;
+            final double boundary = (left + right) / 2.;
 
             boundaries.add(boundary);
         }

@@ -61,9 +61,7 @@ public class FAssertUtils {
 
     static {
         if (ASSERT) {
-            logger.info("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■");
-            logger.info("■■■■■■ asset 未关闭，性能损失较大！■■■■■■");
-            logger.info("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■");
+            logger.info("■■■■■■■■■■■■■ ASSERT MODE ■■■■■■■■■■■■■");
         }
     }
 }

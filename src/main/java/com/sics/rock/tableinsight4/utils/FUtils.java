@@ -148,7 +148,8 @@ public class FUtils {
         if (allowExponentialForm || Double.isNaN(number) || Double.isInfinite(number)) {
             s = Double.toString(number);
         } else {
-            s = new BigDecimal(number, MathContext.UNLIMITED).toPlainString();
+            final String temp = Double.toString(number).toUpperCase();
+            s = temp.contains("E") ? new BigDecimal(number, MathContext.UNLIMITED).toPlainString() : temp;
         }
         if (maxDecimalPlace < 0) return s;
 

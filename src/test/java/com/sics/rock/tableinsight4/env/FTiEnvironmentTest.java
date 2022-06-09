@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.env;
 
 import com.sics.rock.tableinsight4.conf.FTiConfig;
-import com.sics.rock.tableinsight4.test.FSparkTestEnv;
+import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import org.junit.After;
 import org.junit.Test;
 
@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 
-public class FTiEnvironmentTest extends FSparkTestEnv {
+public class FTiEnvironmentTest extends FSparkEnv {
 
     @Test
     public void test_create_destroy() {

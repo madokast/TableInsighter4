@@ -1,6 +1,6 @@
 package com.sics.rock.tableinsight4.others;
 
-import com.sics.rock.tableinsight4.test.FTestTools;
+import com.sics.rock.tableinsight4.test.env.FBasicTestEnv;
 import com.sics.rock.tableinsight4.utils.FUtils;
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ import java.math.MathContext;
 /**
  * It seems a big decimal can not get exponent form string easily.
  */
-public class FDoubleRoundTest extends FTestTools {
+public class FDoubleRoundTest extends FBasicTestEnv {
 
 
     @Test

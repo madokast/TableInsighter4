@@ -1,14 +1,17 @@
 package com.sics.rock.tableinsight4.table;
 
 import com.sics.rock.tableinsight4.core.constant.FConstant;
+import com.sics.rock.tableinsight4.core.interval.FInterval;
 import com.sics.rock.tableinsight4.table.column.FColumnType;
-import com.sics.rock.tableinsight4.table.column.FValueRangeConfig;
+import com.sics.rock.tableinsight4.table.column.FConstantConfig;
+import com.sics.rock.tableinsight4.table.column.FIntervalConstantConfig;
 import com.sics.rock.tableinsight4.table.column.FValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Meta info of a table column
@@ -26,6 +29,9 @@ public class FColumnInfo implements Serializable {
      */
     private final FValueType valueType;
 
+    /**
+     * Column type
+     */
     private FColumnType columnType = FColumnType.NORMAL;
 
     /**
@@ -40,23 +46,27 @@ public class FColumnInfo implements Serializable {
 
     /**
      * Does this column generate constant predicate
+     * Relative config info especially for each column
+     * if there configs are null, back to upper config
      */
-    private boolean findConstant = true;
+    private FConstantConfig constantConfig = FConstantConfig.findUsingDefault();
 
     /**
-     * Does this column generate range-constant predicate
+     * Does this column generate interval-constant predicate
+     * Relative config info especially for each column
+     * if there configs are null, back to upper config
      */
-    private FValueRangeConfig rangeConstantInfo = FValueRangeConfig.notFind();
-
-    /**
-     * Does this column generate null-constant predicate
-     */
-    private boolean nullConstant = true;
+    private FIntervalConstantConfig intervalConstantInfo = FIntervalConstantConfig.notFindIntervalConstant();
 
     /**
      * Constants found in the column
      */
-    private ArrayList<FConstant<?>> constants = new ArrayList<>();
+    private final ArrayList<FConstant<?>> constants = new ArrayList<>();
+
+    /**
+     * interval-constant found in the column
+     */
+    private final ArrayList<FInterval> intervalConstants = new ArrayList<>();
 
     public FColumnInfo(String columnName, FValueType valueType) {
         this.columnName = columnName;
@@ -67,8 +77,15 @@ public class FColumnInfo implements Serializable {
         this.constants.add(constant);
     }
 
-    // ----------------- getter setter -----------------------
+    public void addIntervalConstant(FInterval interval) {
+        this.intervalConstants.add(interval);
+    }
 
+    public void addIntervalConstants(List<FInterval> intervals) {
+        this.intervalConstants.addAll(intervals);
+    }
+
+    // ----------------- getter setter -----------------------
 
     public String getColumnName() {
         return columnName;
@@ -102,35 +119,27 @@ public class FColumnInfo implements Serializable {
         this.target = target;
     }
 
-    public boolean isFindConstant() {
-        return findConstant;
+    public FConstantConfig getConstantConfig() {
+        return constantConfig;
     }
 
-    public void setFindConstant(boolean findConstant) {
-        this.findConstant = findConstant;
+    public void setConstantConfig(FConstantConfig constantConfig) {
+        this.constantConfig = constantConfig;
     }
 
-    public FValueRangeConfig getRangeConstantInfo() {
-        return rangeConstantInfo;
+    public FIntervalConstantConfig getIntervalConstantInfo() {
+        return intervalConstantInfo;
     }
 
-    public void setRangeConstantInfo(FValueRangeConfig rangeConstantInfo) {
-        this.rangeConstantInfo = rangeConstantInfo;
-    }
-
-    public boolean isNullConstant() {
-        return nullConstant;
-    }
-
-    public void setNullConstant(boolean nullConstant) {
-        this.nullConstant = nullConstant;
+    public void setIntervalConstantInfo(FIntervalConstantConfig intervalConstantInfo) {
+        this.intervalConstantInfo = intervalConstantInfo;
     }
 
     public ArrayList<FConstant<?>> getConstants() {
         return constants;
     }
 
-    public void setConstants(ArrayList<FConstant<?>> constants) {
-        this.constants = constants;
+    public ArrayList<FInterval> getIntervalConstants() {
+        return intervalConstants;
     }
 }

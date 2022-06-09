@@ -11,9 +11,8 @@ public class FColumnInfoFactory {
     public static FColumnInfo createIdColumn(String idColName) {
         FColumnInfo id = new FColumnInfo(idColName, FValueType.LONG);
         id.setColumnType(FColumnType.ID);
-        id.setFindConstant(false);
-        id.setNullConstant(false);
-        id.setRangeConstantInfo(FValueRangeConfig.notFind());
+        id.setConstantConfig(FConstantConfig.notFindConstantValue());
+        id.setIntervalConstantInfo(FIntervalConstantConfig.notFindIntervalConstant());
         id.setSkip(true);
         id.setTarget(false);
         return id;
@@ -23,9 +22,8 @@ public class FColumnInfoFactory {
             String externalDerivedColumnName, FExternalBinaryModelInfo externalBinaryModelInfo) {
         FColumnInfo externalDerivedColumn = new FColumnInfo(externalDerivedColumnName, FValueType.LONG);
         externalDerivedColumn.setColumnType(FColumnType.EXTERNAL_BINARY_MODEL);
-        externalDerivedColumn.setFindConstant(false);
-        externalDerivedColumn.setNullConstant(false);
-        externalDerivedColumn.setRangeConstantInfo(FValueRangeConfig.notFind());
+        externalDerivedColumn.setConstantConfig(FConstantConfig.find(false, 0D, 1D));
+        externalDerivedColumn.setIntervalConstantInfo(FIntervalConstantConfig.notFindIntervalConstant());
         externalDerivedColumn.setSkip(false);
         externalDerivedColumn.setTarget(externalBinaryModelInfo.isTarget());
         return externalDerivedColumn;

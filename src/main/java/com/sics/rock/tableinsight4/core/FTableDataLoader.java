@@ -60,7 +60,7 @@ public class FTableDataLoader implements FTiEnvironment {
             ArrayList<FColumnInfo> filteredColumns = removeNotFoundColumn(tableName, dataset.columns(), tableInfo.getColumns());
             tableInfo.setColumns(filteredColumns);
 
-            logger.info("Type cast in table {}. Only retain columns in request", tableName);
+            logger.info("Type cast in table {}. Only retain non-skip columns.", tableName);
             dataset = datasetCastHandler.retainColumnAndCastType(tableName, tableInfo.getInnerTableName(), dataset, filteredColumns);
 
             debug(tableName, dataset);

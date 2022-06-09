@@ -27,19 +27,6 @@ public enum FColumnType {
     NORMAL,
 
     /**
-     * Derived range column. Like
-     * age  $RG{age}
-     *  25   (0,30]
-     *  35   (30,50]
-     *  40   (30,50]
-     *
-     * The "age" is a normal column
-     * and the "$RG{age}" is a derived range column from "age".
-     * For generating range predicate and relative rules.
-     */
-    RANGE,
-
-    /**
      * Derived external binary model column. Like
      * address                                              $EX_001
      * 1600 Pennsylvania Avenue, Washington                 0

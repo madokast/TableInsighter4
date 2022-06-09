@@ -1,6 +1,6 @@
 package com.sics.rock.tableinsight4.utils;
 
-import com.sics.rock.tableinsight4.test.FSparkTestEnv;
+import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.junit.Test;
@@ -11,7 +11,7 @@ import java.util.Collections;
  *
  * @author zhaorx
  */
-public class FSparkSqlUtilsTest extends FSparkTestEnv {
+public class FSparkSqlUtilsTest extends FSparkEnv {
 
 
     @Test

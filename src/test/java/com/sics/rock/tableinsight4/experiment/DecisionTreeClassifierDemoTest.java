@@ -1,6 +1,6 @@
 package com.sics.rock.tableinsight4.experiment;
 
-import com.sics.rock.tableinsight4.test.FSparkTestEnv;
+import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import com.sics.rock.tableinsight4.test.FTableCreator;
 import org.apache.spark.ml.classification.DecisionTreeClassificationModel;
 import org.apache.spark.ml.classification.DecisionTreeClassifier;
@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class DecisionTreeClassifierDemoTest extends FSparkTestEnv {
+public class DecisionTreeClassifierDemoTest extends FSparkEnv {
 
     @Test
     public void demo() {

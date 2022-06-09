@@ -3,12 +3,12 @@ package com.sics.rock.tableinsight4.core;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.test.FExamples;
-import com.sics.rock.tableinsight4.test.FTiTestEnv;
+import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
 import org.junit.Test;
 
 import java.util.Collections;
 
-public class FTableDataLoaderTest extends FTiTestEnv {
+public class FTableDataLoaderTest extends FTableInsightEnv {
 
     @Test
     public void prepareData() {

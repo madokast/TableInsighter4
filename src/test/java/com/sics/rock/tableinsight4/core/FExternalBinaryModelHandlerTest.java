@@ -7,7 +7,7 @@ import com.sics.rock.tableinsight4.core.external.FIExternalBinaryModelCalculator
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.test.FExamples;
-import com.sics.rock.tableinsight4.test.FTiTestEnv;
+import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
 import com.sics.rock.tableinsight4.utils.FScalaUtils;
 import com.sics.rock.tableinsight4.utils.FUtils;
 import org.apache.spark.sql.Dataset;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FExternalBinaryModelHandlerTest extends FTiTestEnv {
+public class FExternalBinaryModelHandlerTest extends FTableInsightEnv {
 
     private static final String idCol = "row_id";
 

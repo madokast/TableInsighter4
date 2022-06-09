@@ -5,6 +5,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -53,7 +54,7 @@ public class FTableDatasetMap {
     }
 
     public FTableInfo getTableInfoByTableName(String tableName) {
-        return tableInfoMap.get(tableName);
+        return Objects.requireNonNull(tableInfoMap.get(tableName), "Table " + tableName + " does not exist");
     }
 
     public FTableInfo getTableInfoByInnerTableName(String innerTableName) {

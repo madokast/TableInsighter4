@@ -1,6 +1,6 @@
 package com.sics.rock.tableinsight4.internal.partitioner;
 
-import com.sics.rock.tableinsight4.test.FSparkTestEnv;
+import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import com.sics.rock.tableinsight4.utils.FUtils;
 import org.apache.spark.TaskContext;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 import static org.junit.Assert.*;
 
 
-public class FPrePartitionerTest extends FSparkTestEnv {
+public class FPrePartitionerTest extends FSparkEnv {
 
     private static final Logger logger = LoggerFactory.getLogger(FPrePartitionerTest.class);
 

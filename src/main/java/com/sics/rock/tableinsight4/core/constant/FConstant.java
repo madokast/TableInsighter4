@@ -8,8 +8,6 @@ import java.io.Serializable;
 
 /**
  *
- * TODO enable inequality
- *
  * A container holds constant.
  *
  * @param <T> constant type

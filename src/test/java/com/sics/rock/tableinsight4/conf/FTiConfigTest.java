@@ -1,13 +1,13 @@
 package com.sics.rock.tableinsight4.conf;
 
-import com.sics.rock.tableinsight4.test.FTestTools;
+import com.sics.rock.tableinsight4.test.env.FBasicTestEnv;
 import com.sics.rock.tableinsight4.utils.FUtils;
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
 
-public class FTiConfigTest extends FTestTools {
+public class FTiConfigTest extends FBasicTestEnv {
 
     @Test
     public void defaultConfig() {

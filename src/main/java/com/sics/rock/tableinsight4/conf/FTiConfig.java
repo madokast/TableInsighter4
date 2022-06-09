@@ -48,15 +48,25 @@ public class FTiConfig {
     @FConfigItem(name = "ti.derived.binaryModelDerivedColumnSuffix", description = "Derived column suffix for external binary model. Rename it only when conflicting with other column names.")
     public String externalBinaryModelDerivedColumnSuffix = "$EX_";
 
-    @FConfigItem(name = "ti.derived.rangeDerivedColumnSuffix", description = "Derived column suffix for range column. Rename it only when conflicting with other column names.")
-    public String rangeDerivedColumnSuffix = "$RG_";
-
     @FConfigItem(name = "ti.rule.constant.maxDecimalPlace", description = "The maximum number of decimal places reserved in rule output.")
-    public int constantNumberMaxDecimalPlace = 2;
+    public Integer constantNumberMaxDecimalPlace = 2;
 
-    @FConfigItem(name = "ti.rule.constant.allowExponentialForm", description = "Allow exponential form of constant number in rule output.")
-    public boolean constantNumberAllowExponentialForm = true;
+    @FConfigItem(name = "ti.rule.constant.allowExponentialForm", description = "Allow exponential form of decimal number in rule output.")
+    public Boolean constantNumberAllowExponentialForm = true;
 
+    @FConfigItem(name = "ti.rule.constant.kMeans.clusterNumber", description = "Cluster number in k-means interval-constant finding")
+    public Integer kMeansClusterNumber = 2;
+
+    @FConfigItem(name = "ti.rule.constant.kMeans.iterNumber", description = "Iteration number in k-means interval-constant finding")
+    public Integer kMeansIterNumber = 1000;
+
+    @FConfigItem(name = "ti.rule.constant.interval.leftClose", description = "The left boundary of interval-constant is close or not. " +
+            "(a, b] is default, i.e. the left boundary is open (not close). The config can be overwritten in column-level")
+    public Boolean intervalLeftClose = false;
+
+    @FConfigItem(name = "ti.rule.constant.interval.rightClose", description = "The right boundary of interval-constant is close or not. " +
+            "(a, b] is default, i.e. the right boundary is close. The config can be overwritten in column-level")
+    public Boolean intervalRightClose = true;
 
     public static FTiConfig defaultConfig() {
         return new FTiConfig();

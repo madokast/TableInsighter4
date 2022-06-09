@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.test;
+package com.sics.rock.tableinsight4.test.env;
 
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.conf.FTiConfig;
@@ -6,7 +6,7 @@ import com.sics.rock.tableinsight4.utils.FTypeUtils;
 import org.junit.After;
 import org.junit.Before;
 
-public abstract class FTiTestEnv extends FSparkTestEnv implements FTiEnvironment {
+public abstract class FTableInsightEnv extends FSparkEnv implements FTiEnvironment {
 
     @Before()
     public void __createTiEnv() {

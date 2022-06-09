@@ -4,10 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -44,7 +42,7 @@ public class FTableInfo implements Serializable {
 
     /**
      * Columns of this table.
-     * Including derived columns such as range-column and model-column,
+     * Including derived columns such as interval-column and model-column,
      * which are dynamic generated. As the result, the List is modifiable,
      * so we use ArrayList type
      */
@@ -62,11 +60,20 @@ public class FTableInfo implements Serializable {
 
     /*---------------------- column view -----------------------*/
 
-    public List<FColumnInfo> rangeColumns() {
-        final List<FColumnInfo> needFindRanges = columns.stream()
-                .filter(c -> c.getRangeConstantInfo().isFindRangeConstant())
+    public List<FColumnInfo> intervalRequiredColumnsView() {
+        final List<FColumnInfo> view = columns.stream()
+                .filter(c -> !c.isSkip())
+                .filter(c -> c.getIntervalConstantInfo().isFindIntervalConstant())
                 .collect(Collectors.toList());
-        return Collections.unmodifiableList(needFindRanges);
+        return Collections.unmodifiableList(view);
+    }
+
+    /**
+     * @return a view of columnMap
+     */
+    public Map<String, FColumnInfo> columnMapView() {
+        final Map<String, FColumnInfo> view = columns.stream().collect(Collectors.toMap(FColumnInfo::getColumnName, Function.identity()));
+        return Collections.unmodifiableMap(view);
     }
 
     /*---------------------- getter setter -----------------------*/

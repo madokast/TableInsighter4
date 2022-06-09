@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.test;
+package com.sics.rock.tableinsight4.test.env;
 
 import com.sics.rock.tableinsight4.utils.FSparkUtils;
 import com.sics.rock.tableinsight4.utils.FUtils;
@@ -7,7 +7,6 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.junit.After;
 import org.junit.Before;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -17,10 +16,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public abstract class FSparkTestEnv extends FTestTools {
+public abstract class FSparkEnv extends FBasicTestEnv {
 
     protected SparkSession spark;
 

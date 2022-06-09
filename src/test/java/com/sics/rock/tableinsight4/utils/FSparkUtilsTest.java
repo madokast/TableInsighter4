@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.utils;
 
 import com.sics.rock.tableinsight4.internal.FPair;
-import com.sics.rock.tableinsight4.test.FSparkTestEnv;
+import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
-public class FSparkUtilsTest extends FSparkTestEnv {
+public class FSparkUtilsTest extends FSparkEnv {
 
 
     @Test
