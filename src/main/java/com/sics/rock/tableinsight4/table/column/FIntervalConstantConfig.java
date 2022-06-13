@@ -1,6 +1,8 @@
 package com.sics.rock.tableinsight4.table.column;
 
-import com.sics.rock.tableinsight4.utils.FValueDefault;
+import com.sics.rock.tableinsight4.conf.FTiConfiguring;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,44 +13,40 @@ import java.util.ArrayList;
  *
  * @author zhaorx
  */
-public class FIntervalConstantConfig implements Serializable {
+public class FIntervalConstantConfig extends FTiConfiguring implements Serializable {
+
+    private static final Logger logger = LoggerFactory.getLogger(FIntervalConstantConfig.class);
+
+    /**
+     * Config key the left boundary is close or open
+     */
+    public static final String CONFIG_LEFT_CLOSE = "leftClose";
+
+    /**
+     * Config key the right boundary is close or open
+     */
+    public static final String CONFIG_RIGHT_CLOSE = "rightClose";
+
+    /**
+     * Config key for k-means parameter
+     */
+    public static final String CONFIG_K_MEANS_CLUSTER_NUMBER = "kMeans.clusterNumber";
+
+    /**
+     * Config key for k-means parameter
+     */
+    public static final String CONFIG_K_MEANS_ITER_NUMBER = "kMeans.iterNumber";
+
 
     /**
      * Find interval constant or not
-     * case null: false
      */
-    private final Boolean findIntervalConstant;
-
-    /**
-     * K-means parameter
-     * <p>
-     * case null: use the default value in environment config
-     */
-    private final Integer kMeansClusterNumber;
-
-    /**
-     * K-means parameter
-     * <p>
-     * case null: use the default value in environment config
-     */
-    private final Integer kMeansIterNumber;
-
-    /**
-     * The left boundary is close or open
-     * case null: use the default value in environment config
-     */
-    private final Boolean leftClose;
-
-    /**
-     * The right boundary is close or open
-     * case null: use the default value in environment config
-     */
-    private final Boolean rightClose;
+    private final boolean findIntervalConstant;
 
     /**
      * External-imported interval constants
      * Defined by user or auto-generating
-     *
+     * <p>
      * The formats of externalIntervalConstant are listed below
      * 1. "a number". Create intervals (-Inf, num] and (num, +inf)
      * 2. "op number". Like ">5", ">=10", "≤20"
@@ -56,24 +54,16 @@ public class FIntervalConstantConfig implements Serializable {
      */
     private final ArrayList<String> externalIntervalConstants = new ArrayList<>();
 
-    private FIntervalConstantConfig(Boolean findIntervalConstant, Integer kMeansClusterNumber, Integer kMeansIterNumber, Boolean leftClose, Boolean rightClose) {
+    private FIntervalConstantConfig(boolean findIntervalConstant) {
         this.findIntervalConstant = findIntervalConstant;
-        this.kMeansClusterNumber = kMeansClusterNumber;
-        this.kMeansIterNumber = kMeansIterNumber;
-        this.leftClose = leftClose;
-        this.rightClose = rightClose;
     }
 
     public static FIntervalConstantConfig notFindIntervalConstant() {
-        return new FIntervalConstantConfig(false, null, null, null, null);
+        return new FIntervalConstantConfig(false);
     }
 
-    public static FIntervalConstantConfig findUsingDefaultConfig() {
-        return new FIntervalConstantConfig(true, null, null, null, null);
-    }
-
-    public static FIntervalConstantConfig find(Integer clusterNumber, Integer iterNumber, Boolean leftClose, Boolean rightClose) {
-        return new FIntervalConstantConfig(true, clusterNumber, iterNumber, leftClose, rightClose);
+    public static FIntervalConstantConfig findIntervalConstant() {
+        return new FIntervalConstantConfig(true);
     }
 
     public void addExternalIntervalConstant(String externalIntervalConstant) {
@@ -81,23 +71,7 @@ public class FIntervalConstantConfig implements Serializable {
     }
 
     public boolean isFindIntervalConstant() {
-        return FValueDefault.getOrDefault(findIntervalConstant, false);
-    }
-
-    public int getClusterNumber(int configValue) {
-        return FValueDefault.getOrDefault(kMeansClusterNumber, configValue);
-    }
-
-    public int getIterNumber(int configValue) {
-        return FValueDefault.getOrDefault(kMeansIterNumber, configValue);
-    }
-
-    public boolean getLeftClose(boolean configValue) {
-        return FValueDefault.getOrDefault(leftClose, configValue);
-    }
-
-    public boolean getRightClose(boolean configValue) {
-        return FValueDefault.getOrDefault(rightClose, configValue);
+        return findIntervalConstant;
     }
 
     public ArrayList<String> getExternalIntervalConstants() {

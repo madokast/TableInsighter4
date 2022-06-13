@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @author zhaorx
  */
-public class FIntervalConstant {
+public class FIntervalConstantInfo {
 
     public static final String SOURCE_EXTERNAL = "EXTERNAL";
     public static final String SOURCE_K_MEANS = "K-MEANS";
@@ -21,15 +21,15 @@ public class FIntervalConstant {
 
     private final String source;
 
-    public FIntervalConstant(String tableName, String columnName, List<FInterval> intervals, String source) {
+    public FIntervalConstantInfo(String tableName, String columnName, List<FInterval> intervals, String source) {
         this.tableName = tableName;
         this.columnName = columnName;
         this.intervals = intervals;
         this.source = source;
     }
 
-    public static FIntervalConstant externalColumnIntervalConstant(String tableName, String columnName, List<FInterval> intervals) {
-        return new FIntervalConstant(tableName, columnName, intervals, SOURCE_EXTERNAL);
+    public static FIntervalConstantInfo externalColumnIntervalConstant(String tableName, String columnName, List<FInterval> intervals) {
+        return new FIntervalConstantInfo(tableName, columnName, intervals, SOURCE_EXTERNAL);
     }
 
     public String getTableName() {

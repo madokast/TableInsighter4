@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *
@@ -22,34 +23,39 @@ public class FConstant<T> implements Serializable {
      */
     private final T constant;
 
-    private final long occurrence;
+    private long index = -1;
 
-    private final long index;
-
-    public FConstant(T constant, long occurrence, long index) {
+    public FConstant(T constant) {
         this.constant = constant;
-        this.occurrence = occurrence;
-        this.index = index;
     }
 
     @Override
     public String toString() {
-        return constant + "[" + occurrence + "(occ)]";
-    }
-
-    public static Logger getLogger() {
-        return logger;
+        return Objects.toString(constant);
     }
 
     public T getConstant() {
         return constant;
     }
 
-    public long getOccurrence() {
-        return occurrence;
+    public void setIndex(long index) {
+        this.index = index;
     }
 
     public long getIndex() {
         return index;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FConstant<?> fConstant = (FConstant<?>) o;
+        return Objects.equals(constant, fConstant.constant);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(constant);
     }
 }

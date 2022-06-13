@@ -45,6 +45,12 @@ public class FTypeUtils {
         return Optional.ofNullable(casted);
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> Optional<T> castAs(Object value, T referValue) {
+        final Class<T> type = (Class<T>) referValue.getClass();
+        return cast(value, type);
+    }
+
     private static String castStr(Object val) {
         if (val == null) return null;
         else {

@@ -1,9 +1,9 @@
 package com.sics.rock.tableinsight4.core;
 
-import com.sics.rock.tableinsight4.core.interval.FIntervalConstant;
-import com.sics.rock.tableinsight4.core.interval.search.FExternalIntervalClusterImporter;
-import com.sics.rock.tableinsight4.core.interval.search.FIIntervalClusterSearcher;
-import com.sics.rock.tableinsight4.core.interval.search.FKMeansIntervalClusterSearcher;
+import com.sics.rock.tableinsight4.core.interval.FIntervalConstantInfo;
+import com.sics.rock.tableinsight4.core.interval.search.FExternalIntervalConstantImporter;
+import com.sics.rock.tableinsight4.core.interval.search.FIIntervalConstantSearcher;
+import com.sics.rock.tableinsight4.core.interval.search.FKMeansIntervalConstantSearcher;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
@@ -22,32 +22,37 @@ public class FIntervalsConstantHandler implements FTiEnvironment {
     private static final Logger logger = LoggerFactory.getLogger(FIntervalsConstantHandler.class);
 
     public void generateIntervalConstant(FTableDatasetMap tableDatasetMap) {
-        // externalIntervalClusterImporter
-        final FIIntervalClusterSearcher externalIntervalClusterImporter = new FExternalIntervalClusterImporter();
-        final List<FIntervalConstant> externalIntervalConstants = externalIntervalClusterImporter.search(tableDatasetMap);
-        printIntervalConstants(externalIntervalConstants);
-        addToColumnInfo(externalIntervalConstants, tableDatasetMap);
+        // external
+        {
+            final FIIntervalConstantSearcher externalIntervalConstantImporter = new FExternalIntervalConstantImporter();
+            final List<FIntervalConstantInfo> externalIntervalConstants = externalIntervalConstantImporter.search(tableDatasetMap);
+            printIntervalConstants(externalIntervalConstants);
+            addToColumnInfo(externalIntervalConstants, tableDatasetMap);
+        }
 
-        // kMeansIntervalClusterSearcher
-        final FIIntervalClusterSearcher kMeansIntervalClusterSearcher = new FKMeansIntervalClusterSearcher(
-                config().kMeansClusterNumber, config().kMeansIterNumber, config().intervalLeftClose, config().intervalRightClose
-        );
-        final List<FIntervalConstant> kMeansIntervalConstants = kMeansIntervalClusterSearcher.search(tableDatasetMap);
-        printIntervalConstants(kMeansIntervalConstants);
-        addToColumnInfo(kMeansIntervalConstants, tableDatasetMap);
+        // kMeans
+        {
+            final FIIntervalConstantSearcher kMeansIntervalConstantSearcher = new FKMeansIntervalConstantSearcher(
+                    config().kMeansClusterNumber, config().kMeansIterNumber, config().intervalLeftClose, config().intervalRightClose
+            );
+            final List<FIntervalConstantInfo> kMeansIntervalConstants = kMeansIntervalConstantSearcher.search(tableDatasetMap);
+            printIntervalConstants(kMeansIntervalConstants);
+            addToColumnInfo(kMeansIntervalConstants, tableDatasetMap);
+        }
     }
 
-    private void printIntervalConstants(List<FIntervalConstant> intervalConstants) {
-        for (FIntervalConstant intervalConstant : intervalConstants) {
+    private void printIntervalConstants(List<FIntervalConstantInfo> intervalConstants) {
+        for (FIntervalConstantInfo intervalConstant : intervalConstants) {
             logger.info("Find interval constants {}", intervalConstant);
         }
     }
 
+    // tabName -> colName -> colInfo
     private final Map<String, Map<String, FColumnInfo>> columnMap = new HashMap<>();
 
-    private void addToColumnInfo(List<FIntervalConstant> intervalConstants, FTableDatasetMap tableDatasetMap) {
+    private void addToColumnInfo(List<FIntervalConstantInfo> intervalConstants, FTableDatasetMap tableDatasetMap) {
 
-        for (FIntervalConstant intervalConstant : intervalConstants) {
+        for (FIntervalConstantInfo intervalConstant : intervalConstants) {
             final String tableName = intervalConstant.getTableName();
             final String columnName = intervalConstant.getColumnName();
             final Map<String, FColumnInfo> columnInfoMap = columnMap.computeIfAbsent(tableName, tn -> tableDatasetMap.getTableInfoByTableName(tn).columnMapView());

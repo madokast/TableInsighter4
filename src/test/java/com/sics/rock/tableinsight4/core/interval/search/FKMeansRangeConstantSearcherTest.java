@@ -13,14 +13,14 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
-public class FKMeansRangeClusterSearcherTest extends FTableInsightEnv {
+public class FKMeansRangeConstantSearcherTest extends FTableInsightEnv {
 
     @Test
     public void search() {
 
         final FTableInfo tableInfo = FExamples.doubleNumberNullColumn7();
 
-        tableInfo.getColumns().forEach(c -> c.setIntervalConstantInfo(FIntervalConstantConfig.findUsingDefaultConfig()));
+        tableInfo.getColumns().forEach(c -> c.setIntervalConstantInfo(FIntervalConstantConfig.findIntervalConstant()));
 
         final FTableDataLoader loader = new FTableDataLoader();
         final FTableDatasetMap tableDatasetMap = loader.prepareData(Collections.singletonList(tableInfo));
@@ -32,7 +32,7 @@ public class FKMeansRangeClusterSearcherTest extends FTableInsightEnv {
     public void search2() {
         config().kMeansClusterNumber = 3;
         final FTableInfo tableInfo = FExamples.doubleNumberNullColumn7();
-        tableInfo.getColumns().forEach(c -> c.setIntervalConstantInfo(FIntervalConstantConfig.findUsingDefaultConfig()));
+        tableInfo.getColumns().forEach(c -> c.setIntervalConstantInfo(FIntervalConstantConfig.findIntervalConstant()));
 
         final FTableDataLoader loader = new FTableDataLoader();
         final FTableDatasetMap tableDatasetMap = loader.prepareData(Collections.singletonList(tableInfo));
@@ -44,9 +44,14 @@ public class FKMeansRangeClusterSearcherTest extends FTableInsightEnv {
     public void search3() {
         config().kMeansClusterNumber = 3;
         final FTableInfo tableInfo = FExamples.doubleNumberNullColumn7();
-        tableInfo.getColumns().forEach(c -> c.setIntervalConstantInfo(FIntervalConstantConfig.find(
-                2, 10, false, false
-        )));
+        tableInfo.getColumns().forEach(c -> {
+            final FIntervalConstantConfig config = FIntervalConstantConfig.findIntervalConstant();
+            config.config("leftClose", false);
+            config.config("rightClose", false);
+            config.config("kMeans.clusterNumber", 4);
+            config.config("kMeans.iterNumber", 20);
+            c.setIntervalConstantInfo(config);
+        });
 
         final FTableDataLoader loader = new FTableDataLoader();
         final FTableDatasetMap tableDatasetMap = loader.prepareData(Collections.singletonList(tableInfo));

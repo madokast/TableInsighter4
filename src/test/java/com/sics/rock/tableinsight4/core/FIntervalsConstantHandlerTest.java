@@ -4,13 +4,10 @@ import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FIntervalConstantConfig;
 import com.sics.rock.tableinsight4.test.FExamples;
-import com.sics.rock.tableinsight4.test.env.FBasicTestEnv;
 import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
 import org.junit.Test;
 
 import java.util.Collections;
-
-import static org.junit.Assert.*;
 
 public class FIntervalsConstantHandlerTest extends FTableInsightEnv {
 
@@ -21,7 +18,7 @@ public class FIntervalsConstantHandlerTest extends FTableInsightEnv {
 
         tableInfo.getColumns().forEach(c -> {
 
-            final FIntervalConstantConfig usingDefaultConfig = FIntervalConstantConfig.findUsingDefaultConfig();
+            final FIntervalConstantConfig usingDefaultConfig = FIntervalConstantConfig.findIntervalConstant();
             usingDefaultConfig.addExternalIntervalConstant("10");
             c.setIntervalConstantInfo(usingDefaultConfig);
         });

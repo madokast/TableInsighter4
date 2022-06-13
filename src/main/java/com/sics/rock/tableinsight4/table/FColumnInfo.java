@@ -49,7 +49,7 @@ public class FColumnInfo implements Serializable {
      * Relative config info especially for each column
      * if there configs are null, back to upper config
      */
-    private FConstantConfig constantConfig = FConstantConfig.findUsingDefault();
+    private FConstantConfig constantConfig = FConstantConfig.findConstantValue();
 
     /**
      * Does this column generate interval-constant predicate
@@ -75,6 +75,10 @@ public class FColumnInfo implements Serializable {
 
     public void addConstant(FConstant<?> constant) {
         this.constants.add(constant);
+    }
+
+    public void addConstants(List<FConstant<?>> constants) {
+        this.constants.addAll(constants);
     }
 
     public void addIntervalConstant(FInterval interval) {

@@ -2,6 +2,7 @@ package com.sics.rock.tableinsight4.test;
 
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableInfo;
+import com.sics.rock.tableinsight4.table.column.FConstantConfig;
 import com.sics.rock.tableinsight4.table.column.FValueType;
 
 import java.io.File;
@@ -21,22 +22,30 @@ public class FExamples {
     public static FTableInfo relation(String tabName, String innerTabName) {
         String header = "cc,ac,pn,nm,str,ct,zip,row_id";
 
-        String[] contents = {"01, 908, 1111111, Mike, Tree Ave, MH, 07974," + (++rowId),
-                "01, 908, 1111111, Rick, Tree Ave, MH, 07974," + (++rowId),
-                "01, 212, 2222222, Joe, 5th Ave, NYC, 01202," + (++rowId),
-                "01, 908, 2222222, Jim, Elm Str, MH, 07974," + (++rowId),
-                "01, 131, 2222222, Sean, 3rd Str, UN, 01202," + (++rowId),
-                "44, 131, 3333333, Ben, High St, EDI, EH4 1DT," + (++rowId),
-                "44, 131, 4444444, Ian, High St, EDI, EH4 1DT," + (++rowId),
-                "44, 908, 4444444, Ian, Port PI, MH, W1B 1JH," + (++rowId)};
+        String[] contents = {"01,908,1111111,Mike,Tree Ave,MH,07974," + (++rowId),
+                "01,908,1111111,Rick,Tree Ave,MH,07974," + (++rowId),
+                "01,212,2222222,Joe,5th Ave,NYC,01202," + (++rowId),
+                "01,908,2222222,Jim,Elm Str,MH,07974," + (++rowId),
+                "01,131,2222222,Sean,3rd Str,UN,01202," + (++rowId),
+                "44,131,3333333,Ben,High St,EDI,EH4 1DT," + (++rowId),
+                "44,131,4444444,Ian,High St,EDI,EH4 1DT," + (++rowId),
+                "44,908,4444444,Ian,Port PI,MH,W1B 1JH," + (++rowId)};
 
         File tab = FTableCreator.createCsv(header, contents);
 
         FTableInfo tableInfo = new FTableInfo(tabName, innerTabName, tab.getAbsolutePath());
         for (String colName : header.split(",")) {
             FValueType type = FValueType.STRING;
-            if (colName.equals("row_id")) type = FValueType.LONG;
-            tableInfo.addColumnInfo(new FColumnInfo(colName, type));
+            if (colName.equals("row_id")) {
+                type = FValueType.LONG;
+            }
+            final FColumnInfo columnInfo = new FColumnInfo(colName, type);
+            tableInfo.addColumnInfo(columnInfo);
+            if (colName.equals("row_id")) {
+                columnInfo.setSkip(true);
+                columnInfo.setTarget(false);
+                columnInfo.setConstantConfig(FConstantConfig.notFindConstantValue());
+            }
         }
 
         return tableInfo;

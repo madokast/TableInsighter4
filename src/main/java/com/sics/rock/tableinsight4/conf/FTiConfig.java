@@ -54,10 +54,21 @@ public class FTiConfig {
     @FConfigItem(name = "ti.rule.constant.allowExponentialForm", description = "Allow exponential form of decimal number in rule output.")
     public Boolean constantNumberAllowExponentialForm = true;
 
-    @FConfigItem(name = "ti.rule.constant.kMeans.clusterNumber", description = "Cluster number in k-means interval-constant finding")
+    @FConfigItem(name = "ti.rule.constant.findNullConstant", description = "The constants found includes null or not. The config can be overwritten in column-level")
+    public Boolean findNullConstant = true;
+
+    @FConfigItem(name = "ti.rule.constant.upperLimitRatio", description = "The upper limit of ratio of appear-time of constant value. The config can be overwritten in column-level")
+    public Double constantUpperLimitRatio = 1.0;
+
+    @FConfigItem(name = "ti.rule.constant.downLimitRatio", description = "The down limit of ratio of appear-time of constant value. The config can be overwritten in column-level")
+    public Double constantDownLimitRatio = 0.1;
+
+    @FConfigItem(name = "ti.rule.constant.interval.kMeans.clusterNumber", description = "Cluster number in k-means interval-constant finding. " +
+            "The config can be overwritten in column-level")
     public Integer kMeansClusterNumber = 2;
 
-    @FConfigItem(name = "ti.rule.constant.kMeans.iterNumber", description = "Iteration number in k-means interval-constant finding")
+    @FConfigItem(name = "ti.rule.constant.interval.kMeans.iterNumber", description = "Iteration number in k-means interval-constant finding. " +
+            "The config can be overwritten in column-level")
     public Integer kMeansIterNumber = 1000;
 
     @FConfigItem(name = "ti.rule.constant.interval.leftClose", description = "The left boundary of interval-constant is close or not. " +
@@ -71,6 +82,7 @@ public class FTiConfig {
     public static FTiConfig defaultConfig() {
         return new FTiConfig();
     }
+
 
     @SuppressWarnings("unchecked")
     public List<String> toConfigString() {
@@ -147,8 +159,9 @@ public class FTiConfig {
     }
 
     @SuppressWarnings("unchecked")
-    private static void loadMapConfig(FTiConfig config, Map<String, Field> keyFieldMap,
-                                      String val, String mainKey, String subKey) throws IllegalAccessException {
+    private static void loadMapConfig(
+            FTiConfig config, Map<String, Field> keyFieldMap,
+            String val, String mainKey, String subKey) throws IllegalAccessException {
         if (StringUtils.isBlank(mainKey) ||
                 StringUtils.isBlank(subKey) ||
                 !keyFieldMap.containsKey(mainKey)) {

@@ -1,6 +1,6 @@
 package com.sics.rock.tableinsight4.core.interval.search;
 
-import com.sics.rock.tableinsight4.core.interval.FIntervalConstant;
+import com.sics.rock.tableinsight4.core.interval.FIntervalConstantInfo;
 import com.sics.rock.tableinsight4.core.interval.FInterval;
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
@@ -19,9 +19,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class FKMeansIntervalClusterSearcher implements FIIntervalClusterSearcher {
+public class FKMeansIntervalConstantSearcher implements FIIntervalConstantSearcher {
 
-    private static final Logger logger = LoggerFactory.getLogger(FKMeansIntervalClusterSearcher.class);
+    private static final Logger logger = LoggerFactory.getLogger(FKMeansIntervalConstantSearcher.class);
 
     private final int clusterNumber;
 
@@ -32,16 +32,16 @@ public class FKMeansIntervalClusterSearcher implements FIIntervalClusterSearcher
     private final boolean rightClose;
 
     @Override
-    public List<FIntervalConstant> search(FTableDatasetMap tableDatasetMap) {
-        List<FIntervalConstant> ret = new ArrayList<>();
+    public List<FIntervalConstantInfo> search(FTableDatasetMap tableDatasetMap) {
+        List<FIntervalConstantInfo> ret = new ArrayList<>();
         tableDatasetMap.foreach((tab, data) -> {
-            final Set<FIntervalConstant> intervals = searchTableIntervals(tab, data);
+            final Set<FIntervalConstantInfo> intervals = searchTableIntervals(tab, data);
             ret.addAll(intervals);
         });
         return ret;
     }
 
-    private Set<FIntervalConstant> searchTableIntervals(FTableInfo tableInfo, Dataset<Row> dataset) {
+    private Set<FIntervalConstantInfo> searchTableIntervals(FTableInfo tableInfo, Dataset<Row> dataset) {
         final String tableName = tableInfo.getTableName();
         return tableInfo.intervalRequiredColumnsView().parallelStream()
                 .map(columnInfo -> searchColumnIntervals(dataset, tableName, columnInfo))
@@ -50,7 +50,7 @@ public class FKMeansIntervalClusterSearcher implements FIIntervalClusterSearcher
 
     }
 
-    private Optional<FIntervalConstant> searchColumnIntervals(Dataset<Row> dataset, String tableName, FColumnInfo columnInfo) {
+    private Optional<FIntervalConstantInfo> searchColumnIntervals(Dataset<Row> dataset, String tableName, FColumnInfo columnInfo) {
         final FIntervalConstantConfig intervalConstantInfo = columnInfo.getIntervalConstantInfo();
         final String columnName = columnInfo.getColumnName();
 
@@ -66,10 +66,10 @@ public class FKMeansIntervalClusterSearcher implements FIIntervalClusterSearcher
                     columnName, distinctCount);
             return Optional.empty();
         }
-        final int iterNumber = intervalConstantInfo.getIterNumber(this.iterNumber);
-        final int clusterNumber = intervalConstantInfo.getClusterNumber(this.clusterNumber);
-        final boolean leftEq = intervalConstantInfo.getLeftClose(this.leftClose);
-        final boolean rightEq = intervalConstantInfo.getRightClose(this.rightClose);
+        final int iterNumber = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_K_MEANS_ITER_NUMBER, this.iterNumber);
+        final int clusterNumber = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_K_MEANS_CLUSTER_NUMBER, this.clusterNumber);
+        final boolean leftEq = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_LEFT_CLOSE, this.leftClose);
+        final boolean rightEq = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_RIGHT_CLOSE, this.rightClose);
         final List<FInterval> intervals = FKMeansUtils.findIntervals(doubleRDD, clusterNumber, iterNumber).stream()
                 .map(lr -> new FInterval(lr._k, lr._v, leftEq, rightEq)).collect(Collectors.toList());
 
@@ -78,10 +78,10 @@ public class FKMeansIntervalClusterSearcher implements FIIntervalClusterSearcher
             return Optional.empty();
         }
 
-        return Optional.of(new FIntervalConstant(tableName, columnName, intervals, FIntervalConstant.SOURCE_K_MEANS));
+        return Optional.of(new FIntervalConstantInfo(tableName, columnName, intervals, FIntervalConstantInfo.SOURCE_K_MEANS));
     }
 
-    public FKMeansIntervalClusterSearcher(int clusterNumber, int iterNumber, boolean leftClose, boolean rightClose) {
+    public FKMeansIntervalConstantSearcher(int clusterNumber, int iterNumber, boolean leftClose, boolean rightClose) {
         this.clusterNumber = clusterNumber;
         this.iterNumber = iterNumber;
         this.leftClose = leftClose;
