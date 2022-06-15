@@ -25,8 +25,7 @@ public class FExternalBinaryModelHandlerTest extends FTableInsightEnv {
     @Test
     public void test_appendDerivedColumn() {
 
-        final FExternalBinaryModelHandler handler = new FExternalBinaryModelHandler(
-                spark, idCol, "$EX_");
+        final FExternalBinaryModelHandler handler = new FExternalBinaryModelHandler();
 
         final FTableDatasetMap relation = relation();
 
@@ -82,8 +81,7 @@ public class FExternalBinaryModelHandlerTest extends FTableInsightEnv {
     @Test
     public void test_appendDerivedColumn2() {
 
-        final FExternalBinaryModelHandler handler = new FExternalBinaryModelHandler(
-                spark, idCol, "$EX_");
+        final FExternalBinaryModelHandler handler = new FExternalBinaryModelHandler();
 
         final FTableDatasetMap relation = relation2();
 

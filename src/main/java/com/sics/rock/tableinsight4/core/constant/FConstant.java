@@ -1,6 +1,7 @@
 package com.sics.rock.tableinsight4.core.constant;
 
 import com.sics.rock.tableinsight4.table.FTableInfo;
+import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +9,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- *
  * A container holds constant.
  *
  * @param <T> constant type
@@ -23,7 +23,13 @@ public class FConstant<T> implements Serializable {
      */
     private final T constant;
 
-    private long index = -1;
+    /**
+     * lazy init
+     * -2: not init
+     * -1: null
+     * >=0 : index for notnull value
+     */
+    private long index = -2;
 
     public FConstant(T constant) {
         this.constant = constant;
@@ -43,6 +49,7 @@ public class FConstant<T> implements Serializable {
     }
 
     public long getIndex() {
+        FAssertUtils.require(() -> index >= -1, "The index of constant has not be set");
         return index;
     }
 
