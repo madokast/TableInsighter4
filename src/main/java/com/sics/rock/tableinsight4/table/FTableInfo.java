@@ -68,11 +68,19 @@ public class FTableInfo implements Serializable {
         return Collections.unmodifiableList(view);
     }
 
+    public List<FColumnInfo> nonSkipColumnsView() {
+        final List<FColumnInfo> view = columns.stream()
+                .filter(c -> !c.isSkip())
+                .collect(Collectors.toList());
+        return Collections.unmodifiableList(view);
+    }
+
     /**
      * @return a view of columnMap
      */
     public Map<String, FColumnInfo> columnMapView() {
-        final Map<String, FColumnInfo> view = columns.stream().collect(Collectors.toMap(FColumnInfo::getColumnName, Function.identity()));
+        final Map<String, FColumnInfo> view = columns.stream()
+                .collect(Collectors.toMap(FColumnInfo::getColumnName, Function.identity()));
         return Collections.unmodifiableMap(view);
     }
 

@@ -18,6 +18,10 @@ public class FConstant<T> implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FTableInfo.class);
 
+    public static final long INDEX_OF_NULL = -1L;
+    public static final long INDEX_NOT_FOUND = -2L;
+    public static final long INDEX_NOT_INIT = -3L;
+
     /**
      * Nullable
      */
@@ -25,11 +29,12 @@ public class FConstant<T> implements Serializable {
 
     /**
      * lazy init
-     * -2: not init
+     * -3: not init
+     * -2: not found
      * -1: null
      * >=0 : index for notnull value
      */
-    private long index = -2;
+    private long index = INDEX_NOT_INIT;
 
     public FConstant(T constant) {
         this.constant = constant;

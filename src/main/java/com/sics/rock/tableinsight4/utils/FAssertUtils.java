@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  *
  * @author zhaorx
  */
-public class FAssertUtils {
+public final class FAssertUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(FAssertUtils.class);
 

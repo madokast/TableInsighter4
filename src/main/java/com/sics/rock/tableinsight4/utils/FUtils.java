@@ -108,6 +108,11 @@ public class FUtils {
         return Arrays.asList(es);
     }
 
+    @SafeVarargs
+    public static <E> Set<E> setOf(E... es) {
+        return new HashSet<>(listOf(es));
+    }
+
     public static <T> Map<T, Integer> indexArray(T[] array) {
 
         FAssertUtils.require(() -> Arrays.stream(array).distinct().count() == (long) array.length,
@@ -117,6 +122,19 @@ public class FUtils {
 
         for (int i = 0; i < array.length; i++) {
             m.put(array[i], i);
+        }
+
+        return m;
+    }
+
+    public static <T> Map<T, Integer> indexList(List<T> list) {
+        FAssertUtils.require(() -> list.stream().distinct().count() == (long) list.size(),
+                () -> "Cannot index a list containing duplicate elements. " + list);
+
+        Map<T, Integer> m = new HashMap<>();
+
+        for (int i = 0; i < list.size(); i++) {
+            m.put(list.get(i), i);
         }
 
         return m;

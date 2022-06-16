@@ -1,6 +1,7 @@
 package com.sics.rock.tableinsight4.table.column;
 
 import com.sics.rock.tableinsight4.utils.FTypeUtils;
+import com.sics.rock.tableinsight4.utils.FUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class FValueType implements Serializable {
 
@@ -47,12 +49,22 @@ public class FValueType implements Serializable {
         }
     }
 
+    /**
+     * @return val is an instance of this type or not
+     */
     public boolean instance(Object val) {
         if (typeType.equals(FTypeType.BASIC) && typeInfo[0] instanceof FBasicType) {
             return val == null || ((FBasicType) typeInfo[0]).jType.isAssignableFrom(val.getClass());
         } else {
             throw new NotImplementedException("Cannot infer instance " + val + " of " + this);
         }
+    }
+
+    public boolean isComparable() {
+        if (typeType.equals(FTypeType.BASIC) && typeInfo[0] instanceof FBasicType) {
+            return ((FBasicType) typeInfo[0]).isComparable();
+        }
+        return false;
     }
 
     @Override
@@ -84,6 +96,12 @@ public class FValueType implements Serializable {
 
         FBasicType(Class<?> jType) {
             this.jType = jType;
+        }
+
+        private static final Set<FBasicType> COMPARABLE_TYPES = FUtils.setOf(INTEGER, LONG, DOUBLE, DATE, TIMESTAMP);
+
+        public boolean isComparable() {
+            return COMPARABLE_TYPES.contains(this);
         }
     }
 }
