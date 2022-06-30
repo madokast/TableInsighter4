@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.core.interval.bitset;
+package com.sics.rock.tableinsight4.internal.bitset;
 
 import java.io.Serializable;
 import java.util.*;
@@ -13,8 +13,6 @@ import java.util.stream.StreamSupport;
  * <p>
  * bs.set(0) -> 10000....
  * bs.set(3) -> 00010....
- *
- * @author zhaorx
  */
 public class FBitSet implements Serializable {
 
@@ -242,6 +240,14 @@ public class FBitSet implements Serializable {
         return bs;
     }
 
+    public static FBitSet of(List<Integer> bits) {
+        if (bits == null || bits.isEmpty()) return new FBitSet(1);
+        int max = bits.stream().mapToInt(Integer::intValue).max().getAsInt();
+        FBitSet bs = new FBitSet(max + 1);
+        bits.forEach(bs::set);
+        return bs;
+    }
+
     // refer jdk8
     public IntStream stream() {
         class BitSetIterator implements PrimitiveIterator.OfInt {
@@ -277,8 +283,16 @@ public class FBitSet implements Serializable {
         return binaryContent() + " " + Arrays.toString(toArray());
     }
 
+    public String toBriefString() {
+        String bc = binaryContent().replaceAll("-", "");
+        for (int i = bc.length() - 1; i >= 0; i--) {
+            if (bc.charAt(i) == '1') return bc.substring(0, i + 1);
+        }
+        return "0";
+    }
+
     public String binaryContent() {
-        StringBuilder sb = new StringBuilder(words.length * Long.SIZE + 1);
+        StringBuilder sb = new StringBuilder(words.length * Long.SIZE + words.length);
         for (long word : words) {
             String str = Long.toBinaryString(word);
             for (int i = 0; i < Long.SIZE - str.length(); i++) {
@@ -287,7 +301,8 @@ public class FBitSet implements Serializable {
             sb.append(str);
             sb.append("-");
         }
-        return sb.substring(0, words.length * Long.SIZE);
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
     }
 
     public int[] toArray() {
