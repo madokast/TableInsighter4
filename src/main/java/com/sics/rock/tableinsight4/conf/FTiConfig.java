@@ -48,6 +48,12 @@ public class FTiConfig {
     @FConfigItem(name = "ti.derived.binaryModelDerivedColumnSuffix", description = "Derived column suffix for external binary model. Rename it only when conflicting with other column names.")
     public String externalBinaryModelDerivedColumnSuffix = "$EX_";
 
+    @FConfigItem(name = "ti.derived.combineColumnLinker", description = "Derived combine columns linker. The linker should match its regex. Rename it only when conflicting with other column names.")
+    public String combineColumnLinker = "||','||";
+
+    @FConfigItem(name = "ti.derived.combineColumnLinkerRegex", description = "Derived combine columns linker regex. Rename it only when conflicting with other column names.")
+    public String combineColumnLinkerRegex = "\\|\\|','\\|\\|";
+
     @FConfigItem(name = "ti.rule.constant.maxDecimalPlace", description = "The maximum number of decimal places reserved in rule output.")
     public Integer constantNumberMaxDecimalPlace = 2;
 

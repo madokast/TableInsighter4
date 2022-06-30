@@ -51,8 +51,8 @@ public class FPliConstructor {
     private final JavaSparkContext sc;
 
     public FPLI construct(FTableDatasetMap tableDatasetMap) {
-        // 1. Use FOrderedPartitioner to distribute table data into partitions of same capacity
-        //    So each row is ordered globally and the positive / negative examples of rules are able to be found
+        // 1. Use FOrderedPartitioner to distribute table data into partitions of same capacity.
+        //    So each row is ordered globally in order to find the positive / negative examples of rules.
         partitionAllTable(tableDatasetMap);
 
         // 2. Create type-based, unique and ordered index of all the value in table data.

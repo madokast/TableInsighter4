@@ -2,7 +2,7 @@ package com.sics.rock.tableinsight4.core;
 
 import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.core.external.FExternalBinaryModelInfo;
-import com.sics.rock.tableinsight4.core.external.FIExternalBianryModelPredicateNameFormatter;
+import com.sics.rock.tableinsight4.core.external.FIExternalBinaryModelPredicateNameFormatter;
 import com.sics.rock.tableinsight4.core.external.FIExternalBinaryModelCalculator;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
@@ -60,10 +60,11 @@ public class FExternalBinaryModelHandlerTest extends FTableInsightEnv {
 
         final String id = "cc_similar";
         final FIExternalBinaryModelCalculator calculator = () -> pairs;
-        final FIExternalBianryModelPredicateNameFormatter predicateNameFormatter = (i, j) -> "Similar('eq', t0.cc = t1.cc)";
+        final FIExternalBinaryModelPredicateNameFormatter predicateNameFormatter = (i, j) -> "Similar('eq', t0.cc = t1.cc)";
 
 
         return new FExternalBinaryModelInfo(id, tabName, tabName,
+                Collections.singletonList("cc"), Collections.singletonList("cc"),
                 true, calculator, predicateNameFormatter);
     }
 
@@ -116,10 +117,11 @@ public class FExternalBinaryModelHandlerTest extends FTableInsightEnv {
 
         final String id = "cc_similar";
         final FIExternalBinaryModelCalculator calculator = () -> pairs;
-        final FIExternalBianryModelPredicateNameFormatter predicateNameFormatter = (i, j) -> "Similar('eq', t0.cc = t2.cc)";
+        final FIExternalBinaryModelPredicateNameFormatter predicateNameFormatter = (i, j) -> "Similar('eq', t0.cc = t2.cc)";
 
 
         return new FExternalBinaryModelInfo(id, "r1", "r2",
+                Collections.singletonList("cc"), Collections.singletonList("cc"),
                 true, calculator, predicateNameFormatter);
     }
 

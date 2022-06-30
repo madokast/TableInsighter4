@@ -1,6 +1,8 @@
 package com.sics.rock.tableinsight4.core.external;
 
 
+import java.util.List;
+
 /**
  * @author zhaorx
  */
@@ -12,16 +14,31 @@ public class FExternalBinaryModelInfo {
 
     private final String rightTableName;
 
+    /**
+     * for predicate compatibility and toString
+     */
+    private final List<String> leftColumns;
+
+    /**
+     * for predicate compatibility and toString
+     */
+    private final List<String> rightColumns;
+
     private final boolean target;
 
     private final FIExternalBinaryModelCalculator calculator;
 
-    private final FIExternalBianryModelPredicateNameFormatter predicateNameFormatter;
+    private final FIExternalBinaryModelPredicateNameFormatter predicateNameFormatter;
 
-    public FExternalBinaryModelInfo(String id, String leftTableName, String rightTableName, boolean target, FIExternalBinaryModelCalculator calculator, FIExternalBianryModelPredicateNameFormatter predicateNameFormatter) {
+    public FExternalBinaryModelInfo(String id, String leftTableName, String rightTableName,
+                                    List<String> leftColumns, List<String> rightColumns,
+                                    boolean target, FIExternalBinaryModelCalculator calculator,
+                                    FIExternalBinaryModelPredicateNameFormatter predicateNameFormatter) {
         this.id = id;
         this.leftTableName = leftTableName;
         this.rightTableName = rightTableName;
+        this.leftColumns = leftColumns;
+        this.rightColumns = rightColumns;
         this.target = target;
         this.calculator = calculator;
         this.predicateNameFormatter = predicateNameFormatter;
@@ -39,6 +56,14 @@ public class FExternalBinaryModelInfo {
         return rightTableName;
     }
 
+    public List<String> getLeftColumns() {
+        return leftColumns;
+    }
+
+    public List<String> getRightColumns() {
+        return rightColumns;
+    }
+
     public boolean isTarget() {
         return target;
     }
@@ -47,7 +72,12 @@ public class FExternalBinaryModelInfo {
         return calculator;
     }
 
-    public FIExternalBianryModelPredicateNameFormatter getPredicateNameFormatter() {
+    public FIExternalBinaryModelPredicateNameFormatter getPredicateNameFormatter() {
         return predicateNameFormatter;
+    }
+
+    @Override
+    public String toString() {
+        return "FExternalBinaryModelInfo{" + id + '}';
     }
 }

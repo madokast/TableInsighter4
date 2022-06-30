@@ -4,6 +4,7 @@ import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FColumnInfoFactory;
+import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 import com.sics.rock.tableinsight4.utils.FSparkSqlUtils;
 import com.sics.rock.tableinsight4.utils.FUtils;
 import org.apache.spark.sql.Dataset;
@@ -24,7 +25,7 @@ public class FExternalModelDerivedColumnAppender {
 
     private static final Logger logger = LoggerFactory.getLogger(FExternalModelDerivedColumnAppender.class);
 
-    private final String externalBinaryModelDerivedColumnSuffix;
+    private final FDerivedColumnNameHandler derivedColumnNameHandler;
 
     private final String idColumn;
 
@@ -32,7 +33,7 @@ public class FExternalModelDerivedColumnAppender {
 
     public void appendDerivedColumn(FTableDatasetMap tables, FExternalBinaryModelInfo externalPairInfo) {
         // Derived column $EX_id
-        final String externalDerivedColumn = externalBinaryModelDerivedColumnSuffix + externalPairInfo.getId();
+        final String externalDerivedColumn = derivedColumnNameHandler.deriveModelColumn(externalPairInfo.getId());
 
         final String leftTableName = externalPairInfo.getLeftTableName();
         final String rightTableName = externalPairInfo.getRightTableName();
@@ -87,8 +88,8 @@ public class FExternalModelDerivedColumnAppender {
         return spark.createDataFrame(rows, structType).cache();
     }
 
-    public FExternalModelDerivedColumnAppender(String externalBinaryModelDerivedColumnSuffix, String idColumn, SparkSession spark) {
-        this.externalBinaryModelDerivedColumnSuffix = externalBinaryModelDerivedColumnSuffix;
+    public FExternalModelDerivedColumnAppender(FDerivedColumnNameHandler derivedColumnNameHandler, String idColumn, SparkSession spark) {
+        this.derivedColumnNameHandler = derivedColumnNameHandler;
         this.idColumn = idColumn;
         this.spark = spark;
     }
