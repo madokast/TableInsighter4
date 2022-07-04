@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.table;
 
-import com.sics.rock.tableinsight4.core.constant.FConstant;
-import com.sics.rock.tableinsight4.core.interval.FInterval;
+import com.sics.rock.tableinsight4.procedure.constant.FConstant;
+import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 import com.sics.rock.tableinsight4.table.column.FColumnType;
 import com.sics.rock.tableinsight4.table.column.FConstantConfig;
 import com.sics.rock.tableinsight4.table.column.FIntervalConstantConfig;
@@ -74,11 +74,14 @@ public class FColumnInfo implements Serializable {
     }
 
     public void addConstant(FConstant<?> constant) {
+        if (!valueType.instance(constant.getConstant())) {
+            logger.warn("Type-incompatible constant {} put in {} column {}", constant.getConstant(), valueType, columnName);
+        }
         this.constants.add(constant);
     }
 
     public void addConstants(List<FConstant<?>> constants) {
-        this.constants.addAll(constants);
+        this.constants.forEach(this::addConstant);
     }
 
     public void addIntervalConstant(FInterval interval) {

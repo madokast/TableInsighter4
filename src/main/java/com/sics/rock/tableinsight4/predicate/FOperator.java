@@ -10,7 +10,9 @@ public enum FOperator {
 
     LET("<="),
 
-    GET(">=");
+    GET(">="),
+
+    BELONG("∈");
 
     public final String symbol;
 

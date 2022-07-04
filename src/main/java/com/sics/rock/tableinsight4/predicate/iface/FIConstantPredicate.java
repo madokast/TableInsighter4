@@ -1,6 +1,6 @@
 package com.sics.rock.tableinsight4.predicate.iface;
 
-import com.sics.rock.tableinsight4.core.constant.FConstant;
+import com.sics.rock.tableinsight4.procedure.constant.FConstant;
 import com.sics.rock.tableinsight4.predicate.FIPredicate;
 
 import java.util.List;

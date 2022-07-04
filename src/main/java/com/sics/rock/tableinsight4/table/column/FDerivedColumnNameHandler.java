@@ -1,6 +1,6 @@
 package com.sics.rock.tableinsight4.table.column;
 
-import com.sics.rock.tableinsight4.core.external.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.procedure.external.FExternalBinaryModelInfo;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 

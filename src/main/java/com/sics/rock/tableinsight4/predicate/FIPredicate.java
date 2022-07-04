@@ -33,12 +33,14 @@ public interface FIPredicate extends Serializable {
     FOperator operator();
 
     /**
+     * identifier
+     *
      * relative table column of this predicate
      * for compatibility between predicates
      *
      * Derived column names should revert to origin ones
      */
-    List<String> tableColumns();
+    List<String> innerTabCols();
 
     /**
      * length of this predicate
