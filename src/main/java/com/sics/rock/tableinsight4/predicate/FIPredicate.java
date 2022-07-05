@@ -2,6 +2,7 @@ package com.sics.rock.tableinsight4.predicate;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A predicate is a logic element in a rule.
@@ -40,7 +41,7 @@ public interface FIPredicate extends Serializable {
      *
      * Derived column names should revert to origin ones
      */
-    List<String> innerTabCols();
+    Set<String> innerTabCols();
 
     /**
      * length of this predicate

@@ -88,6 +88,10 @@ public class FTiConfig {
             "(a, b] is default, i.e. the right boundary is close. The config can be overwritten in column-level")
     public Boolean intervalRightClose = true;
 
+    @FConfigItem(name = "ti.internal.sliceLengthForPLI", description = "Origin table splice length for PLI construction. " +
+            "The value decide the PLI number and may affect the speed of ES construction. The recommended value may be 1000 ~ 2500. ")
+    public int sliceLengthForPLI = 1000;
+
     public static FTiConfig defaultConfig() {
         return new FTiConfig();
     }

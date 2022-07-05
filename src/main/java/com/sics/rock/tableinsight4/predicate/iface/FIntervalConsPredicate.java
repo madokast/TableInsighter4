@@ -4,8 +4,8 @@ import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.procedure.constant.FConstant;
 import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class FIntervalConsPredicate implements FIConstantPredicate, FIUnaryPredicate {
 
@@ -13,21 +13,21 @@ public class FIntervalConsPredicate implements FIConstantPredicate, FIUnaryPredi
     private final String columnName;
     private final int tupleId;
     private final FInterval interval;
-    private final String innerTabCol;
+    private final Set<String> innerTabCols;
 
 
     public FIntervalConsPredicate(String tableName, String columnName, int tupleId,
-                                  FInterval interval, String innerTabCol) {
+                                  FInterval interval, Set<String> innerTabCols) {
         this.tableName = tableName;
         this.columnName = columnName;
         this.tupleId = tupleId;
         this.interval = interval;
-        this.innerTabCol = innerTabCol;
+        this.innerTabCols = innerTabCols;
     }
 
     @Override
-    public List<String> innerTabCols() {
-        return Collections.singletonList(innerTabCol);
+    public Set<String> innerTabCols() {
+        return innerTabCols;
     }
 
     @Override

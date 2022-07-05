@@ -5,6 +5,7 @@ import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.predicate.iface.FIntervalConsPredicate;
 import com.sics.rock.tableinsight4.predicate.iface.FUnaryConsPredicate;
 import com.sics.rock.tableinsight4.table.FTableInfo;
+import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,22 +50,34 @@ public class FPredicateFactory {
     /**
      * create single-line rules like t0.name = aaa
      */
-    public static FPredicateFactory createSingleLinePredicateFactory(FTableInfo table, String tableColumnLinker) {
-        FPredicateFactory factory = new FPredicateFactory();
+    public static FPredicateFactory createSingleLinePredicateFactory(
+            FTableInfo table, FDerivedColumnNameHandler derivedColumnNameHandler) {
+        final FPredicateFactory factory = new FPredicateFactory();
 
+        final String tabName = table.getTableName();
+        final String innerTableName = table.getInnerTableName();
+
+        table.nonSkipColumnsView().forEach(columnInfo -> {
+            final String columnName = columnInfo.getColumnName();
+            // identifier
+            final Set<String> innerTabCols = derivedColumnNameHandler.innerTabCols(tabName, innerTableName,columnName);
+            columnInfo.getConstants().stream().map(cons ->
+                    new FUnaryConsPredicate(tabName, columnName, 0, FOperator.EQ, cons, innerTabCols)
+            ).forEach(factory::put);
+            columnInfo.getIntervalConstants().stream().map(interval ->
+                    new FIntervalConsPredicate(tabName, columnName, 0, interval, innerTabCols)
+            ).forEach(factory::put);
+        });
+
+        return factory;
+    }
+
+    public static FPredicateFactory createSingleTableCrossLinePredicateFactory(
+            FTableInfo table, boolean constantPredicate, FDerivedColumnNameHandler derivedColumnNameHandler) {
+        FPredicateFactory factory = new FPredicateFactory();
         String tabName = table.getTableName();
         String innerTableName = table.getInnerTableName();
 
-        table.nonSkipColumnsView().forEach(columnInfo -> {
-            String columnName = columnInfo.getColumnName();
-            String innerTabCol = innerTableName + tableColumnLinker + columnName;
-            columnInfo.getConstants().stream().map(cons ->
-                    new FUnaryConsPredicate(tabName, columnName, 0, FOperator.EQ, cons, innerTabCol)
-            ).forEach(factory::put);
-            columnInfo.getIntervalConstants().stream().map(interval ->
-                    new FIntervalConsPredicate(tabName, columnName, 0, interval, innerTabCol)
-            ).forEach(factory::put);
-        });
 
         return factory;
     }
@@ -130,5 +143,8 @@ public class FPredicateFactory {
 
     public boolean isEmpty() {
         return size() == 0;
+    }
+
+    private FPredicateFactory() {
     }
 }

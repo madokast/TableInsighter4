@@ -4,9 +4,7 @@ import com.sics.rock.tableinsight4.procedure.external.FExternalBinaryModelInfo;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,6 +12,7 @@ public class FDerivedColumnNameHandler implements FTiEnvironment {
 
     private final String combineColumnLinker = config().combineColumnLinker;
     private final String combineColumnLinkerRegex = config().combineColumnLinkerRegex;
+    private final String tableColumnLinker = config().tableColumnLinker;
 
     public String deriveCombinedColumn(List<String> combinedColumnNames) {
         return String.join(combineColumnLinker, combinedColumnNames);
@@ -23,6 +22,18 @@ public class FDerivedColumnNameHandler implements FTiEnvironment {
         FAssertUtils.require(() -> combinedColumnName.contains(combineColumnLinker),
                 () -> combinedColumnName + " is not a derived combined column name.");
         return Arrays.asList(combinedColumnName.split(combineColumnLinkerRegex));
+    }
+
+    public boolean isCombinedColumnName(String maybeCombinedColumnName) {
+        return maybeCombinedColumnName.contains(combineColumnLinker);
+    }
+
+    public List<String> tryParseCombinedColumn(String maybeCombinedColumnName) {
+        if (isCombinedColumnName(maybeCombinedColumnName)) {
+            return parseCombinedColumn(maybeCombinedColumnName);
+        } else {
+            return Collections.singletonList(maybeCombinedColumnName);
+        }
     }
 
     private final String externalBinaryModelDerivedColumnSuffix = config().externalBinaryModelDerivedColumnSuffix;
@@ -43,9 +54,32 @@ public class FDerivedColumnNameHandler implements FTiEnvironment {
         return cachedModelInfoMap.get(modelId);
     }
 
+    public boolean isDerivedModelColumnName(String maybeDerivedModelColumnName) {
+        if (maybeDerivedModelColumnName.startsWith(externalBinaryModelDerivedColumnSuffix)) {
+            final String modelId = maybeDerivedModelColumnName.substring(externalBinaryModelDerivedColumnSuffix.length());
+            return cachedModelInfoMap.containsKey(modelId);
+        }
+        return false;
+    }
+
 
     public FDerivedColumnNameHandler(List<FExternalBinaryModelInfo> externalBinaryModelInfos) {
         cachedModelInfoMap = externalBinaryModelInfos.stream()
                 .collect(Collectors.toMap(FExternalBinaryModelInfo::getId, Function.identity()));
+    }
+
+    public Set<String> innerTabCols(String tabName, String innerTableName, String columnName) {
+        if(isDerivedModelColumnName(columnName)) {
+            FExternalBinaryModelInfo modelInfo = extractModelInfo(columnName);
+            if (modelInfo.getLeftTableName().equals(tabName)) {
+                return modelInfo.getLeftColumns().stream().map(c -> innerTableName + tableColumnLinker + c).collect(Collectors.toSet());
+            } else if (modelInfo.getRightTableName().equals(tabName)) {
+                return modelInfo.getRightColumns().stream().map(c -> innerTableName + tableColumnLinker + c).collect(Collectors.toSet());
+            } else {
+                throw new IllegalArgumentException(columnName + " is a derived model column but not belong to model " + modelInfo);
+            }
+        }
+
+        return tryParseCombinedColumn(columnName).stream().map(c -> innerTableName + tableColumnLinker + c).collect(Collectors.toSet());
     }
 }

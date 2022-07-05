@@ -5,6 +5,7 @@ import com.sics.rock.tableinsight4.procedure.constant.FConstant;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class FUnaryConsPredicate implements FIConstantPredicate, FIUnaryPredicate {
 
@@ -13,22 +14,22 @@ public class FUnaryConsPredicate implements FIConstantPredicate, FIUnaryPredicat
     private final int tupleId;
     private final FOperator operator;
     private final FConstant<?> constant;
-    private final String innerTabCol;
+    private final Set<String> innerTabCols;
 
 
     public FUnaryConsPredicate(String tableName, String columnName, int tupleId,
-                               FOperator operator, FConstant<?> constant, String innerTabCol) {
+                               FOperator operator, FConstant<?> constant, Set<String> innerTabCols) {
         this.tableName = tableName;
         this.columnName = columnName;
         this.tupleId = tupleId;
         this.operator = operator;
         this.constant = constant;
-        this.innerTabCol = innerTabCol;
+        this.innerTabCols = innerTabCols;
     }
 
     @Override
-    public List<String> innerTabCols() {
-        return Collections.singletonList(innerTabCol);
+    public Set<String> innerTabCols() {
+        return innerTabCols;
     }
 
     @Override
