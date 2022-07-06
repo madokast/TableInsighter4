@@ -40,6 +40,7 @@ public class FConstantHandler implements FTiEnvironment {
 
     private void printConstants(List<FConstantInfo> constantInfos) {
         for (FConstantInfo constantInfo : constantInfos) {
+            if (constantInfo.isEmpty()) continue;
             logger.info("Find constants {}", constantInfo);
         }
     }
@@ -50,6 +51,8 @@ public class FConstantHandler implements FTiEnvironment {
     private void addToColumnInfo(List<FConstantInfo> constantInfos, FTableDatasetMap tableDatasetMap) {
 
         for (FConstantInfo constantInfo : constantInfos) {
+            if (constantInfo.isEmpty()) continue;
+
             final String tableName = constantInfo.getTableName();
             final String columnName = constantInfo.getColumnName();
             final Map<String, FColumnInfo> columnInfoMap = columnMap.computeIfAbsent(tableName, tn -> tableDatasetMap.getTableInfoByTableName(tn).columnMapView());

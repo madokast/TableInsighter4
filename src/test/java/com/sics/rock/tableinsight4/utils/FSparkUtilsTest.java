@@ -161,8 +161,8 @@ public class FSparkUtilsTest extends FSparkEnv {
 
     @Test
     public void union() {
-        Optional<JavaRDD<Object>> union = FSparkUtils.union(Collections.emptyList());
-        assertFalse(union.isPresent());
+        JavaRDD<Object> union = FSparkUtils.union(spark, Collections.emptyList());
+        assertEquals(0L, union.count());
     }
 
     @Test
@@ -176,11 +176,8 @@ public class FSparkUtilsTest extends FSparkEnv {
         int num = collect.stream().map(FPair::k).mapToInt(Integer::intValue).sum();
         List<JavaRDD<Integer>> rddList = collect.stream().map(FPair::v).collect(Collectors.toList());
 
-        Optional<JavaRDD<Integer>> union = FSparkUtils.union(rddList);
-        assertTrue(union.isPresent());
+        JavaRDD<Integer> union = FSparkUtils.union(spark, rddList);
 
-        JavaRDD<Integer> rdd = union.get();
-
-        assertEquals(num, rdd.count());
+        assertEquals(num, union.count());
     }
 }

@@ -1,11 +1,8 @@
-package com.sics.rock.tableinsight4.procedure;
+package com.sics.rock.tableinsight4.pli;
 
 import com.sics.rock.tableinsight4.procedure.constant.FConstant;
-import com.sics.rock.tableinsight4.pli.FLocalPLI;
-import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.internal.FPartitionId;
 import com.sics.rock.tableinsight4.internal.FRddElementIndex;
-import com.sics.rock.tableinsight4.pli.FTypedOrderedIndex;
 import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.internal.partitioner.FOrderedPartitioner;
 import com.sics.rock.tableinsight4.internal.partitioner.FPartitionIdPartitioner;
@@ -105,10 +102,21 @@ public class FPliConstructor {
             tableInfo.nonSkipColumnsView().forEach(columnInfo -> {
                 final String columnName = columnInfo.getColumnName();
                 final FValueType valueType = columnInfo.getValueType();
+                // rdd of column values
                 final JavaRDD<Object> distinctRDD = dataset.select(columnName).toJavaRDD().map(row -> row.get(0))
                         .filter(Objects::nonNull).distinct();
+                // rdd of constant in this column
+                final JavaRDD<Object> constantValRDD = FSparkUtils.rddOf(columnInfo.getConstants().stream().map(FConstant::getConstant)
+                        .filter(Objects::nonNull).collect(Collectors.toList()), spark);
+                // rdd of interval constant in this column
+                final JavaRDD<Object> intervalConstantValRDD = FSparkUtils.rddOf(columnInfo.getIntervalConstants().stream()
+                        .flatMap(i -> i.constants().stream().map(FConstant::getConstant))
+                        .filter(d -> !d.isInfinite()).collect(Collectors.toList()), spark);
+
+                JavaRDD<Object> allData = FSparkUtils.union(spark, FUtils.listOf(distinctRDD, constantValRDD, intervalConstantValRDD));
+
                 typeBasedRddList.putIfAbsent(valueType, new ArrayList<>());
-                typeBasedRddList.get(valueType).add(distinctRDD);
+                typeBasedRddList.get(valueType).add(allData);
             });
         });
 
@@ -118,7 +126,7 @@ public class FPliConstructor {
         Map<FValueType, JavaPairRDD<Object, Long>> indexMap = typeBasedRddList.entrySet().stream().map(e -> {
             final FValueType type = e.getKey();
             final List<JavaRDD<Object>> RDDs = e.getValue();
-            JavaRDD<Object> distinctRDD = FSparkUtils.union(RDDs).orElse(sc.emptyRDD()).distinct();
+            JavaRDD<Object> distinctRDD = FSparkUtils.union(spark, RDDs).distinct();
             if (type.isComparable()) {
                 distinctRDD = distinctRDD.sortBy(v -> v, true, distinctRDD.getNumPartitions());
             }
@@ -304,7 +312,7 @@ public class FPliConstructor {
                 JavaRDD<Row> valIndexMap = typedOrderedIndex.indexesOf(valueType).get()
                         .map(t -> RowFactory.create(t._1, t._2));
 
-                StructType structType = new StructType().add(columnName, DataTypes.StringType).add(columnName + "_id", DataTypes.LongType);
+                StructType structType = new StructType().add(columnName, valueType.getSparkSqlType()).add(columnName + "_id", DataTypes.LongType);
                 Dataset<Row> indexTable = spark.createDataFrame(valIndexMap, structType);
                 dataset = FSparkSqlUtils.leftOuterJoin(dataset, indexTable, Collections.singletonList(columnName));
 
@@ -313,7 +321,7 @@ public class FPliConstructor {
             }
 
             logger.debug("Index table {}: ", tableInfo.getTableName());
-            dataset.select(idColName, FScalaUtils.seqOf(selectors)).show(false);
+            dataset.select(idColName, FScalaUtils.seqOf(selectors)).orderBy(idColName).show(false);
 
             JavaPairRDD<FPartitionId, Map<FColumnName, FLocalPLI>> tablePLI = PLI.getTablePLI(tableInfo);
             tablePLI.collect().forEach(pidMap -> {

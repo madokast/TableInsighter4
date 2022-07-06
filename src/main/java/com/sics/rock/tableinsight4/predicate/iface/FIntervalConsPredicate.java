@@ -40,6 +40,7 @@ public class FIntervalConsPredicate implements FIConstantPredicate, FIUnaryPredi
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<FConstant<?>> allConstants() {
         return (List<FConstant<?>>) (List) interval.constants();
     }

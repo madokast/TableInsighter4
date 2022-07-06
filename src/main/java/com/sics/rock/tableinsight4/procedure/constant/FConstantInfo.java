@@ -50,6 +50,10 @@ public class FConstantInfo {
         final String constants = this.constants.stream().map(FConstant::toString)
                 .map(c -> "'" + c + "'")
                 .collect(Collectors.joining(", "));
-        return String.format("[%s]%s in %s.%s", type.toString(), constants, tableName, columnName);
+        return String.format("[%s] %s in %s.%s", type.toString(), constants, tableName, columnName);
+    }
+
+    public boolean isEmpty() {
+        return constants.isEmpty();
     }
 }

@@ -5,13 +5,13 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.TaskContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Tuple2;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -154,13 +154,18 @@ public class FSparkUtils {
         return FUtils.mergeReduce(RDDs, (r1, r2) -> r1.union(r2).reduceByKey(Long::sum));
     }
 
-    public static <E> Optional<JavaRDD<E>> union(List<JavaRDD<E>> RDDs) {
-        if (RDDs.isEmpty()) return Optional.empty();
+    public static <E> JavaRDD<E> union(SparkSession spark, List<JavaRDD<E>> RDDs) {
+        if (RDDs.isEmpty()) return JavaSparkContext.fromSparkContext(spark.sparkContext()).emptyRDD();
         JavaRDD<E> one = RDDs.get(0);
         for (int i = 1; i < RDDs.size(); i++) {
             one = one.union(RDDs.get(i));
         }
-        return Optional.of(one);
+        return one;
     }
 
+    public static <E> JavaRDD<E> rddOf(List<E> elements, SparkSession spark) {
+        final JavaSparkContext sc = JavaSparkContext.fromSparkContext(spark.sparkContext());
+
+        return sc.parallelize(elements);
+    }
 }

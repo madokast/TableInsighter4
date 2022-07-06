@@ -42,7 +42,12 @@ public class FConstant<T> implements Serializable {
 
     @Override
     public String toString() {
-        return Objects.toString(constant);
+        String c = Objects.toString(constant);
+        if (index == INDEX_NOT_INIT) {
+            return c;
+        } else if (index == INDEX_NOT_FOUND) {
+            return c + "(index not found)";
+        } else return c + "<-" + index;
     }
 
     public T getConstant() {

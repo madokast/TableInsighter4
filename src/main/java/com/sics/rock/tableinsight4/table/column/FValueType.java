@@ -3,14 +3,25 @@ package com.sics.rock.tableinsight4.table.column;
 import com.sics.rock.tableinsight4.utils.FTypeUtils;
 import com.sics.rock.tableinsight4.utils.FUtils;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
+/**
+ * Type of value in table.
+ * basic type
+ * typeType = BASIC, typeInfo = [basic_type]
+ * <p>
+ * array type
+ * typeType = ARRAY, typeInfo = [element_type]
+ *
+ * @author zhaorx
+ */
 public class FValueType implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FValueType.class);
@@ -27,17 +38,25 @@ public class FValueType implements Serializable {
 
     private final Object[] typeInfo;
 
+    private final DataType sparkSqlType;
+
     public static FValueType createArrayType(FValueType elementType) {
         return new FValueType(FTypeType.ARRAY, new Object[]{elementType});
     }
 
-    public static FValueType createStructureType(List<FValueType> components) {
-        return new FValueType(FTypeType.STRUCTURE, components.toArray());
-    }
-
-    private FValueType(FTypeType typeType, Object[] typeInfo) {
+    public FValueType(FTypeType typeType, Object[] typeInfo) {
         this.typeType = typeType;
         this.typeInfo = typeInfo;
+        switch (typeType) {
+            case BASIC:
+                this.sparkSqlType = ((FBasicType) typeInfo[0]).sparkSqlType;
+                break;
+            case ARRAY:
+                this.sparkSqlType = DataTypes.createArrayType(((FValueType) typeInfo[0]).sparkSqlType);
+                break;
+            default:
+                throw new RuntimeException("Unknown typeType " + typeType);
+        }
     }
 
     public Object cast(Object val) {
@@ -66,6 +85,10 @@ public class FValueType implements Serializable {
         return false;
     }
 
+    public DataType getSparkSqlType() {
+        return sparkSqlType;
+    }
+
     @Override
     public String toString() {
         if (typeType.equals(FTypeType.BASIC)) {
@@ -79,22 +102,24 @@ public class FValueType implements Serializable {
 
 
     private enum FTypeType implements Serializable {
-        BASIC, ARRAY, STRUCTURE
+        BASIC, ARRAY
     }
 
     private enum FBasicType implements Serializable {
-        STRING(String.class),
-        INTEGER(Integer.class),
-        LONG(Long.class),
-        DOUBLE(Double.class),
-        DATE(java.sql.Date.class),
-        TIMESTAMP(java.sql.Timestamp.class),
-        BOOLEAN(Boolean.class);
+        STRING(String.class, DataTypes.StringType),
+        INTEGER(Integer.class, DataTypes.IntegerType),
+        LONG(Long.class, DataTypes.LongType),
+        DOUBLE(Double.class, DataTypes.DoubleType),
+        DATE(java.sql.Date.class, DataTypes.DateType),
+        TIMESTAMP(java.sql.Timestamp.class, DataTypes.TimestampType),
+        BOOLEAN(Boolean.class, DataTypes.BooleanType);
 
         private final Class<?> jType;
+        private final DataType sparkSqlType;
 
-        FBasicType(Class<?> jType) {
+        FBasicType(Class<?> jType, DataType sparkSqlType) {
             this.jType = jType;
+            this.sparkSqlType = sparkSqlType;
         }
 
         private static final Set<FBasicType> COMPARABLE_TYPES = FUtils.setOf(INTEGER, LONG, DOUBLE, DATE, TIMESTAMP);
