@@ -161,6 +161,9 @@ public class FUtils {
         return map;
     }
 
+    /**
+     * @param maxDecimalPlace do not round when -1
+     */
     public static String round(double number, int maxDecimalPlace, boolean allowExponentialForm) {
         final String s;
         if (allowExponentialForm || Double.isNaN(number) || Double.isInfinite(number)) {

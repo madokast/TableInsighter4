@@ -1,27 +1,38 @@
-package com.sics.rock.tableinsight4.predicate.iface;
+package com.sics.rock.tableinsight4.predicate;
 
 import com.sics.rock.tableinsight4.predicate.FOperator;
+import com.sics.rock.tableinsight4.predicate.iface.FIConstantPredicate;
+import com.sics.rock.tableinsight4.predicate.iface.FIUnaryPredicate;
 import com.sics.rock.tableinsight4.procedure.constant.FConstant;
-import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class FIntervalConsPredicate implements FIConstantPredicate, FIUnaryPredicate {
+/**
+ * unary line constant predicate
+ * t0.age = 30
+ * t0.age = 20
+ *
+ * @author zhaorx
+ */
+public class FUnaryConsPredicate implements FIConstantPredicate, FIUnaryPredicate {
 
     private final String tableName;
     private final String columnName;
     private final int tupleId;
-    private final FInterval interval;
+    private final FOperator operator;
+    private final FConstant<?> constant;
     private final Set<String> innerTabCols;
 
 
-    public FIntervalConsPredicate(String tableName, String columnName, int tupleId,
-                                  FInterval interval, Set<String> innerTabCols) {
+    public FUnaryConsPredicate(String tableName, String columnName, int tupleId,
+                               FOperator operator, FConstant<?> constant, Set<String> innerTabCols) {
         this.tableName = tableName;
         this.columnName = columnName;
         this.tupleId = tupleId;
-        this.interval = interval;
+        this.operator = operator;
+        this.constant = constant;
         this.innerTabCols = innerTabCols;
     }
 
@@ -32,17 +43,12 @@ public class FIntervalConsPredicate implements FIConstantPredicate, FIUnaryPredi
 
     @Override
     public String toString() {
-        return toString(-1, true);
-    }
-
-    public String toString(int maxDecimalPlace, boolean allowExponentialForm) {
-        return interval.inequalityOf("t" + tupleId + "." + columnName);
+        return "t" + tupleId + "." + columnName + " " + operator.symbol + " " + constant.toUserString();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<FConstant<?>> allConstants() {
-        return (List<FConstant<?>>) (List) interval.constants();
+        return Collections.singletonList(constant);
     }
 
     @Override
@@ -62,7 +68,7 @@ public class FIntervalConsPredicate implements FIConstantPredicate, FIUnaryPredi
 
     @Override
     public FOperator operator() {
-        return FOperator.BELONG;
+        return operator;
     }
 
     @Override

@@ -1,20 +1,30 @@
 package com.sics.rock.tableinsight4.predicate;
 
+import com.sics.rock.tableinsight4.internal.FPair;
+import com.sics.rock.tableinsight4.procedure.FExternalBinaryModelHandler;
+import com.sics.rock.tableinsight4.procedure.FTableDataLoader;
 import com.sics.rock.tableinsight4.procedure.constant.FConstant;
-import com.sics.rock.tableinsight4.procedure.external.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.procedure.external.binary.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.procedure.external.binary.FIExternalBinaryModelCalculator;
+import com.sics.rock.tableinsight4.procedure.external.binary.FIExternalBinaryModelPredicateNameFormatter;
 import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 import com.sics.rock.tableinsight4.table.FColumnInfo;
+import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
-import com.sics.rock.tableinsight4.table.column.FColumnInfoFactory;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 import com.sics.rock.tableinsight4.table.column.FValueType;
 import com.sics.rock.tableinsight4.test.FExamples;
 import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
 import com.sics.rock.tableinsight4.utils.FUtils;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.junit.Test;
 
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import static org.junit.Assert.*;
 
@@ -141,5 +151,125 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         logger.info("innerTabCols = {}", predicate.innerTabCols());
 
+    }
+
+    @Test
+    public void createSingleTableCrossLinePredicateFactory_normal_only() {
+        FTableInfo relation = FExamples.relation();
+
+        for (FColumnInfo column : relation.getColumns()) {
+            if (column.getColumnName().equals("cc")) {
+                column.addConstant(new FConstant<>(null));
+                column.addConstant(new FConstant<>("abc"));
+                column.addConstant(new FConstant<>(123));
+                break;
+            }
+        }
+
+        FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
+                relation, false, new FDerivedColumnNameHandler(Collections.emptyList()));
+
+        for (FIPredicate predicate : factory.allPredicates()) {
+            assertTrue(predicate instanceof FBinaryPredicate);
+        }
+    }
+
+    @Test
+    public void createSingleTableCrossLinePredicateFactory_constant() {
+        FTableInfo relation = FExamples.relation();
+
+        for (FColumnInfo column : relation.getColumns()) {
+            if (column.getColumnName().equals("cc")) {
+                column.addConstant(new FConstant<>(null));
+                column.addConstant(new FConstant<>("abc"));
+                column.addConstant(new FConstant<>(123));
+                break;
+            }
+        }
+
+        FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
+                relation, true, new FDerivedColumnNameHandler(Collections.emptyList()));
+
+        for (FIPredicate predicate : factory.allPredicates()) {
+            if (predicate instanceof FBinaryConsPredicate) {
+                assertTrue(((FBinaryConsPredicate) predicate).toString().contains("t1"));
+            }
+            if (predicate instanceof FBinaryIntervalConsPredicate) {
+                assertTrue(((FBinaryIntervalConsPredicate) predicate).toString().contains("t1"));
+            }
+        }
+    }
+
+    @Test
+    public void createSingleTableCrossLinePredicateFactory_interval() {
+        FTableInfo relation = FExamples.relation();
+
+        for (FColumnInfo column : relation.getColumns()) {
+            if (column.getColumnName().equals("cc")) {
+                column.addIntervalConstant(new FInterval(10, 20, true, false));
+                break;
+            }
+        }
+
+        FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
+                relation, true, new FDerivedColumnNameHandler(Collections.emptyList()));
+
+        for (FIPredicate predicate : factory.allPredicates()) {
+            if (predicate instanceof FBinaryConsPredicate) {
+                assertTrue(((FBinaryConsPredicate) predicate).toString().contains("t1"));
+            }
+            if (predicate instanceof FBinaryIntervalConsPredicate) {
+                assertTrue(((FBinaryIntervalConsPredicate) predicate).toString().contains("t1"));
+            }
+        }
+    }
+
+    @Test
+    public void createSingleTableCrossLinePredicateFactory_binary_model() {
+        FTableInfo relation = FExamples.relation();
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap relationDatasetMap = dataLoader.prepareData(FUtils.listOf(relation));
+
+        String modelId = "001";
+        FIExternalBinaryModelCalculator calculator = () -> {
+            List<FPair<Long, Long>> pairs = new ArrayList<>();
+            Dataset<Row> dataset = relationDatasetMap.getDatasetByTableName(relation.getTableName());
+            List<Row> ccRows = dataset.select(config().idColumnName, "cc").collectAsList();
+            for (Row left : ccRows) {
+                long leftRowId = left.getLong(0);
+                String letCC = left.getString(1);
+                for (Row right : ccRows) {
+                    long rightRowId = right.getLong(0);
+                    String rightCC = right.getString(1);
+                    if (Objects.equals(letCC, rightCC)) {
+                        pairs.add(new FPair<>(leftRowId, rightRowId));
+                    }
+                }
+            }
+            return pairs;
+        };
+
+        FIExternalBinaryModelPredicateNameFormatter predicateNameFormatter = (leftTupleId, rightTupleId) ->
+                "similar('equal', t0.cc, t1.cc)";
+
+        FExternalBinaryModelInfo modelInfo = new FExternalBinaryModelInfo(modelId, relation.getTableName(), relation.getTableName(),
+                FUtils.listOf("cc"), FUtils.listOf("cc"), true,
+                calculator, predicateNameFormatter);
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(relationDatasetMap, FUtils.listOf(modelInfo));
+
+        relationDatasetMap.getDatasetByTableName(relation.getTableName()).show();
+
+        FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
+                relation, true, new FDerivedColumnNameHandler(FUtils.listOf(modelInfo)));
+
+        assertTrue(factory.allPredicates().stream().anyMatch(p -> p instanceof FBinaryModelPredicate));
+
+        for (FIPredicate predicate : factory.allPredicates()) {
+            if (predicate instanceof FBinaryModelPredicate) {
+                assertTrue(predicate.innerTabCols().contains(relation.getInnerTableName() + config().tableColumnLinker + "cc"));
+            }
+        }
     }
 }

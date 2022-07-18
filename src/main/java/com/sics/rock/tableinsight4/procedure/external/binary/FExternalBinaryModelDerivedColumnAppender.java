@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.procedure.external;
+package com.sics.rock.tableinsight4.procedure.external.binary;
 
 import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class FExternalModelDerivedColumnAppender {
+public class FExternalBinaryModelDerivedColumnAppender {
 
-    private static final Logger logger = LoggerFactory.getLogger(FExternalModelDerivedColumnAppender.class);
+    private static final Logger logger = LoggerFactory.getLogger(FExternalBinaryModelDerivedColumnAppender.class);
 
     private final FDerivedColumnNameHandler derivedColumnNameHandler;
 
@@ -88,7 +88,7 @@ public class FExternalModelDerivedColumnAppender {
         return spark.createDataFrame(rows, structType).cache();
     }
 
-    public FExternalModelDerivedColumnAppender(FDerivedColumnNameHandler derivedColumnNameHandler, String idColumn, SparkSession spark) {
+    public FExternalBinaryModelDerivedColumnAppender(FDerivedColumnNameHandler derivedColumnNameHandler, String idColumn, SparkSession spark) {
         this.derivedColumnNameHandler = derivedColumnNameHandler;
         this.idColumn = idColumn;
         this.spark = spark;

@@ -148,7 +148,7 @@ public class FInterval implements Serializable {
      * [a, b] + mid => a ≤ mid ≤ b
      * (-Inf, b) + mid => mid < b
      */
-    private String inequalityOf(String middle, int maxDecimalPlace, boolean allowExponentialForm) {
+    public String inequalityOf(String middle, int maxDecimalPlace, boolean allowExponentialForm) {
         final String l = FUtils.round(left.getConstant(), maxDecimalPlace, allowExponentialForm);
         final String r = FUtils.round(right.getConstant(), maxDecimalPlace, allowExponentialForm);
 

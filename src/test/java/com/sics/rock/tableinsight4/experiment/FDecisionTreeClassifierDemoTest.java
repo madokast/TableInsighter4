@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class DecisionTreeClassifierDemoTest extends FSparkEnv {
+public class FDecisionTreeClassifierDemoTest extends FSparkEnv {
 
     @Test
     public void demo() {

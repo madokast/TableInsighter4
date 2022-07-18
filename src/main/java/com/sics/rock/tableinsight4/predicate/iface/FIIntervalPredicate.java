@@ -1,23 +1,36 @@
 package com.sics.rock.tableinsight4.predicate.iface;
 
-
+import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.procedure.constant.FConstant;
+import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Set;
 
 /**
- * e.g. c1 >= 2 & c1 < 5
+ * Interval predicate is also constant predicate
  *
  * @author zhaorx
  */
-public interface FIIntervalPredicate extends FIUnaryPredicate, FIConstantPredicate {
+public interface FIIntervalPredicate extends FIConstantPredicate {
 
-    Optional<FConstant<Double>> left();
+    FInterval interval();
 
-    Optional<FConstant<Double>> right();
+    @Override
+    @SuppressWarnings("unchecked")
+    default List<FConstant<?>> allConstants() {
+        return (List<FConstant<?>>) (List) interval().constants();
+    }
 
-    boolean leftClose();
+    @Override
+    default FOperator operator() {
+        return FOperator.BELONG;
+    }
 
-    boolean rightClose();
+    @Override
+    Set<String> innerTabCols();
+
+    @Override
+    int length();
 
 }

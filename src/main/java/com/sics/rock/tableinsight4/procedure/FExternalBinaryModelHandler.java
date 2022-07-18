@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.procedure;
 
-import com.sics.rock.tableinsight4.procedure.external.FExternalBinaryModelInfo;
-import com.sics.rock.tableinsight4.procedure.external.FExternalModelDerivedColumnAppender;
+import com.sics.rock.tableinsight4.procedure.external.binary.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.procedure.external.binary.FExternalBinaryModelDerivedColumnAppender;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
@@ -21,7 +21,7 @@ public class FExternalBinaryModelHandler implements FTiEnvironment {
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
 
-        FExternalModelDerivedColumnAppender appender = new FExternalModelDerivedColumnAppender(
+        FExternalBinaryModelDerivedColumnAppender appender = new FExternalBinaryModelDerivedColumnAppender(
                 derivedColumnNameHandler,
                 config().idColumnName,
                 spark()

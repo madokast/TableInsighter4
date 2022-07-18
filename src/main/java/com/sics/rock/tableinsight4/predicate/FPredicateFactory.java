@@ -2,9 +2,8 @@ package com.sics.rock.tableinsight4.predicate;
 
 import com.sics.rock.tableinsight4.internal.FIndexProvider;
 import com.sics.rock.tableinsight4.internal.FPair;
-import com.sics.rock.tableinsight4.predicate.iface.FIntervalConsPredicate;
-import com.sics.rock.tableinsight4.predicate.iface.FUnaryConsPredicate;
 import com.sics.rock.tableinsight4.table.FTableInfo;
+import com.sics.rock.tableinsight4.table.column.FColumnType;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import org.slf4j.Logger;
@@ -12,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * predicate factory
@@ -60,12 +60,12 @@ public class FPredicateFactory {
         table.nonSkipColumnsView().forEach(columnInfo -> {
             final String columnName = columnInfo.getColumnName();
             // identifier
-            final Set<String> innerTabCols = derivedColumnNameHandler.innerTabCols(tabName, innerTableName,columnName);
+            final Set<String> innerTabCols = derivedColumnNameHandler.innerTabCols(tabName, innerTableName, columnName);
             columnInfo.getConstants().stream().map(cons ->
                     new FUnaryConsPredicate(tabName, columnName, 0, FOperator.EQ, cons, innerTabCols)
             ).forEach(factory::put);
             columnInfo.getIntervalConstants().stream().map(interval ->
-                    new FIntervalConsPredicate(tabName, columnName, 0, interval, innerTabCols)
+                    new FUnaryIntervalConsPredicate(tabName, columnName, 0, interval, innerTabCols)
             ).forEach(factory::put);
         });
 
@@ -77,6 +77,40 @@ public class FPredicateFactory {
         FPredicateFactory factory = new FPredicateFactory();
         String tabName = table.getTableName();
         String innerTableName = table.getInnerTableName();
+
+        table.nonSkipColumnsView().forEach(columnInfo -> {
+            final String columnName = columnInfo.getColumnName();
+            // identifier
+            final Set<String> innerTabCols = derivedColumnNameHandler.innerTabCols(tabName, innerTableName, columnName);
+
+            if (constantPredicate) {
+                columnInfo.getConstants().stream().flatMap(cons -> {
+                    FIPredicate t0 = new FUnaryConsPredicate(tabName, columnName, 0, FOperator.EQ, cons, innerTabCols);
+                    FIPredicate t1 = new FUnaryConsPredicate(tabName, columnName, 1, FOperator.EQ, cons, innerTabCols);
+                    FIPredicate t01 = new FBinaryConsPredicate(tabName, columnName, FOperator.EQ, cons, innerTabCols);
+                    return Stream.of(t0, t1, t01);
+                }).forEach(factory::put);
+                columnInfo.getIntervalConstants().stream().flatMap(interval -> {
+                    FIPredicate t0 = new FUnaryIntervalConsPredicate(tabName, columnName, 0, interval, innerTabCols);
+                    FIPredicate t1 = new FUnaryIntervalConsPredicate(tabName, columnName, 1, interval, innerTabCols);
+                    FIPredicate t01 = new FBinaryIntervalConsPredicate(tabName, columnName, interval, innerTabCols);
+                    return Stream.of(t0, t1, t01);
+                }).forEach(factory::put);
+            }
+
+            if (columnInfo.getColumnType().equals(FColumnType.NORMAL)) {
+                factory.put(new FBinaryPredicate(tabName, tabName, columnName, columnName, FOperator.EQ, innerTabCols));
+            }
+
+            if (columnInfo.getColumnType().equals(FColumnType.EXTERNAL_BINARY_MODEL)) {
+
+                factory.put(new FBinaryModelPredicate(tabName, tabName, columnName, innerTabCols,
+                        derivedColumnNameHandler.extractModelInfo(columnName)
+                                .getPredicateNameFormatter().format(0, 1))
+                );
+            }
+
+        });
 
 
         return factory;

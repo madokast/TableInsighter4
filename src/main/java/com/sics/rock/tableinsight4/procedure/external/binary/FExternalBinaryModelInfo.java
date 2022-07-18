@@ -1,9 +1,11 @@
-package com.sics.rock.tableinsight4.procedure.external;
+package com.sics.rock.tableinsight4.procedure.external.binary;
 
 
 import java.util.List;
 
 /**
+ * model applying on 2 tuples
+ *
  * @author zhaorx
  */
 public class FExternalBinaryModelInfo {

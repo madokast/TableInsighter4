@@ -54,6 +54,10 @@ public class FConstant<T> implements Serializable {
         return constant;
     }
 
+    public String toUserString() {
+        return "'" + Objects.toString(constant) + "'";
+    }
+
     public void setIndex(long index) {
         this.index = index;
     }

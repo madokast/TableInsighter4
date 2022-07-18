@@ -1,6 +1,7 @@
 package com.sics.rock.tableinsight4.table.column;
 
-import com.sics.rock.tableinsight4.procedure.external.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.predicate.FIPredicate;
+import com.sics.rock.tableinsight4.procedure.external.binary.FExternalBinaryModelInfo;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 
@@ -54,7 +55,7 @@ public class FDerivedColumnNameHandler implements FTiEnvironment {
         return cachedModelInfoMap.get(modelId);
     }
 
-    public boolean isDerivedModelColumnName(String maybeDerivedModelColumnName) {
+    public boolean isDerivedBinaryModelColumnName(String maybeDerivedModelColumnName) {
         if (maybeDerivedModelColumnName.startsWith(externalBinaryModelDerivedColumnSuffix)) {
             final String modelId = maybeDerivedModelColumnName.substring(externalBinaryModelDerivedColumnSuffix.length());
             return cachedModelInfoMap.containsKey(modelId);
@@ -68,8 +69,12 @@ public class FDerivedColumnNameHandler implements FTiEnvironment {
                 .collect(Collectors.toMap(FExternalBinaryModelInfo::getId, Function.identity()));
     }
 
+    /**
+     * identifier of predicate
+     * @see FIPredicate#innerTabCols()
+     */
     public Set<String> innerTabCols(String tabName, String innerTableName, String columnName) {
-        if(isDerivedModelColumnName(columnName)) {
+        if(isDerivedBinaryModelColumnName(columnName)) {
             FExternalBinaryModelInfo modelInfo = extractModelInfo(columnName);
             if (modelInfo.getLeftTableName().equals(tabName)) {
                 return modelInfo.getLeftColumns().stream().map(c -> innerTableName + tableColumnLinker + c).collect(Collectors.toSet());
