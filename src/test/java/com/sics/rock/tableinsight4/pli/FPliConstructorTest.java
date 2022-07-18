@@ -67,6 +67,8 @@ public class FPliConstructorTest extends FTableInsightEnv {
 
     @Test
     public void construct4() {
+        config().sliceLengthForPLI = 5;
+
         FTableInfo doubleNumberNullColumn7 = FExamples.doubleNumberNullColumn7();
 
         final FTableDataLoader dataLoader = new FTableDataLoader();
