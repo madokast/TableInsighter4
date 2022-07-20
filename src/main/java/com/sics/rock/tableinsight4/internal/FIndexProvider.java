@@ -1,11 +1,12 @@
 package com.sics.rock.tableinsight4.internal;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FIndexProvider<T> {
+public class FIndexProvider<T> implements Serializable {
 
     private Map<T, Integer> indexes = new HashMap<>();
 

@@ -79,4 +79,16 @@ public class FExamples {
 
         return tableInfo;
     }
+
+    public static FTableInfo create(String tabName, String[] columnNames, FValueType[] columnTypes, String[] lines) {
+
+        File tab = FTableCreator.createCsv(String.join(",", columnNames), lines);
+
+        FTableInfo tableInfo = new FTableInfo(tabName, "tab01", tab.getAbsolutePath());
+        for (int i = 0; i < columnNames.length; i++) {
+            tableInfo.addColumnInfo(new FColumnInfo(columnNames[i], columnTypes[i]));
+        }
+
+        return tableInfo;
+    }
 }

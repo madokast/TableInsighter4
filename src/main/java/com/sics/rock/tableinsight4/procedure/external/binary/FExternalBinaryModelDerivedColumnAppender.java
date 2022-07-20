@@ -6,7 +6,7 @@ import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FColumnInfoFactory;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 import com.sics.rock.tableinsight4.utils.FSparkSqlUtils;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -78,7 +78,7 @@ public class FExternalBinaryModelDerivedColumnAppender {
         if (pairs.isEmpty()) return spark.emptyDataFrame();
 
         // Build union-find set
-        final Map<Long, Long> rowSetMap = FUtils.createUnionFindSet(pairs);
+        final Map<Long, Long> rowSetMap = FTiUtils.createUnionFindSet(pairs);
 
         // Convert union-find set to spark table
         final List<Row> rows = rowSetMap.entrySet().stream().map(e -> RowFactory.create(e.getKey(), e.getValue())).collect(Collectors.toList());

@@ -9,7 +9,7 @@ import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.test.FExamples;
 import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
 import com.sics.rock.tableinsight4.utils.FScalaUtils;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.junit.Test;
@@ -133,6 +133,6 @@ public class FExternalBinaryModelHandlerTest extends FTableInsightEnv {
 
         final FTableDataLoader dataLoader = new FTableDataLoader();
 
-        return dataLoader.prepareData(FUtils.listOf(r1, r2));
+        return dataLoader.prepareData(FTiUtils.listOf(r1, r2));
     }
 }

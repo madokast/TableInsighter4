@@ -9,6 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Config with default value
+ * see its implemented subset
+ *
+ * @author zhaorx
+ */
 public abstract class FTiConfiguring implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FTiConfiguring.class);

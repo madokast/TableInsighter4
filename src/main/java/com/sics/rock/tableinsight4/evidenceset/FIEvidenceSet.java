@@ -11,5 +11,7 @@ public interface FIEvidenceSet {
     long allCount();
 
     long[] predicateSupport();
+
+    String[] info(int limit);
 }
 

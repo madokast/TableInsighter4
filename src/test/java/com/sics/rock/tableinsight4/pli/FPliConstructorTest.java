@@ -22,7 +22,7 @@ public class FPliConstructorTest extends FTableInsightEnv {
 
         FPliConstructor constructor = new FPliConstructor(
                 config().idColumnName,
-                2,
+                2, true,
                 spark
         );
 
@@ -39,7 +39,7 @@ public class FPliConstructorTest extends FTableInsightEnv {
 
         FPliConstructor constructor = new FPliConstructor(
                 config().idColumnName,
-                1000,
+                1000, true,
                 spark
         );
 
@@ -60,7 +60,8 @@ public class FPliConstructorTest extends FTableInsightEnv {
         FConstantHandler constantHandler = new FConstantHandler();
         constantHandler.generateConstant(tableDatasetMap);
 
-        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName, config().sliceLengthForPLI, spark);
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
     }
@@ -80,7 +81,8 @@ public class FPliConstructorTest extends FTableInsightEnv {
         FConstantHandler constantHandler = new FConstantHandler();
         constantHandler.generateConstant(tableDatasetMap);
 
-        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName, config().sliceLengthForPLI, spark);
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
     }

@@ -13,7 +13,7 @@ public class FScalaUtils {
 
     @SafeVarargs
     public static <E> Seq<E> seqOf(E... es) {
-        return seqOf(FUtils.listOf(es));
+        return seqOf(FTiUtils.listOf(es));
 
 //        ListBuffer<E> r = new ListBuffer<>();
 //        for (E e : es) {
@@ -28,7 +28,7 @@ public class FScalaUtils {
 
     public static <E> List<E> seqToJList(Seq<E> seq) {
         Iterable<E> es = CollectionConverters.IterableHasAsJava(seq).asJava();
-        return FUtils.collect(es.iterator());
+        return FTiUtils.collect(es.iterator());
     }
 
 }

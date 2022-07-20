@@ -8,6 +8,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class FPLI {
 
@@ -34,7 +35,10 @@ public class FPLI {
         return PLI.get(tableInfo);
     }
 
-    public JavaPairRDD<FRddElementIndex, Long> getTableIDColumnMap(FTableInfo tableInfo) {
-        return IDColumnMap.get(tableInfo);
+    /**
+     * depend on ti.rule.positiveNegativeExample.switch
+     */
+    public Optional<JavaPairRDD<FRddElementIndex, Long>> getTableIDColumnMap(FTableInfo tableInfo) {
+        return IDColumnMap.containsKey(tableInfo) ? Optional.of(IDColumnMap.get(tableInfo)) : Optional.empty();
     }
 }

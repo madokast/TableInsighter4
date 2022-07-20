@@ -151,7 +151,7 @@ public class FSparkUtils {
 
     public static <K> Optional<JavaPairRDD<K, Long>> unionReduceLong(List<JavaPairRDD<K, Long>> RDDs) {
 
-        return FUtils.mergeReduce(RDDs, (r1, r2) -> r1.union(r2).reduceByKey(Long::sum));
+        return FTiUtils.mergeReduce(RDDs, (r1, r2) -> r1.union(r2).reduceByKey(Long::sum));
     }
 
     public static <E> JavaRDD<E> union(SparkSession spark, List<JavaRDD<E>> RDDs) {

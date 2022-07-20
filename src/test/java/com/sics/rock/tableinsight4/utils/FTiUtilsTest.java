@@ -8,27 +8,27 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class FUtilsTest {
+public class FTiUtilsTest {
 
     @Test
     public void test_createUnionFindSet() {
-        final List<FPair<String, String>> pairs = FUtils.listOf(
+        final List<FPair<String, String>> pairs = FTiUtils.listOf(
                 new FPair<>("a", "b")
         );
 
-        final Map<String, Long> unionFindSet = FUtils.createUnionFindSet(pairs);
+        final Map<String, Long> unionFindSet = FTiUtils.createUnionFindSet(pairs);
 
         assertEquals(unionFindSet.get("a"), unionFindSet.get("b"));
     }
 
     @Test
     public void test_createUnionFindSet2() {
-        final List<FPair<String, String>> pairs = FUtils.listOf(
+        final List<FPair<String, String>> pairs = FTiUtils.listOf(
                 new FPair<>("a", "b"),
                 new FPair<>("c", "d")
         );
 
-        final Map<String, Long> unionFindSet = FUtils.createUnionFindSet(pairs);
+        final Map<String, Long> unionFindSet = FTiUtils.createUnionFindSet(pairs);
 
         assertEquals(unionFindSet.get("a"), unionFindSet.get("b"));
         assertEquals(unionFindSet.get("c"), unionFindSet.get("d"));
@@ -41,13 +41,13 @@ public class FUtilsTest {
 
     @Test
     public void test_createUnionFindSet3() {
-        final List<FPair<String, String>> pairs = FUtils.listOf(
+        final List<FPair<String, String>> pairs = FTiUtils.listOf(
                 new FPair<>("a", "b"),
                 new FPair<>("c", "d"),
                 new FPair<>("a", "c")
         );
 
-        final Map<String, Long> unionFindSet = FUtils.createUnionFindSet(pairs);
+        final Map<String, Long> unionFindSet = FTiUtils.createUnionFindSet(pairs);
 
         assertEquals(unionFindSet.get("a"), unionFindSet.get("b"));
         assertEquals(unionFindSet.get("c"), unionFindSet.get("d"));

@@ -12,11 +12,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * small utils
+ *
  * @author zhaorx
  */
-public class FUtils {
+public class FTiUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(FUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(FTiUtils.class);
 
     public static <T> Optional<T> mergeReduce(List<T> array, BinaryOperator<T> op) {
         if (array.isEmpty()) return Optional.empty();
@@ -182,5 +184,15 @@ public class FUtils {
         if (maxDecimalPlace == 0) return s.substring(0, dot) + s.substring(end);
         else if (end - dot < maxDecimalPlace + 1) return s;
         else return s.substring(0, dot + maxDecimalPlace + 1) + s.substring(end);
+    }
+
+    public static long[] longArrSum(final long[] arr1, final long[] arr2) {
+        FAssertUtils.require(arr1.length == arr2.length,
+                "Element-wise adding of 2 long array with different length " + arr1.length + " and " + arr2.length);
+        long[] r = Arrays.copyOf(arr1, arr1.length);
+        for (int i = 0; i < r.length; i++) {
+            r[i] += arr2[i];
+        }
+        return r;
     }
 }

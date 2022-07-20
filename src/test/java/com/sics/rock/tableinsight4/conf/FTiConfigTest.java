@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.conf;
 
 import com.sics.rock.tableinsight4.test.env.FBasicTestEnv;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -87,7 +87,7 @@ public class FTiConfigTest extends FBasicTestEnv {
 
     @Test
     public void load10() {
-        FTiConfig load = FTiConfig.load(FUtils.listOf(
+        FTiConfig load = FTiConfig.load(FTiUtils.listOf(
                 "ti.data.load.csv.options.header=123",
                 "ti.data.load.csv.options.header1=abc",
                 "ti.data.load.csv.options.header2=1233"
@@ -98,7 +98,7 @@ public class FTiConfigTest extends FBasicTestEnv {
     @Test(expected = FConfigParseException.class)
     public void load11() {
         // No conf matches ti.load.csv.options.
-        FTiConfig load = FTiConfig.load(FUtils.listOf(
+        FTiConfig load = FTiConfig.load(FTiUtils.listOf(
                 "ti.data.load.csv.options.header=123",
                 "ti.data.load.csv.options.=fsdfsd",
                 "ti.data.load.csv.options.header2=1233"

@@ -2,14 +2,12 @@ package com.sics.rock.tableinsight4.internal;
 
 import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import com.sics.rock.tableinsight4.utils.FRddElementIndexUtils;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 import scala.Tuple2;
 
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class FRddElementIndexTest extends FSparkEnv {
 
@@ -24,7 +22,7 @@ public class FRddElementIndexTest extends FSparkEnv {
         FRddElementIndex i15 = new FRddElementIndex(1, 5);
         FRddElementIndex i22 = new FRddElementIndex(2, 2);
 
-        List<FRddElementIndex> is = FUtils.listOf(i15, i04, i22);
+        List<FRddElementIndex> is = FTiUtils.listOf(i15, i04, i22);
 
         FRddElementIndexUtils.filterElementsByIndices(infoRdd, is)
                 .stream().map(s -> "find" + s).forEach(logger::info);

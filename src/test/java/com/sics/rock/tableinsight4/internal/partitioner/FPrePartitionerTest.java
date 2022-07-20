@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.internal.partitioner;
 
 import com.sics.rock.tableinsight4.test.env.FSparkEnv;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.TaskContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class FPrePartitionerTest extends FSparkEnv {
         assertEquals(1, partitionNumberOne.size());
 
         repartitionOne.partitionBy(prePartitioner).foreachPartition(iter -> {
-            final List<Tuple2<Double, Double>> list = FUtils.collect(iter);
+            final List<Tuple2<Double, Double>> list = FTiUtils.collect(iter);
             assertEquals(1, list.size());
             final Double key = list.get(0)._1;
             final int prePartitionId = prePartitioner.getPartition(key);

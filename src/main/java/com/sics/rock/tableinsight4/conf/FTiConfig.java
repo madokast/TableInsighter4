@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.conf;
 
 import com.sics.rock.tableinsight4.utils.FTypeUtils;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +30,12 @@ public class FTiConfig {
     @FConfigItem(name = "ti.rule.syntax.implication", description = "The symbol of logical operation implication in rule (e.g. ->, =>, →")
     public String syntaxImplication = "->";
 
+    @FConfigItem(name = "ti.rule.positiveNegativeExample.switch", description = "The switch of positive/negative examples.")
+    public Boolean positiveNegativeExampleSwitch = true;
+
+    @FConfigItem(name = "ti.rule.positiveNegativeExample.number", description = "The number of positive and negative examples.")
+    public Integer positiveNegativeExampleNumber = 10;
+
     @FConfigItem(name = "ti.internal.tableColumnLinker", description = "The linker string join table and column as identifier. Rename it only when the linker exists in column names. (e.g., __, @, __@@__)")
     public String tableColumnLinker = "@";
 
@@ -37,13 +43,13 @@ public class FTiConfig {
     public String tableLoadOrders = "JDBC,CSV,ORC";
 
     @FConfigItem(name = "ti.data.load.csv.options", description = "Options in csv file loaded by spark. See https://spark.apache.org/docs/3.2.0/sql-data-sources-csv.html")
-    public Map<String, String> csvTableLoadOptions = FUtils.mapOf("header", "true", "inferSchema", "false");
+    public Map<String, String> csvTableLoadOptions = FTiUtils.mapOf("header", "true", "inferSchema", "false");
 
     @FConfigItem(name = "ti.data.load.orc.options", description = "Options in orc file loaded by spark")
     public Map<String, String> orcTableLoadOptions = new HashMap<>();
 
     @FConfigItem(name = "ti.data.load.jdbc.options", description = "Options in table loaded by jdbc in spark")
-    public Map<String, String> jdbcTableLoadOptions = FUtils.mapOf("url", "jdbc:", "user", "root", "password", "root");
+    public Map<String, String> jdbcTableLoadOptions = FTiUtils.mapOf("url", "jdbc:", "user", "root", "password", "root");
 
     @FConfigItem(name = "ti.data.idColumnName", description = "ID column name. Used in identify positive/negative examples of rules")
     public String idColumnName = "row_id";
@@ -90,7 +96,11 @@ public class FTiConfig {
 
     @FConfigItem(name = "ti.internal.sliceLengthForPLI", description = "Origin table splice length for PLI construction. " +
             "The value decide the PLI number and may affect the speed of ES construction. The recommended value may be 1000 ~ 2500. ")
-    public int sliceLengthForPLI = 1000;
+    public Integer sliceLengthForPLI = 1000;
+
+    @FConfigItem(name = "ti.internal.evidenceSet.partitionNumber", description = "The partition number of RDD which implements " +
+            "the internal data structure evidence set.")
+    public Integer evidenceSetPartitionNumber = 500;
 
     public static FTiConfig defaultConfig() {
         return new FTiConfig();

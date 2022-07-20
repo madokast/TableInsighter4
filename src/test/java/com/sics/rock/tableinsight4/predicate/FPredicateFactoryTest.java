@@ -15,7 +15,7 @@ import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 import com.sics.rock.tableinsight4.table.column.FValueType;
 import com.sics.rock.tableinsight4.test.FExamples;
 import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.junit.Test;
@@ -130,7 +130,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         FExternalBinaryModelInfo modelInfo = new FExternalBinaryModelInfo(
                 modelId, relation.getTableName(), relation.getTableName(),
-                FUtils.listOf("cc", "ac"), Collections.singletonList("ac"),
+                FTiUtils.listOf("cc", "ac"), Collections.singletonList("ac"),
                 true, null, null
         );
 
@@ -229,7 +229,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         FTableInfo relation = FExamples.relation();
 
         final FTableDataLoader dataLoader = new FTableDataLoader();
-        final FTableDatasetMap relationDatasetMap = dataLoader.prepareData(FUtils.listOf(relation));
+        final FTableDatasetMap relationDatasetMap = dataLoader.prepareData(FTiUtils.listOf(relation));
 
         String modelId = "001";
         FIExternalBinaryModelCalculator calculator = () -> {
@@ -254,15 +254,15 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
                 "similar('equal', t0.cc, t1.cc)";
 
         FExternalBinaryModelInfo modelInfo = new FExternalBinaryModelInfo(modelId, relation.getTableName(), relation.getTableName(),
-                FUtils.listOf("cc"), FUtils.listOf("cc"), true,
+                FTiUtils.listOf("cc"), FTiUtils.listOf("cc"), true,
                 calculator, predicateNameFormatter);
         FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
-        modelHandler.appendDerivedColumn(relationDatasetMap, FUtils.listOf(modelInfo));
+        modelHandler.appendDerivedColumn(relationDatasetMap, FTiUtils.listOf(modelInfo));
 
         relationDatasetMap.getDatasetByTableName(relation.getTableName()).show();
 
         FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
-                relation, true, new FDerivedColumnNameHandler(FUtils.listOf(modelInfo)));
+                relation, true, new FDerivedColumnNameHandler(FTiUtils.listOf(modelInfo)));
 
         assertTrue(factory.allPredicates().stream().anyMatch(p -> p instanceof FBinaryModelPredicate));
 

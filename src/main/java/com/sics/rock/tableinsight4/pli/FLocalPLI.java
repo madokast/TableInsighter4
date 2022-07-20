@@ -1,5 +1,7 @@
 package com.sics.rock.tableinsight4.pli;
 
+import com.sics.rock.tableinsight4.predicate.FOperator;
+import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 
 import java.io.Serializable;
@@ -17,6 +19,7 @@ import java.util.stream.Stream;
  */
 public class FLocalPLI implements Serializable {
 
+    // index -> [local rowId]
     private final Map<Long, List<Integer>> index2localRowIds = new HashMap<>();
 
 
@@ -46,8 +49,53 @@ public class FLocalPLI implements Serializable {
         return this;
     }
 
-    public List<Integer> getLocalRowIdsOf(long index) {
-        return index2localRowIds.getOrDefault(index, Collections.emptyList());
+    public Stream<Integer> localRowIdsOf(long index, FOperator operator) {
+        switch (operator) {
+            case EQ:
+                return index2localRowIds.getOrDefault(index, Collections.emptyList()).stream();
+            case GT:
+                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() > index).map(Map.Entry::getValue).flatMap(List::stream);
+            case LT:
+                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() < index).map(Map.Entry::getValue).flatMap(List::stream);
+            case GET:
+                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() >= index).map(Map.Entry::getValue).flatMap(List::stream);
+            case LET:
+                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() <= index).map(Map.Entry::getValue).flatMap(List::stream);
+            default:
+                throw new RuntimeException("Operator " + operator + " not support");
+        }
+    }
+
+    public Stream<Integer> localRowIdsBetween(long leftIndex, long rightIndex, boolean leftClose, boolean rightClose) {
+        if (leftClose && rightClose) {
+            return index2localRowIds.entrySet().stream()
+                    .filter(e -> {
+                        long key = e.getKey();
+                        return key >= leftIndex && key <= rightIndex;
+                    })
+                    .map(Map.Entry::getValue).flatMap(List::stream);
+        } else if (leftClose && !rightClose) {
+            return index2localRowIds.entrySet().stream()
+                    .filter(e -> {
+                        long key = e.getKey();
+                        return key >= leftIndex && key < rightIndex;
+                    })
+                    .map(Map.Entry::getValue).flatMap(List::stream);
+        } else if (!leftClose && rightClose) {
+            return index2localRowIds.entrySet().stream()
+                    .filter(e -> {
+                        long key = e.getKey();
+                        return key > leftIndex && key <= rightIndex;
+                    })
+                    .map(Map.Entry::getValue).flatMap(List::stream);
+        } else {
+            return index2localRowIds.entrySet().stream()
+                    .filter(e -> {
+                        long key = e.getKey();
+                        return key > leftIndex && key < rightIndex;
+                    })
+                    .map(Map.Entry::getValue).flatMap(List::stream);
+        }
     }
 
     public Stream<Long> indexStream() {

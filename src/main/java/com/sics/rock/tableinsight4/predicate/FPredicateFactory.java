@@ -9,6 +9,7 @@ import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
  *
  * @author zhaorx
  */
-public class FPredicateFactory {
+public class FPredicateFactory implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FPredicateFactory.class);
 

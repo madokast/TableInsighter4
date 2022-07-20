@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.test.env;
 
 import com.sics.rock.tableinsight4.utils.FSparkUtils;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
@@ -51,7 +51,7 @@ public abstract class FSparkEnv extends FBasicTestEnv {
 
     @SafeVarargs
     protected final <E> JavaRDD<E> rddOf(E... es) {
-        return sc.parallelize(FUtils.listOf(es));
+        return sc.parallelize(FTiUtils.listOf(es));
     }
 
     // --------------- hadoop env ------------------------

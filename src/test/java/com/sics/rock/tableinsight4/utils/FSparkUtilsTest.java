@@ -152,7 +152,7 @@ public class FSparkUtilsTest extends FSparkEnv {
         JavaPairRDD<Integer, Long> rdd1 = rddOf(new Tuple2<>(1, 1L), new Tuple2<>(2, 2L)).mapToPair(t -> t);
         JavaPairRDD<Integer, Long> rdd2 = rddOf(new Tuple2<>(2, 1L), new Tuple2<>(1, 2L)).mapToPair(t -> t);
 
-        Optional<JavaPairRDD<Integer, Long>> rdd = FSparkUtils.unionReduceLong(FUtils.listOf(rdd1, rdd2));
+        Optional<JavaPairRDD<Integer, Long>> rdd = FSparkUtils.unionReduceLong(FTiUtils.listOf(rdd1, rdd2));
 
         assertTrue(rdd.isPresent());
 

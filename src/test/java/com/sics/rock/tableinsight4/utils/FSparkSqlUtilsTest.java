@@ -80,7 +80,7 @@ public class FSparkSqlUtilsTest extends FSparkEnv {
                 "Wang Wu", null, 4
         );
 
-        final Dataset<Row> join = FSparkSqlUtils.leftOuterJoin(table1, table2, FUtils.listOf("name", "key"));
+        final Dataset<Row> join = FSparkSqlUtils.leftOuterJoin(table1, table2, FTiUtils.listOf("name", "key"));
 
         join.show();
     }
@@ -103,7 +103,7 @@ public class FSparkSqlUtilsTest extends FSparkEnv {
                 "Zhao RX", 1.83, 1
         );
 
-        final Dataset<Row> join = FSparkSqlUtils.leftOuterJoin(table1, table2, FUtils.listOf("name", "key"));
+        final Dataset<Row> join = FSparkSqlUtils.leftOuterJoin(table1, table2, FTiUtils.listOf("name", "key"));
 
         join.show();
     }
@@ -124,7 +124,7 @@ public class FSparkSqlUtilsTest extends FSparkEnv {
                 "Wang Wu", null, 4
         );
 
-        final Dataset<Row> join = FSparkSqlUtils.leftOuterJoin(table1, table2, FUtils.listOf("name", "key"));
+        final Dataset<Row> join = FSparkSqlUtils.leftOuterJoin(table1, table2, FTiUtils.listOf("name", "key"));
 
         join.show();
     }

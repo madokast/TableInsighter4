@@ -1,6 +1,13 @@
 package com.sics.rock.tableinsight4;
 
 import com.sics.rock.tableinsight4.conf.FTiConfig;
+import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
+import com.sics.rock.tableinsight4.internal.FPartitionId;
+import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
+import com.sics.rock.tableinsight4.pli.FLocalPLI;
+import com.sics.rock.tableinsight4.pli.FPLI;
+import com.sics.rock.tableinsight4.pli.FPliConstructor;
+import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
 import com.sics.rock.tableinsight4.procedure.FConstantHandler;
 import com.sics.rock.tableinsight4.procedure.FExternalBinaryModelHandler;
 import com.sics.rock.tableinsight4.procedure.FIntervalsConstantHandler;
@@ -9,10 +16,19 @@ import com.sics.rock.tableinsight4.procedure.external.binary.FExternalBinaryMode
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
+import com.sics.rock.tableinsight4.table.column.FColumnName;
+import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
+import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import com.sics.rock.tableinsight4.utils.FTypeUtils;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.SparkSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import scala.Tuple2;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Entry
@@ -20,6 +36,8 @@ import java.util.List;
  * @author zhaorx
  */
 public class FTableInsight {
+
+    private static final Logger logger = LoggerFactory.getLogger(FTableInsight.class);
 
     private final List<FTableInfo> tableInfos;
 
@@ -44,6 +62,10 @@ public class FTableInsight {
 
             FConstantHandler constantHandler = new FConstantHandler();
             constantHandler.generateConstant(tableDatasetMap);
+
+            FPliConstructor pliConstructor = new FPliConstructor(config.idColumnName, config.sliceLengthForPLI, config.positiveNegativeExampleSwitch, spark);
+            FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
         } finally {
             FTiEnvironment.destroy();
         }

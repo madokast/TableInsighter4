@@ -51,6 +51,10 @@ public class FUnaryConsPredicate implements FIConstantPredicate, FIUnaryPredicat
         return Collections.singletonList(constant);
     }
 
+    public FConstant<?> constant() {
+        return constant;
+    }
+
     @Override
     public String tableName() {
         return tableName;

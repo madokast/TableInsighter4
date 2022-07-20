@@ -43,6 +43,8 @@ public class FPliConstructor {
     // 1000-2500?
     private final int sliceLengthForPLI;
 
+    private final boolean positiveNegativeExampleSwitch;
+
     private final SparkSession spark;
 
     private final JavaSparkContext sc;
@@ -113,7 +115,7 @@ public class FPliConstructor {
                         .flatMap(i -> i.constants().stream().map(FConstant::getConstant))
                         .filter(d -> !d.isInfinite()).collect(Collectors.toList()), spark);
 
-                JavaRDD<Object> allData = FSparkUtils.union(spark, FUtils.listOf(distinctRDD, constantValRDD, intervalConstantValRDD));
+                JavaRDD<Object> allData = FSparkUtils.union(spark, FTiUtils.listOf(distinctRDD, constantValRDD, intervalConstantValRDD));
 
                 typeBasedRddList.putIfAbsent(valueType, new ArrayList<>());
                 typeBasedRddList.get(valueType).add(allData);
@@ -208,7 +210,7 @@ public class FPliConstructor {
             StructType schema,
             JavaPairRDD<Row, FRddElementIndex> eleIndexTabRDD,
             FTypedOrderedIndex typedOrderedIndex) {
-        Map<String, Integer> column2index = FUtils.indexArray(schema.fieldNames());
+        Map<String, Integer> column2index = FTiUtils.indexArray(schema.fieldNames());
         final int numPartitions = eleIndexTabRDD.getNumPartitions();
         final String tableName = tableInfo.getTableName();
 
@@ -276,10 +278,12 @@ public class FPliConstructor {
             final JavaPairRDD<Row, FRddElementIndex> eleIndexTabRDD = FRddElementIndexUtils
                     .rddElementIndex(dataset.toJavaRDD()).cache().setName("Element_index_table_" + tableName);
             final JavaPairRDD<FPartitionId, Map<FColumnName, FLocalPLI>> pliOfTable = createPLI(tableInfo, schema, eleIndexTabRDD, typedOrderedIndex);
-            final JavaPairRDD<FRddElementIndex, Long> elementIndexIDMap = createElementIndexIDMap(schema, eleIndexTabRDD);
 
             PLI.putTablePLI(tableInfo, pliOfTable);
-            PLI.putTableIDColumnMap(tableInfo, elementIndexIDMap);
+            if (positiveNegativeExampleSwitch) {
+                final JavaPairRDD<FRddElementIndex, Long> elementIndexIDMap = createElementIndexIDMap(schema, eleIndexTabRDD);
+                PLI.putTableIDColumnMap(tableInfo, elementIndexIDMap);
+            }
         });
 
         return PLI;
@@ -335,9 +339,10 @@ public class FPliConstructor {
         });
     }
 
-    public FPliConstructor(String idColName, int sliceLengthForPLI, SparkSession spark) {
+    public FPliConstructor(String idColName, int sliceLengthForPLI, boolean positiveNegativeExampleSwitch, SparkSession spark) {
         this.idColName = idColName;
         this.sliceLengthForPLI = sliceLengthForPLI;
+        this.positiveNegativeExampleSwitch = positiveNegativeExampleSwitch;
         this.spark = spark;
         this.sc = JavaSparkContext.fromSparkContext(spark.sparkContext());
     }

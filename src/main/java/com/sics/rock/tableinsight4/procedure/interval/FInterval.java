@@ -2,7 +2,7 @@ package com.sics.rock.tableinsight4.procedure.interval;
 
 import com.sics.rock.tableinsight4.procedure.constant.FConstant;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * interval
@@ -136,7 +137,7 @@ public class FInterval implements Serializable {
             double number = Double.parseDouble(intervalLike);
             if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
             if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
-            return FUtils.listOf(
+            return FTiUtils.listOf(
                     new FInterval(Double.NEGATIVE_INFINITY, number, false, true),
                     new FInterval(number, Double.POSITIVE_INFINITY, false, false)
             );
@@ -149,8 +150,8 @@ public class FInterval implements Serializable {
      * (-Inf, b) + mid => mid < b
      */
     public String inequalityOf(String middle, int maxDecimalPlace, boolean allowExponentialForm) {
-        final String l = FUtils.round(left.getConstant(), maxDecimalPlace, allowExponentialForm);
-        final String r = FUtils.round(right.getConstant(), maxDecimalPlace, allowExponentialForm);
+        final String l = FTiUtils.round(left.getConstant(), maxDecimalPlace, allowExponentialForm);
+        final String r = FTiUtils.round(right.getConstant(), maxDecimalPlace, allowExponentialForm);
 
         if (Double.isInfinite(left.getConstant())) {
             return middle + " " + lessInequality(rightClose) + " " + r;
@@ -170,8 +171,8 @@ public class FInterval implements Serializable {
      * [a, b] + mid => mid ≥ a, mid ≤ b
      */
     public List<String> splitInequalityOf(String middle, int maxDecimalPlace, boolean allowExponentialForm) {
-        final String l = FUtils.round(left.getConstant(), maxDecimalPlace, allowExponentialForm);
-        final String r = FUtils.round(right.getConstant(), maxDecimalPlace, allowExponentialForm);
+        final String l = FTiUtils.round(left.getConstant(), maxDecimalPlace, allowExponentialForm);
+        final String r = FTiUtils.round(right.getConstant(), maxDecimalPlace, allowExponentialForm);
 
         List<String> ret = new ArrayList<>(2);
         if (!Double.isInfinite(left.getConstant())) {
@@ -186,8 +187,8 @@ public class FInterval implements Serializable {
     }
 
     public String toString(int maxDecimalPlace, boolean allowExponentialForm) {
-        return leftBoundary() + FUtils.round(left.getConstant(), maxDecimalPlace, allowExponentialForm)
-                + ", " + FUtils.round(right.getConstant(), maxDecimalPlace, allowExponentialForm) + rightBoundary();
+        return leftBoundary() + FTiUtils.round(left.getConstant(), maxDecimalPlace, allowExponentialForm)
+                + ", " + FTiUtils.round(right.getConstant(), maxDecimalPlace, allowExponentialForm) + rightBoundary();
     }
 
     @Override
@@ -219,6 +220,23 @@ public class FInterval implements Serializable {
     }
 
     public List<FConstant<Double>> constants() {
-        return FUtils.listOf(left, right);
+        return FTiUtils.listOf(left, right);
+    }
+
+
+    public Optional<FConstant<Double>> left() {
+        return left.getConstant().isInfinite() ? Optional.empty() : Optional.of(left);
+    }
+
+    public Optional<FConstant<Double>> right() {
+        return right.getConstant().isInfinite() ? Optional.empty() : Optional.of(right);
+    }
+
+    public boolean leftClose() {
+        return leftClose;
+    }
+
+    public boolean rightClose() {
+        return rightClose;
     }
 }

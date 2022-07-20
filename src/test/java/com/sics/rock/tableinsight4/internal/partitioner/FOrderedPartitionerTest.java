@@ -2,7 +2,7 @@ package com.sics.rock.tableinsight4.internal.partitioner;
 
 import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import com.sics.rock.tableinsight4.utils.FSparkUtils;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.TaskContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -17,7 +17,7 @@ public class FOrderedPartitionerTest extends FSparkEnv {
 
     @Test
     public void test() {
-        List<String> strings = FUtils.listOf("a", "b", "c", "d", "e");
+        List<String> strings = FTiUtils.listOf("a", "b", "c", "d", "e");
 
         JavaRDD<String> rdd = sc.parallelize(strings, 2);
 

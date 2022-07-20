@@ -6,7 +6,6 @@ public final class FColumns {
         return tableName + "." + columnName;
     }
 
-
     private FColumns() {
     }
 }

@@ -11,7 +11,7 @@ public class FKMeansUtilsTest extends FSparkEnv {
 
     @Test
     public void findInterval() {
-        final JavaRDD<Double> doubleJavaRDD = sc.parallelize(FUtils.listOf(1., 1., 1., 2., 2., 2., 3., 3., 3.));
+        final JavaRDD<Double> doubleJavaRDD = sc.parallelize(FTiUtils.listOf(1., 1., 1., 2., 2., 2., 3., 3., 3.));
 
         final List<FPair<Double, Double>> intervals = FKMeansUtils.findIntervals(doubleJavaRDD, 3, 20);
 

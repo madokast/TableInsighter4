@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.table.column;
 
 import com.sics.rock.tableinsight4.utils.FTypeUtils;
-import com.sics.rock.tableinsight4.utils.FUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
@@ -122,7 +122,7 @@ public class FValueType implements Serializable {
             this.sparkSqlType = sparkSqlType;
         }
 
-        private static final Set<FBasicType> COMPARABLE_TYPES = FUtils.setOf(INTEGER, LONG, DOUBLE, DATE, TIMESTAMP);
+        private static final Set<FBasicType> COMPARABLE_TYPES = FTiUtils.setOf(INTEGER, LONG, DOUBLE, DATE, TIMESTAMP);
 
         public boolean isComparable() {
             return COMPARABLE_TYPES.contains(this);
