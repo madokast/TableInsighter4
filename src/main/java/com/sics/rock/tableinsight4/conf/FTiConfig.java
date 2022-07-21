@@ -99,8 +99,8 @@ public class FTiConfig {
     public Integer sliceLengthForPLI = 1000;
 
     @FConfigItem(name = "ti.internal.evidenceSet.partitionNumber", description = "The partition number of RDD which implements " +
-            "the internal data structure evidence set.")
-    public Integer evidenceSetPartitionNumber = 500;
+            "the internal data structure evidence set. Number -1 means automatic determining.")
+    public Integer evidenceSetPartitionNumber = -1;
 
     public static FTiConfig defaultConfig() {
         return new FTiConfig();

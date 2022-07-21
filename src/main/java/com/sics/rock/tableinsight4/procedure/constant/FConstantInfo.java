@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -20,13 +21,13 @@ public class FConstantInfo {
 
     private final FValueType type;
 
-    private final List<FConstant<?>> constants;
+    private final FConstant<?> constant;
 
-    public FConstantInfo(String tableName, String columnName, FValueType type, List<FConstant<?>> constants) {
+    public FConstantInfo(String tableName, String columnName, FValueType type, FConstant<?> constant) {
         this.tableName = tableName;
         this.columnName = columnName;
         this.type = type;
-        this.constants = constants;
+        this.constant = constant;
     }
 
     public String getTableName() {
@@ -41,19 +42,28 @@ public class FConstantInfo {
         return type;
     }
 
-    public List<FConstant<?>> getConstants() {
-        return constants;
+    public FConstant<?> getConstant() {
+        return constant;
     }
 
     @Override
     public String toString() {
-        final String constants = this.constants.stream().map(FConstant::toString)
-                .map(c -> "'" + c + "'")
-                .collect(Collectors.joining(", "));
-        return String.format("[%s] %s in %s.%s", type.toString(), constants, tableName, columnName);
+        return String.format("%s(%s) in %s.%s", constant.toString(), type.toString(), tableName, columnName);
     }
 
-    public boolean isEmpty() {
-        return constants.isEmpty();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FConstantInfo that = (FConstantInfo) o;
+        return Objects.equals(tableName, that.tableName) &&
+                Objects.equals(columnName, that.columnName) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(constant, that.constant);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tableName, columnName, type, constant);
     }
 }

@@ -40,7 +40,7 @@ public class FRatioConstantSearcher implements FIConstantSearcher {
     private List<FConstantInfo> search(FTableInfo tabInfo, Dataset<Row> dataset) {
         final String tableName = tabInfo.getTableName();
         final long length = tabInfo.getLength(dataset::count);
-        return tabInfo.getColumns().parallelStream().map(columnInfo -> {
+        return tabInfo.getColumns().parallelStream().flatMap(columnInfo -> {
             final String columnName = columnInfo.getColumnName();
             final FValueType valueType = columnInfo.getValueType();
             final FConstantConfig constantConfig = columnInfo.getConstantConfig();
@@ -54,7 +54,7 @@ public class FRatioConstantSearcher implements FIConstantSearcher {
 
             JavaRDD<?> values = dataset.select(columnName).toJavaRDD().map(row -> row.get(0));
             if (!findNullConstant) values = values.filter(Objects::nonNull);
-            final List<FConstant<?>> constants = values.mapToPair(v -> new Tuple2<>(v, 1L))
+            return values.mapToPair(v -> new Tuple2<>(v, 1L))
                     .reduceByKey(Long::sum)
                     .filter(t -> t._2 <= maxLength && t._2 >= minLength)
                     .collect()
@@ -63,9 +63,8 @@ public class FRatioConstantSearcher implements FIConstantSearcher {
                     .map(Tuple2::_1)
                     .peek(cons -> FAssertUtils.require(valueType.instance(cons), cons + " is not instance of " + valueType))
                     .map(FConstant::new)
-                    .collect(Collectors.toList());
-            return new FConstantInfo(tableName, columnName, valueType, constants);
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+                    .map(cons -> new FConstantInfo(tableName, columnName, valueType, cons));
+        }).collect(Collectors.toList());
     }
 
     public FRatioConstantSearcher(boolean findNullConstant, double upperLimitRatio, double downLimitRatio) {

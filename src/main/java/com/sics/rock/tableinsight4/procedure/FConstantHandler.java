@@ -10,21 +10,21 @@ import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FConstantHandler implements FTiEnvironment {
 
     private static final Logger logger = LoggerFactory.getLogger(FConstantHandler.class);
 
     public void generateConstant(FTableDatasetMap tableDatasetMap) {
+        // set for distinct
+        final Set<FConstantInfo> allConstantInfo = new HashSet<>();
+
         // External
         {
             final FIConstantSearcher constantSearcher = new FExternalConstantSearcher();
             final List<FConstantInfo> constantInfos = constantSearcher.search(tableDatasetMap);
-            printConstants(constantInfos);
-            addToColumnInfo(constantInfos, tableDatasetMap);
+            allConstantInfo.addAll(constantInfos);
         }
 
         // Ratio
@@ -33,14 +33,15 @@ public class FConstantHandler implements FTiEnvironment {
                     config().findNullConstant, config().constantUpperLimitRatio, config().constantDownLimitRatio
             );
             final List<FConstantInfo> constantInfos = constantSearcher.search(tableDatasetMap);
-            printConstants(constantInfos);
-            addToColumnInfo(constantInfos, tableDatasetMap);
+            allConstantInfo.addAll(constantInfos);
         }
+
+        printConstants(allConstantInfo);
+        addToColumnInfo(allConstantInfo, tableDatasetMap);
     }
 
-    private void printConstants(List<FConstantInfo> constantInfos) {
+    private void printConstants(Set<FConstantInfo> constantInfos) {
         for (FConstantInfo constantInfo : constantInfos) {
-            if (constantInfo.isEmpty()) continue;
             logger.info("Find constants {}", constantInfo);
         }
     }
@@ -48,11 +49,9 @@ public class FConstantHandler implements FTiEnvironment {
     // tabName -> colName -> colInfo
     private final Map<String, Map<String, FColumnInfo>> columnMap = new HashMap<>();
 
-    private void addToColumnInfo(List<FConstantInfo> constantInfos, FTableDatasetMap tableDatasetMap) {
+    private void addToColumnInfo(Set<FConstantInfo> constantInfos, FTableDatasetMap tableDatasetMap) {
 
         for (FConstantInfo constantInfo : constantInfos) {
-            if (constantInfo.isEmpty()) continue;
-
             final String tableName = constantInfo.getTableName();
             final String columnName = constantInfo.getColumnName();
             final Map<String, FColumnInfo> columnInfoMap = columnMap.computeIfAbsent(tableName, tn -> tableDatasetMap.getTableInfoByTableName(tn).columnMapView());
@@ -61,7 +60,7 @@ public class FConstantHandler implements FTiEnvironment {
                 logger.warn("The column {}.{} does not exist when adding constant info {}", tableName, columnName, constantInfo);
                 break;
             }
-            columnInfo.addConstants(constantInfo.getConstants());
+            columnInfo.addConstant(constantInfo.getConstant());
         }
     }
 }

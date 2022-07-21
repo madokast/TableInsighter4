@@ -26,10 +26,11 @@ public class FExternalConstantSearcher implements FIConstantSearcher {
                 final String columnName = column.getColumnName();
                 final FValueType valueType = column.getValueType();
                 final ArrayList<String> constants = column.getConstantConfig().getExternalConstants();
-                final List<FConstant<?>> _consts = constants.stream()
+                constants.stream()
                         .map(valueType::cast).distinct()
-                        .map(FConstant::new).collect(Collectors.toList());
-                ret.add(new FConstantInfo(tableName, columnName, valueType, _consts));
+                        .map(FConstant::new)
+                        .map(cons -> new FConstantInfo(tableName, columnName, valueType, cons))
+                        .forEach(ret::add);
             }
         });
         return ret;

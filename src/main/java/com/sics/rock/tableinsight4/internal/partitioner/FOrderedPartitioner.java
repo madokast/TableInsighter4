@@ -7,7 +7,7 @@ import java.util.Objects;
 
 /**
  * A partitioner used for pair-rdd[Long, Any] only.
- * The capacity of each partition is C.
+ * The capacity of each partition is C, pre-determined.
  * A element (k:Long, v:Any) in the rdd will be distributed to (k/C)-th partition.
  * <p>
  * The key value must be greater then or equal 0

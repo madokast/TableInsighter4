@@ -64,4 +64,42 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
     }
 
 
+    @Test
+    public void test_constant() {
+        FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
+                "1", "1", "2", "3"
+        });
+
+        one.getColumns().get(0).getConstantConfig().addExternalConstants("3");
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(one));
+
+        List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+
+        FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
+                spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
+
+        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+
+        for (String ps : ES.info(100)) {
+            logger.info(ps);
+        }
+    }
+
 }

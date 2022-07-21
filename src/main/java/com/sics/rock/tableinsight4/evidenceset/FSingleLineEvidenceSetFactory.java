@@ -71,7 +71,8 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
 
         })
                 // reduce depend on positiveNegativeExampleSwitch
-                .reduceByKey(this.positiveNegativeExampleSwitch ? new FExamplePredicateSetMerge(positiveNegativeExampleNumber) : FPredicateSetMerge.instance, evidenceSetPartitionNumber)
+                .reduceByKey(this.positiveNegativeExampleSwitch ? new FExamplePredicateSetMerge(positiveNegativeExampleNumber) : FPredicateSetMerge.instance,
+                        evidenceSetPartitionNumber == -1 ? ((int) (tableLength / 1000)) + 1 : evidenceSetPartitionNumber)
                 .map(t -> t._2)
                 .persist(StorageLevel.MEMORY_AND_DISK())
                 .setName("single_line_es_" + tableInfo.getTableName());
