@@ -1,6 +1,7 @@
 package com.sics.rock.tableinsight4.evidenceset;
 
 import com.sics.rock.tableinsight4.evidenceset.predicateset.FIPredicateSet;
+import com.sics.rock.tableinsight4.internal.SerializableConsumer;
 import com.sics.rock.tableinsight4.rule.FRule;
 import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.api.java.JavaRDD;
@@ -11,6 +12,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author zhaorx
+ */
 public class FRddEvidenceSet implements FIEvidenceSet {
 
     /**
@@ -73,6 +77,11 @@ public class FRddEvidenceSet implements FIEvidenceSet {
     public long[] predicateSupport() {
         lazyInit(predicateSize);
         return predicateSupport;
+    }
+
+    @Override
+    public void foreach(SerializableConsumer<FIPredicateSet> psConsumer) {
+        ES.foreach(psConsumer::accept);
     }
 
     @Override

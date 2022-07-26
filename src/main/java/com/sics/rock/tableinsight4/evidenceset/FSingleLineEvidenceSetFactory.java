@@ -61,8 +61,9 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
             if (colPLIMap.isEmpty()) return Collections.emptyIterator();
 
             // calculate max local row-id
-            final int maxRowId = colPLIMap.values().stream().mapToInt(FLocalPLI::getMaxLocalRowId).max().orElse(0);
-            if (maxRowId == 0) return Collections.emptyIterator();
+            final int maxRowId = colPLIMap.values().stream().mapToInt(FLocalPLI::getMaxLocalRowId).max().orElse(-1);
+            // bug-fix: maxRowId == 0 does not mean empty
+            if (maxRowId == -1) return Collections.emptyIterator();
 
             // build local ES
             final FIPredicateSet[] localES = createSingleLineLocalES(predicatesBroadcast.getValue(), colPLIMap, maxRowId + 1);

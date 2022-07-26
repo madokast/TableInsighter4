@@ -26,8 +26,10 @@ public class FInterval implements Serializable {
 
     private static final String LE = "<";
     private static final String LEQ = "<=";
+    private static final String __LEQ = "≤";
     private static final String GT = ">";
     private static final String GEQ = ">=";
+    private static final String __GEQ = "≥";
     private static final String LEFT_OPEN = "(";
     private static final String RIGHT_OPEN = ")";
     private static final String LEFT_CLOSE = "[";
@@ -120,6 +122,16 @@ public class FInterval implements Serializable {
             return Collections.singletonList(new FInterval(Double.NEGATIVE_INFINITY, number, false, true));
         } else if (intervalLike.startsWith(GEQ)) {
             double number = Double.parseDouble(intervalLike.substring(GEQ.length()));
+            if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
+            if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
+            return Collections.singletonList(new FInterval(number, Double.POSITIVE_INFINITY, true, false));
+        } else if (intervalLike.startsWith(__LEQ)) {
+            double number = Double.parseDouble(intervalLike.substring(__LEQ.length()));
+            if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
+            if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
+            return Collections.singletonList(new FInterval(Double.NEGATIVE_INFINITY, number, false, true));
+        } else if (intervalLike.startsWith(__GEQ)) {
+            double number = Double.parseDouble(intervalLike.substring(__GEQ.length()));
             if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
             if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
             return Collections.singletonList(new FInterval(number, Double.POSITIVE_INFINITY, true, false));

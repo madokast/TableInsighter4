@@ -176,6 +176,8 @@ public class FPliConstructor {
         tableDatasetMap.foreach((tabInfo, ignore) ->
                 tabInfo.getColumns().forEach(columnInfo -> {
                     final FValueType valueType = columnInfo.getValueType();
+
+                    // fill constant
                     columnInfo.getConstants().forEach(cons -> {
                         final Object consVal = cons.getConstant();
                         if (consVal == null) {
@@ -190,7 +192,29 @@ public class FPliConstructor {
                             }
                         }
                     });
+
+                    // fill interval
+                    columnInfo.getIntervalConstants().forEach(interval -> {
+                        interval.right().ifPresent(cons-> {
+                            Double consVal = cons.getConstant();
+                            long index = typeBasedConstantIndexMap.getOrDefault(valueType, Collections.emptyMap())
+                                    .getOrDefault(consVal, FConstant.INDEX_NOT_FOUND);
+                            cons.setIndex(index);
+                            logger.error("Column {}.{} contains interval constant {}, but cannot found its index",
+                                    tabInfo.getTableName(), columnInfo.getColumnName(), consVal);
+                        });
+                        interval.left().ifPresent(cons-> {
+                            Double consVal = cons.getConstant();
+                            long index = typeBasedConstantIndexMap.getOrDefault(valueType, Collections.emptyMap())
+                                    .getOrDefault(consVal, FConstant.INDEX_NOT_FOUND);
+                            cons.setIndex(index);
+                            logger.error("Column {}.{} contains interval constant {}, but cannot found its index",
+                                    tabInfo.getTableName(), columnInfo.getColumnName(), consVal);
+                        });
+                    });
                 }));
+
+
     }
 
     private JavaPairRDD<Row, FRddElementIndex> createEleIndexTabRDD(FTableInfo tableInfo, Dataset<Row> table) {

@@ -182,4 +182,18 @@ public class FPredicateFactory implements Serializable {
 
     private FPredicateFactory() {
     }
+
+    /**
+     * find predicate by feature
+     * debug only
+     */
+    public Optional<FIPredicate> find(String feature) {
+        for (FIPredicate predicate : this.allPredicates()) {
+            if (feature.chars().mapToObj(ch -> String.valueOf((char) ch)).allMatch(ch -> predicate.toString().contains(ch))) {
+                return Optional.of(predicate);
+            }
+        }
+        logger.error("No predicate matches {}", feature);
+        return Optional.empty();
+    }
 }
