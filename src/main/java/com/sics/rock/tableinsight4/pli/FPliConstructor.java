@@ -1,11 +1,12 @@
 package com.sics.rock.tableinsight4.pli;
 
-import com.sics.rock.tableinsight4.procedure.constant.FConstant;
+import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.internal.FPartitionId;
 import com.sics.rock.tableinsight4.internal.FRddElementIndex;
-import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.internal.partitioner.FOrderedPartitioner;
 import com.sics.rock.tableinsight4.internal.partitioner.FPartitionIdPartitioner;
+import com.sics.rock.tableinsight4.procedure.constant.FConstant;
+import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
@@ -106,14 +107,16 @@ public class FPliConstructor {
                 final FValueType valueType = columnInfo.getValueType();
                 // rdd of column values
                 final JavaRDD<Object> distinctRDD = dataset.select(columnName).toJavaRDD().map(row -> row.get(0))
-                        .filter(Objects::nonNull).distinct();
+                        .filter(FConstant::normalValue).distinct();
                 // rdd of constant in this column
-                final JavaRDD<Object> constantValRDD = FSparkUtils.rddOf(columnInfo.getConstants().stream().map(FConstant::getConstant)
-                        .filter(Objects::nonNull).collect(Collectors.toList()), spark);
+                final JavaRDD<Object> constantValRDD = FSparkUtils.rddOf(columnInfo.getConstants().stream()
+                        .filter(FConstant::indexNotInit)
+                        .map(FConstant::getConstant)
+                        .collect(Collectors.toList()), spark);
                 // rdd of interval constant in this column
                 final JavaRDD<Object> intervalConstantValRDD = FSparkUtils.rddOf(columnInfo.getIntervalConstants().stream()
-                        .flatMap(i -> i.constants().stream().map(FConstant::getConstant))
-                        .filter(d -> !d.isInfinite()).collect(Collectors.toList()), spark);
+                        .flatMap(i -> i.constants().stream()).map(FConstant::getConstant)
+                        .collect(Collectors.toList()), spark);
 
                 JavaRDD<Object> allData = FSparkUtils.union(spark, FTiUtils.listOf(distinctRDD, constantValRDD, intervalConstantValRDD));
 
@@ -146,10 +149,17 @@ public class FPliConstructor {
         tableDatasetMap.foreach((tabInfo, ignore) -> {
             tabInfo.getColumns().forEach(columnInfo -> {
                 final FValueType valueType = columnInfo.getValueType();
-                final List<Object> constants = columnInfo.getConstants().stream().map(FConstant::getConstant)
-                        .filter(Objects::nonNull).collect(Collectors.toList());
+                final List<Object> constants = columnInfo.getConstants().stream()
+                        .filter(FConstant::indexNotInit).map(FConstant::getConstant)
+                        .collect(Collectors.toList());
+                List<FConstant> intervalConstants = columnInfo.getIntervalConstants().stream()
+                        .map(FInterval::constants)
+                        .flatMap(List::stream)
+                        .filter(FConstant::indexNotInit)
+                        .collect(Collectors.toList());
                 typeBasedConstants.putIfAbsent(valueType, new HashSet<>());
                 typeBasedConstants.get(valueType).addAll(constants);
+                typeBasedConstants.get(valueType).addAll(intervalConstants);
             });
         });
 
@@ -178,43 +188,36 @@ public class FPliConstructor {
                     final FValueType valueType = columnInfo.getValueType();
 
                     // fill constant
-                    columnInfo.getConstants().forEach(cons -> {
-                        final Object consVal = cons.getConstant();
-                        if (consVal == null) {
-                            cons.setIndex(FConstant.INDEX_OF_NULL);
-                        } else {
-                            long index = typeBasedConstantIndexMap.getOrDefault(valueType, Collections.emptyMap())
-                                    .getOrDefault(consVal, FConstant.INDEX_NOT_FOUND);
-                            cons.setIndex(index);
-                            if (index == FConstant.INDEX_NOT_FOUND) {
-                                logger.error("Column {}.{} contains constant {}, but cannot found its index",
-                                        tabInfo.getTableName(), columnInfo.getColumnName(), consVal);
-                            }
-                        }
-                    });
+                    columnInfo.getConstants().stream()
+                            .filter(FConstant::indexNotInit)
+                            .forEach(cons -> {
+                                final Object consVal = cons.getConstant();
+                                if (consVal == null) {
+                                    cons.setIndex(FConstant.INDEX_OF_NULL);
+                                } else {
+                                    long index = typeBasedConstantIndexMap.getOrDefault(valueType, Collections.emptyMap())
+                                            .getOrDefault(consVal, FConstant.INDEX_NOT_FOUND);
+                                    cons.setIndex(index);
+                                    if (index == FConstant.INDEX_NOT_FOUND) {
+                                        logger.error("Column {}.{} contains constant {}, but cannot found its index",
+                                                tabInfo.getTableName(), columnInfo.getColumnName(), consVal);
+                                    }
+                                }
+                            });
 
                     // fill interval
-                    columnInfo.getIntervalConstants().forEach(interval -> {
-                        interval.right().ifPresent(cons-> {
-                            Double consVal = cons.getConstant();
-                            long index = typeBasedConstantIndexMap.getOrDefault(valueType, Collections.emptyMap())
-                                    .getOrDefault(consVal, FConstant.INDEX_NOT_FOUND);
-                            cons.setIndex(index);
-                            logger.error("Column {}.{} contains interval constant {}, but cannot found its index",
-                                    tabInfo.getTableName(), columnInfo.getColumnName(), consVal);
-                        });
-                        interval.left().ifPresent(cons-> {
-                            Double consVal = cons.getConstant();
-                            long index = typeBasedConstantIndexMap.getOrDefault(valueType, Collections.emptyMap())
-                                    .getOrDefault(consVal, FConstant.INDEX_NOT_FOUND);
-                            cons.setIndex(index);
-                            logger.error("Column {}.{} contains interval constant {}, but cannot found its index",
-                                    tabInfo.getTableName(), columnInfo.getColumnName(), consVal);
-                        });
-                    });
+                    columnInfo.getIntervalConstants().forEach(interval -> interval.constants().stream()
+                            .filter(FConstant::indexNotInit).forEach(cons -> {
+                                Object consVal = cons.getConstant();
+                                long index = typeBasedConstantIndexMap.getOrDefault(valueType, Collections.emptyMap())
+                                        .getOrDefault(consVal, FConstant.INDEX_NOT_FOUND);
+                                cons.setIndex(index);
+                                if (index == FConstant.INDEX_NOT_FOUND) {
+                                    logger.error("Column {}.{} contains interval constant {}, but cannot found its index",
+                                            tabInfo.getTableName(), columnInfo.getColumnName(), consVal);
+                                }
+                            }));
                 }));
-
-
     }
 
     private JavaPairRDD<Row, FRddElementIndex> createEleIndexTabRDD(FTableInfo tableInfo, Dataset<Row> table) {
@@ -263,7 +266,14 @@ public class FPliConstructor {
                         // final Object value = value2indexIndex._1; // nullable
                         final Tuple2<FRddElementIndex, Optional<Long>> indexIndex = value2indexIndex._2;
                         final FRddElementIndex elementIndex = indexIndex._1;
-                        final Long index = indexIndex._2.or(FConstant.INDEX_OF_NULL);
+                        long index = indexIndex._2.or(FConstant.INDEX_NOT_FOUND);
+
+                        if (index == FConstant.INDEX_NOT_FOUND) {
+                            index = FConstant.specialIndexOf(value2indexIndex._1);
+                        }
+                        if (index == FConstant.INDEX_NOT_FOUND) {
+                            throw new RuntimeException("Index of " + value2indexIndex._1 + " not found!");
+                        }
 
                         final int partitionId = elementIndex.partitionId;
                         final int offset = elementIndex.offset;
@@ -359,7 +369,6 @@ public class FPliConstructor {
                     logger.debug("{} {} in partition id {}", col, pli, pid);
                 });
             });
-
         });
     }
 

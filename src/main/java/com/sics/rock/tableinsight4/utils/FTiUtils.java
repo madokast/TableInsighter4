@@ -163,6 +163,17 @@ public class FTiUtils {
         return map;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <K, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, Object... kvs) {
+        int kvLen = kvs.length;
+        FAssertUtils.require(kvLen % 2 == 0, "kvs.len " + kvLen + " is odd");
+        Map<K, V> map = mapOf(k1, v1, k2, v2, k3, v3);
+        for (int i = 0; i < kvLen; i += 2) {
+            map.put((K) kvs[i], (V) kvs[i + 1]);
+        }
+        return map;
+    }
+
     /**
      * @param maxDecimalPlace do not round when -1
      */

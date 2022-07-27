@@ -1,6 +1,8 @@
 package com.sics.rock.tableinsight4.procedure.interval;
 
+import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.procedure.constant.FConstant;
+import com.sics.rock.tableinsight4.table.column.FValueType;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +22,7 @@ import java.util.Optional;
  * [left, right)
  * [left, right]
  */
-public class FInterval implements Serializable {
+public class FInterval<T extends Comparable<T>> implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FInterval.class);
 
@@ -35,9 +37,9 @@ public class FInterval implements Serializable {
     private static final String LEFT_CLOSE = "[";
     private static final String RIGHT_CLOSE = "]";
 
-    private final FConstant<Double> left;
+    private final FConstant<T> left;
 
-    private final FConstant<Double> right;
+    private final FConstant<T> right;
 
     /**
      * left in the interval if true
@@ -49,28 +51,29 @@ public class FInterval implements Serializable {
      */
     private final boolean rightClose;
 
-    public FInterval(double left, double right, boolean leftClose, boolean rightClose) {
-        this.left = new FConstant<>(left);
-        this.right = new FConstant<>(right);
+    public FInterval(T left, T right, boolean leftClose, boolean rightClose) {
+        FAssertUtils.require(left != null, "left == null");
+        FAssertUtils.require(right != null, "right == null");
+
+        this.left = FConstant.of(left);
+        this.right = FConstant.of(right);
+
+        FAssertUtils.require(!this.left.equals(FConstant.POSITIVE_INFINITY), "left = +Inf");
+        FAssertUtils.require(!this.right.equals(FConstant.NEGATIVE_INFINITY), "right = -Inf");
+
+        FAssertUtils.require(!this.left.equals(FConstant.NAN), "right = NaN");
+        FAssertUtils.require(!this.right.equals(FConstant.NAN), "right = NaN");
+
         this.leftClose = leftClose;
         this.rightClose = rightClose;
-
-        FAssertUtils.require(!Double.isNaN(left), "Interval " + toString() + " is invalid");
-        FAssertUtils.require(!Double.isNaN(right), "Interval " + toString() + " is invalid");
-        FAssertUtils.require(!(Double.isInfinite(left) && Double.isInfinite(right)), "Interval " + toString() + " is meaningless");
-
-        if (Double.isInfinite(left) && leftClose) logger.warn("Interval {} left is inf but close.", this);
-        if (Double.isInfinite(right) && rightClose) logger.warn("Interval {} left is inf but close.", this);
-
-        FAssertUtils.require(left <= right, "Interval " + toString() + " is invalid");
     }
 
     /**
      * parse interval [x, y], (x, y] ...
      */
-    public static FInterval parse(String interval) throws IllegalArgumentException {
-        final double left;
-        final double right;
+    public static FInterval parse(String interval, FValueType type) throws IllegalArgumentException {
+        final Comparable left;
+        final Comparable right;
         final boolean leftEq;
         final boolean rightEq;
 
@@ -96,8 +99,11 @@ public class FInterval implements Serializable {
         if (split.length != 2) throw new IllegalArgumentException("Invalid interval string " + interval);
 
         try {
-            left = Double.parseDouble(split[0]);
-            right = Double.parseDouble(split[1]);
+            left = (Comparable) type.cast(split[0]);
+            right = (Comparable) type.cast(split[1]);
+
+            if (left == null) throw new IllegalArgumentException(split[0] + " cannot cast to " + type);
+            if (right == null) throw new IllegalArgumentException(split[1] + " cannot cast to " + type);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid interval string " + interval, e);
         }
@@ -110,45 +116,31 @@ public class FInterval implements Serializable {
      * 2. "op number". Like ">5", ">=10", "≤20"
      * 3. "interval". Like "[3,5]", "(12,30]"
      */
-    public static List<FInterval> of(String intervalLike) throws IllegalArgumentException {
+    public static List<FInterval<?>> of(String intervalLike, FValueType type) throws IllegalArgumentException {
         if (StringUtils.isBlank(intervalLike)) throw new IllegalArgumentException(intervalLike + " is blank");
         intervalLike = intervalLike.trim();
         if (intervalLike.startsWith(LEFT_OPEN) || intervalLike.startsWith(LEFT_CLOSE)) {
-            return Collections.singletonList(parse(intervalLike));
+            return Collections.singletonList(parse(intervalLike, type));
         } else if (intervalLike.startsWith(LEQ)) {
-            double number = Double.parseDouble(intervalLike.substring(LEQ.length()));
-            if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
-            if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
+            Comparable number = (Comparable) type.cast(intervalLike.substring(LEQ.length()));
             return Collections.singletonList(new FInterval(Double.NEGATIVE_INFINITY, number, false, true));
         } else if (intervalLike.startsWith(GEQ)) {
-            double number = Double.parseDouble(intervalLike.substring(GEQ.length()));
-            if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
-            if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
+            Comparable number = (Comparable) type.cast(intervalLike.substring(GEQ.length()));
             return Collections.singletonList(new FInterval(number, Double.POSITIVE_INFINITY, true, false));
         } else if (intervalLike.startsWith(__LEQ)) {
-            double number = Double.parseDouble(intervalLike.substring(__LEQ.length()));
-            if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
-            if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
+            Comparable number = (Comparable) type.cast(intervalLike.substring(__LEQ.length()));
             return Collections.singletonList(new FInterval(Double.NEGATIVE_INFINITY, number, false, true));
         } else if (intervalLike.startsWith(__GEQ)) {
-            double number = Double.parseDouble(intervalLike.substring(__GEQ.length()));
-            if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
-            if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
+            Comparable number = (Comparable) type.cast(intervalLike.substring(__GEQ.length()));
             return Collections.singletonList(new FInterval(number, Double.POSITIVE_INFINITY, true, false));
         } else if (intervalLike.startsWith(LE)) {
-            double number = Double.parseDouble(intervalLike.substring(LE.length()));
-            if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
-            if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
+            Comparable number = (Comparable) type.cast(intervalLike.substring(LE.length()));
             return Collections.singletonList(new FInterval(Double.NEGATIVE_INFINITY, number, false, false));
         } else if (intervalLike.startsWith(GT)) {
-            double number = Double.parseDouble(intervalLike.substring(GT.length()));
-            if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
-            if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
+            Comparable number = (Comparable) type.cast(intervalLike.substring(GT.length()));
             return Collections.singletonList(new FInterval(number, Double.POSITIVE_INFINITY, false, false));
         } else {
-            double number = Double.parseDouble(intervalLike);
-            if (Double.isInfinite(number)) throw new IllegalArgumentException(intervalLike + " is infinite");
-            if (Double.isNaN(number)) throw new IllegalArgumentException(intervalLike + " is NaN");
+            Comparable number = (Comparable) type.cast(intervalLike);
             return FTiUtils.listOf(
                     new FInterval(Double.NEGATIVE_INFINITY, number, false, true),
                     new FInterval(number, Double.POSITIVE_INFINITY, false, false)
@@ -162,14 +154,15 @@ public class FInterval implements Serializable {
      * (-Inf, b) + mid => mid < b
      */
     public String inequalityOf(String middle, int maxDecimalPlace, boolean allowExponentialForm) {
-        final String l = FTiUtils.round(left.getConstant(), maxDecimalPlace, allowExponentialForm);
-        final String r = FTiUtils.round(right.getConstant(), maxDecimalPlace, allowExponentialForm);
-
-        if (Double.isInfinite(left.getConstant())) {
+        if (left.equals(FConstant.NEGATIVE_INFINITY)) {
+            String r = rightString(maxDecimalPlace, allowExponentialForm);
             return middle + " " + lessInequality(rightClose) + " " + r;
-        } else if (Double.isInfinite(right.getConstant())) {
+        } else if (right.equals(FConstant.POSITIVE_INFINITY)) {
+            String l = leftString(maxDecimalPlace, allowExponentialForm);
             return middle + " " + greatInequality(leftClose) + " " + l;
         } else {
+            String r = rightString(maxDecimalPlace, allowExponentialForm);
+            String l = leftString(maxDecimalPlace, allowExponentialForm);
             return l + " " + lessInequality(leftClose) + " " + middle + " " + lessInequality(rightClose) + " " + r;
         }
     }
@@ -183,15 +176,15 @@ public class FInterval implements Serializable {
      * [a, b] + mid => mid ≥ a, mid ≤ b
      */
     public List<String> splitInequalityOf(String middle, int maxDecimalPlace, boolean allowExponentialForm) {
-        final String l = FTiUtils.round(left.getConstant(), maxDecimalPlace, allowExponentialForm);
-        final String r = FTiUtils.round(right.getConstant(), maxDecimalPlace, allowExponentialForm);
-
         List<String> ret = new ArrayList<>(2);
-        if (!Double.isInfinite(left.getConstant())) {
+
+        if (!left.equals(FConstant.NEGATIVE_INFINITY)) {
+            String l = leftString(maxDecimalPlace, allowExponentialForm);
             ret.add(middle + " " + greatInequality(leftClose) + " " + l);
         }
 
-        if (!Double.isInfinite(right.getConstant())) {
+        if (!right.equals(FConstant.POSITIVE_INFINITY)) {
+            String r = rightString(maxDecimalPlace, allowExponentialForm);
             ret.add(middle + " " + lessInequality(rightClose) + " " + r);
         }
 
@@ -199,8 +192,8 @@ public class FInterval implements Serializable {
     }
 
     public String toString(int maxDecimalPlace, boolean allowExponentialForm) {
-        return leftBoundary() + FTiUtils.round(left.getConstant(), maxDecimalPlace, allowExponentialForm)
-                + ", " + FTiUtils.round(right.getConstant(), maxDecimalPlace, allowExponentialForm) + rightBoundary();
+        return leftBoundary() + leftString(maxDecimalPlace, allowExponentialForm)
+                + ", " + rightString(maxDecimalPlace, allowExponentialForm) + rightBoundary();
     }
 
     @Override
@@ -224,24 +217,19 @@ public class FInterval implements Serializable {
         return rightClose ? RIGHT_CLOSE : RIGHT_OPEN;
     }
 
-
-    public boolean including(double number) {
-        return (Double.isInfinite(left.getConstant()) || (leftClose ? (number >= left.getConstant()) : (number > left.getConstant())))
-                &&
-                (Double.isInfinite(right.getConstant()) || (rightClose ? (number <= right.getConstant()) : (number < right.getConstant())));
+    public Optional<FConstant<T>> left() {
+        return left.equals(FConstant.NEGATIVE_INFINITY) ? Optional.empty() : Optional.of(left);
     }
 
-    public List<FConstant<Double>> constants() {
-        return FTiUtils.listOf(left, right);
+    public Optional<FConstant<T>> right() {
+        return right.equals(FConstant.POSITIVE_INFINITY) ? Optional.empty() : Optional.of(right);
     }
 
-
-    public Optional<FConstant<Double>> left() {
-        return left.getConstant().isInfinite() ? Optional.empty() : Optional.of(left);
-    }
-
-    public Optional<FConstant<Double>> right() {
-        return right.getConstant().isInfinite() ? Optional.empty() : Optional.of(right);
+    public List<FConstant<T>> constants() {
+        List<FConstant<T>> ret = new ArrayList<>(2);
+        left().ifPresent(ret::add);
+        right().ifPresent(ret::add);
+        return ret;
     }
 
     public boolean leftClose() {
@@ -250,5 +238,52 @@ public class FInterval implements Serializable {
 
     public boolean rightClose() {
         return rightClose;
+    }
+
+
+    public FOperator leftOperator() {
+        return leftClose ? FOperator.GET : FOperator.GT;
+    }
+
+    public FOperator rightOperator() {
+        return rightClose ? FOperator.LET : FOperator.LT;
+    }
+
+    private String leftString(int maxDecimalPlace, boolean allowExponentialForm) {
+        if (left.equals(FConstant.NEGATIVE_INFINITY)) {
+            return left.getConstant().toString();
+        } else {
+            T lc = left.getConstant();
+            if (lc instanceof Double || lc instanceof Float) {
+                return FTiUtils.round(((Number) lc).doubleValue(), maxDecimalPlace, allowExponentialForm);
+            } else {
+                return lc.toString();
+            }
+        }
+    }
+
+    private String rightString(int maxDecimalPlace, boolean allowExponentialForm) {
+        if (right.equals(FConstant.POSITIVE_INFINITY)) {
+            return right.getConstant().toString();
+        } else {
+            T rc = right.getConstant();
+            if (rc instanceof Double || rc instanceof Float) {
+                return FTiUtils.round(((Number) rc).doubleValue(), maxDecimalPlace, allowExponentialForm);
+            } else {
+                return rc.toString();
+            }
+        }
+    }
+
+    // test only
+    public boolean including(T v) {
+        if (left.equals(FConstant.NEGATIVE_INFINITY)) {
+            return right.getConstant().compareTo(v) >= (rightClose ? 0 : 1);
+        } else if (right.equals(FConstant.POSITIVE_INFINITY)) {
+            return v.compareTo(left.getConstant()) >= (leftClose ? 0 : 1);
+        } else {
+            return right.getConstant().compareTo(v) >= (rightClose ? 0 : 1) &&
+                    v.compareTo(left.getConstant()) >= (leftClose ? 0 : 1);
+        }
     }
 }

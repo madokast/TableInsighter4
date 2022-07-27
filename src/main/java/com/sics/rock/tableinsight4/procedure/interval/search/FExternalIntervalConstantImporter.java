@@ -4,6 +4,7 @@ import com.sics.rock.tableinsight4.procedure.interval.FIntervalConstantInfo;
 import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
+import com.sics.rock.tableinsight4.table.column.FValueType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +28,10 @@ public class FExternalIntervalConstantImporter implements FIIntervalConstantSear
             final ArrayList<FColumnInfo> columns = tabInfo.getColumns();
             for (FColumnInfo column : columns) {
                 final String columnName = column.getColumnName();
+                FValueType valueType = column.getValueType();
                 final ArrayList<String> externalIntervalConstants = column.getIntervalConstantInfo().getExternalIntervalConstants();
                 for (String externalIntervalConstant : externalIntervalConstants) {
-                    final List<FInterval> intervalList = FInterval.of(externalIntervalConstant);
+                    final List<FInterval<?>> intervalList = FInterval.of(externalIntervalConstant, valueType);
                     ret.add(FIntervalConstantInfo.externalColumnIntervalConstant(tableName, columnName, intervalList));
                 }
             }

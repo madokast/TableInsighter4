@@ -6,6 +6,13 @@ import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 
 import java.util.Set;
 
+/**
+ * t0.age > 20
+ * t0.age <= 20
+ * t0.age in [20,30)
+ *
+ * @author zhaorx
+ */
 public class FUnaryIntervalConsPredicate implements FIIntervalPredicate, FIUnaryPredicate {
 
     private final String tableName;
@@ -60,6 +67,6 @@ public class FUnaryIntervalConsPredicate implements FIIntervalPredicate, FIUnary
 
     @Override
     public int length() {
-        return 1;
+        return (interval.left().isPresent() ? 1 : 0) + (interval.right().isPresent() ? 1 : 0);
     }
 }

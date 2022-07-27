@@ -66,7 +66,7 @@ public class FColumnInfo implements Serializable {
     /**
      * interval-constant found in the column
      */
-    private final ArrayList<FInterval> intervalConstants = new ArrayList<>();
+    private final ArrayList<FInterval<?>> intervalConstants = new ArrayList<>();
 
     public FColumnInfo(String columnName, FValueType valueType) {
         this.columnName = columnName;
@@ -74,9 +74,6 @@ public class FColumnInfo implements Serializable {
     }
 
     public void addConstant(FConstant<?> constant) {
-        if (!valueType.instance(constant.getConstant())) {
-            logger.warn("Type-incompatible constant {} put in {} column {}", constant.getConstant(), valueType, columnName);
-        }
         this.constants.add(constant);
     }
 
@@ -84,11 +81,11 @@ public class FColumnInfo implements Serializable {
         constants.forEach(this::addConstant);
     }
 
-    public void addIntervalConstant(FInterval interval) {
+    public void addIntervalConstant(FInterval<?> interval) {
         this.intervalConstants.add(interval);
     }
 
-    public void addIntervalConstants(List<FInterval> intervals) {
+    public void addIntervalConstants(List<FInterval<?>> intervals) {
         this.intervalConstants.addAll(intervals);
     }
 
@@ -146,7 +143,7 @@ public class FColumnInfo implements Serializable {
         return constants;
     }
 
-    public ArrayList<FInterval> getIntervalConstants() {
+    public ArrayList<FInterval<?>> getIntervalConstants() {
         return intervalConstants;
     }
 }

@@ -1,15 +1,19 @@
 package com.sics.rock.tableinsight4.pli;
 
 import com.sics.rock.tableinsight4.procedure.FConstantHandler;
+import com.sics.rock.tableinsight4.procedure.FExternalBinaryModelHandler;
 import com.sics.rock.tableinsight4.procedure.FIntervalsConstantHandler;
 import com.sics.rock.tableinsight4.procedure.FTableDataLoader;
+import com.sics.rock.tableinsight4.procedure.external.binary.FExternalBinaryModelInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
+import com.sics.rock.tableinsight4.table.column.FValueType;
 import com.sics.rock.tableinsight4.test.FExamples;
 import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
 
 public class FPliConstructorTest extends FTableInsightEnv {
 
@@ -85,5 +89,30 @@ public class FPliConstructorTest extends FTableInsightEnv {
                 config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
+    }
+
+
+    @Test
+    public void construct_special() {
+        FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
+                null, "NaN", "+Inf", "-INF", "123"
+        });
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(one));
+
+        List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        FPLI PLI = pliConstructor.construct(tableDatasetMap);
     }
 }

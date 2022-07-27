@@ -10,8 +10,8 @@ import java.util.Set;
  * interval predicate applying on 2 tuple
  * 20 < t0.age <= 40 ^ 20 < t1.age <= 40
  *
- * @see FBinaryConsPredicate
  * @author zhaorx
+ * @see FBinaryConsPredicate
  */
 public class FBinaryIntervalConsPredicate implements FIBinaryPredicate, FIIntervalPredicate {
 
@@ -81,6 +81,6 @@ public class FBinaryIntervalConsPredicate implements FIBinaryPredicate, FIInterv
 
     @Override
     public int length() {
-        return 2;
+        return 2 * ((interval.left().isPresent() ? 1 : 0) + (interval.right().isPresent() ? 1 : 0));
     }
 }

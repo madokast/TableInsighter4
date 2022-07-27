@@ -18,11 +18,11 @@ import com.sics.rock.tableinsight4.test.FExamples;
 import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * TODO waiting for complete test
@@ -62,12 +62,13 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
         FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
+        assertEquals(one.getLength(null), ES.allCount());
+
         for (String ps : ES.info(100)) {
             logger.info(ps);
         }
 
     }
-
 
     @Test
     public void test_constant() {
@@ -101,6 +102,8 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
         FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+
+        assertEquals(one.getLength(null), ES.allCount());
 
         for (String ps : ES.info(100)) {
             logger.info(ps);
@@ -153,6 +156,8 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         int eq2i = singleLinePredicateFactory.getIndex(eq2);
         int eq3i = singleLinePredicateFactory.getIndex(eq3);
         int gt1i = singleLinePredicateFactory.getIndex(gt1);
+
+        assertEquals(one.getLength(null), ES.allCount());
 
         ES.foreach(ps -> {
             FBitSet bitSet = ps.getBitSet();
@@ -208,6 +213,8 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
             logger.info(ps);
         }
 
+        assertEquals(one.getLength(null), ES.allCount());
+
         FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
         FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
         FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
@@ -233,4 +240,388 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         });
     }
 
+    @Test
+    public void test_less() {
+        config().sliceLengthForPLI = 2;
+
+        FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
+                "1", "1", "2", "3", "3", "3"
+        });
+
+        one.getColumns().get(0).getIntervalConstantInfo().addExternalIntervalConstant("<2");
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(one));
+
+        List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+
+        FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
+                spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
+
+        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+
+        for (String ps : ES.info(100)) {
+            logger.info(ps);
+        }
+
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
+        FIPredicate lt2 = singleLinePredicateFactory.find("<2").get();
+
+        int eq1i = singleLinePredicateFactory.getIndex(eq1);
+        int eq2i = singleLinePredicateFactory.getIndex(eq2);
+        int eq3i = singleLinePredicateFactory.getIndex(eq3);
+        int lt2i = singleLinePredicateFactory.getIndex(lt2);
+
+        assertEquals(one.getLength(null), ES.allCount());
+
+        ES.foreach(ps -> {
+            FBitSet bitSet = ps.getBitSet();
+
+            assertFalse(bitSet.get(eq1i) && bitSet.get(eq2i));
+            assertFalse(bitSet.get(eq1i) && bitSet.get(eq3i));
+
+            assertFalse(bitSet.get(eq2i) && bitSet.get(eq3i));
+
+            if (bitSet.get(eq1i)) assertTrue(bitSet.get(lt2i));
+            if (bitSet.get(eq2i)) assertFalse(bitSet.get(lt2i));
+            if (bitSet.get(eq3i)) assertFalse(bitSet.get(lt2i));
+        });
+    }
+
+    @Test
+    public void test_less_eq() {
+        config().sliceLengthForPLI = 2;
+
+        FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
+                "1", "1", "2", "3", "3", "3"
+        });
+
+        one.getColumns().get(0).getIntervalConstantInfo().addExternalIntervalConstant("<=2");
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(one));
+
+        List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+
+        FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
+                spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
+
+        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+
+        for (String ps : ES.info(100)) {
+            logger.info(ps);
+        }
+
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
+        FIPredicate let2 = singleLinePredicateFactory.find("<=2").get();
+
+        int eq1i = singleLinePredicateFactory.getIndex(eq1);
+        int eq2i = singleLinePredicateFactory.getIndex(eq2);
+        int eq3i = singleLinePredicateFactory.getIndex(eq3);
+        int let2i = singleLinePredicateFactory.getIndex(let2);
+
+        long[] supports = ES.predicateSupport();
+
+        logger.info("supports = {}", Arrays.toString(supports));
+
+        assertEquals(one.getLength(null), ES.allCount());
+
+        ES.foreach(ps -> {
+            FBitSet bitSet = ps.getBitSet();
+
+            assertFalse(bitSet.get(eq1i) && bitSet.get(eq2i));
+            assertFalse(bitSet.get(eq1i) && bitSet.get(eq3i));
+
+            assertFalse(bitSet.get(eq2i) && bitSet.get(eq3i));
+
+            if (bitSet.get(eq1i)) assertTrue(bitSet.get(let2i));
+            if (bitSet.get(eq2i)) assertTrue(bitSet.get(let2i));
+            if (bitSet.get(eq3i)) assertFalse(bitSet.get(let2i));
+        });
+    }
+
+    @Test
+    public void test_interval_close() {
+        config().sliceLengthForPLI = 2;
+
+        FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
+                "1", "1", "2", "3", "3", "3"
+        });
+
+        one.getColumns().get(0).getIntervalConstantInfo().addExternalIntervalConstant("[2,2]");
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(one));
+
+        List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+
+        FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
+                spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
+
+        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+
+        for (String ps : ES.info(100)) {
+            logger.info(ps);
+        }
+
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
+        FIPredicate in2 = singleLinePredicateFactory.find("<=2").get();
+
+        int eq1i = singleLinePredicateFactory.getIndex(eq1);
+        int eq2i = singleLinePredicateFactory.getIndex(eq2);
+        int eq3i = singleLinePredicateFactory.getIndex(eq3);
+        int in2i = singleLinePredicateFactory.getIndex(in2);
+
+        long[] supports = ES.predicateSupport();
+
+        logger.info("supports = {}", Arrays.toString(supports));
+
+        assertEquals(one.getLength(null), ES.allCount());
+
+        ES.foreach(ps -> {
+            FBitSet bitSet = ps.getBitSet();
+
+            assertFalse(bitSet.get(eq1i) && bitSet.get(eq2i));
+            assertFalse(bitSet.get(eq1i) && bitSet.get(eq3i));
+
+            assertFalse(bitSet.get(eq2i) && bitSet.get(eq3i));
+
+            if (bitSet.get(eq1i)) assertFalse(bitSet.get(in2i));
+            if (bitSet.get(eq2i)) assertTrue(bitSet.get(in2i));
+            if (bitSet.get(eq3i)) assertFalse(bitSet.get(in2i));
+        });
+    }
+
+    @Test
+    public void test_interval_close2() {
+        config().sliceLengthForPLI = 2;
+
+        FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
+                "1", "1", "2", "3", "3", "3"
+        });
+
+        one.getColumns().get(0).getIntervalConstantInfo().addExternalIntervalConstant("[2,3]");
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(one));
+
+        List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+
+        FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
+                spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
+
+        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+
+        for (String ps : ES.info(100)) {
+            logger.info(ps);
+        }
+
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
+        FIPredicate in23 = singleLinePredicateFactory.find("<=").get();
+
+        int eq1i = singleLinePredicateFactory.getIndex(eq1);
+        int eq2i = singleLinePredicateFactory.getIndex(eq2);
+        int eq3i = singleLinePredicateFactory.getIndex(eq3);
+        int in23i = singleLinePredicateFactory.getIndex(in23);
+
+        long[] supports = ES.predicateSupport();
+
+        logger.info("supports = {}", Arrays.toString(supports));
+
+        assertEquals(one.getLength(null), ES.allCount());
+
+        ES.foreach(ps -> {
+            FBitSet bitSet = ps.getBitSet();
+
+            assertFalse(bitSet.get(eq1i) && bitSet.get(eq2i));
+            assertFalse(bitSet.get(eq1i) && bitSet.get(eq3i));
+
+            assertFalse(bitSet.get(eq2i) && bitSet.get(eq3i));
+
+            if (bitSet.get(eq1i)) assertFalse(bitSet.get(in23i));
+            if (bitSet.get(eq2i)) assertTrue(bitSet.get(in23i));
+            if (bitSet.get(eq3i)) assertTrue(bitSet.get(in23i));
+        });
+    }
+
+    @Test
+    public void test_interval_other_close() {
+        config().sliceLengthForPLI = 2;
+
+        FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
+                "1", "1", "2", "3", "3", "3"
+        });
+
+        one.getColumns().get(0).getIntervalConstantInfo().addExternalIntervalConstant("[-100,1]");
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(one));
+
+        List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+
+        FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
+                spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
+
+        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+
+        for (String ps : ES.info(100)) {
+            logger.info(ps);
+        }
+
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
+        FIPredicate l1 = singleLinePredicateFactory.find("<=").get();
+
+        int eq1i = singleLinePredicateFactory.getIndex(eq1);
+        int eq2i = singleLinePredicateFactory.getIndex(eq2);
+        int eq3i = singleLinePredicateFactory.getIndex(eq3);
+        int l1i = singleLinePredicateFactory.getIndex(l1);
+
+        long[] supports = ES.predicateSupport();
+
+        logger.info("supports = {}", Arrays.toString(supports));
+
+        assertEquals(one.getLength(null), ES.allCount());
+
+        ES.foreach(ps -> {
+            FBitSet bitSet = ps.getBitSet();
+
+            assertFalse(bitSet.get(eq1i) && bitSet.get(eq2i));
+            assertFalse(bitSet.get(eq1i) && bitSet.get(eq3i));
+
+            assertFalse(bitSet.get(eq2i) && bitSet.get(eq3i));
+
+            if (bitSet.get(eq1i)) assertTrue(bitSet.get(l1i));
+            if (bitSet.get(eq2i)) assertFalse(bitSet.get(l1i));
+            if (bitSet.get(eq3i)) assertFalse(bitSet.get(l1i));
+        });
+    }
+
+    @Test
+    public void test_const_special() {
+//        config().sliceLengthForPLI;
+
+        FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
+                null, "nan", "inf", "-inf", "123"
+        });
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(one));
+
+        List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+
+        FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
+                spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
+
+        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+
+        ES.foreach(ps -> assertEquals(1, ps.getBitSet().cardinality()));
+
+        String[] info = ES.info(100);
+
+        assertEquals(one.getLength(null), info.length);
+
+        for (String ps : info) {
+            logger.info(ps);
+        }
+    }
 }

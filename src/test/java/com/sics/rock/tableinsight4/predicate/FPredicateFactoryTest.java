@@ -39,9 +39,9 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         for (FColumnInfo column : relation.getColumns()) {
             if (column.getColumnName().equals("cc")) {
-                column.addConstant(new FConstant<>(null));
-                column.addConstant(new FConstant<>("abc"));
-                column.addConstant(new FConstant<>(123));
+                column.addConstant(FConstant.of(null));
+                column.addConstant(FConstant.of("abc"));
+                column.addConstant(FConstant.of(123));
                 break;
             }
         }
@@ -84,10 +84,10 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         FTableInfo relation = FExamples.relation();
 
-        relation.getColumns().get(0).addConstant(new FConstant<>(null));
-        relation.getColumns().get(1).addConstant(new FConstant<>(213));
-        relation.getColumns().get(2).addConstant(new FConstant<>("abc"));
-        relation.getColumns().get(3).addConstant(new FConstant<>(12.32));
+        relation.getColumns().get(0).addConstant(FConstant.of(null));
+        relation.getColumns().get(1).addConstant(FConstant.of(213));
+        relation.getColumns().get(2).addConstant(FConstant.of("abc"));
+        relation.getColumns().get(3).addConstant(FConstant.of(12.32));
 
         FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
                 relation, new FDerivedColumnNameHandler(Collections.emptyList()));
@@ -107,7 +107,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         String c1 = relation.getColumns().get(1).getColumnName();
 
         FColumnInfo colCombined = new FColumnInfo(c0 + combineColumnLinker + c1, FValueType.STRING);
-        colCombined.addConstant(new FConstant<>("CITY 44312"));
+        colCombined.addConstant(FConstant.of("CITY 44312"));
         relation.getColumns().add(colCombined);
 
         FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
@@ -139,7 +139,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         String column = derivedColumnNameHandler.deriveModelColumn(modelId);
 
         FColumnInfo ci = new FColumnInfo(column, FValueType.LONG);
-        ci.addConstant(new FConstant<>(1L));
+        ci.addConstant(FConstant.of(1L));
         relation.getColumns().add(ci);
 
         FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
@@ -159,9 +159,9 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         for (FColumnInfo column : relation.getColumns()) {
             if (column.getColumnName().equals("cc")) {
-                column.addConstant(new FConstant<>(null));
-                column.addConstant(new FConstant<>("abc"));
-                column.addConstant(new FConstant<>(123));
+                column.addConstant(FConstant.of(null));
+                column.addConstant(FConstant.of("abc"));
+                column.addConstant(FConstant.of(123));
                 break;
             }
         }
@@ -180,9 +180,9 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         for (FColumnInfo column : relation.getColumns()) {
             if (column.getColumnName().equals("cc")) {
-                column.addConstant(new FConstant<>(null));
-                column.addConstant(new FConstant<>("abc"));
-                column.addConstant(new FConstant<>(123));
+                column.addConstant(FConstant.of(null));
+                column.addConstant(FConstant.of("abc"));
+                column.addConstant(FConstant.of(123));
                 break;
             }
         }

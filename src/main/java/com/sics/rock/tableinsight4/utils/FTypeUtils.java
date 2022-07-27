@@ -93,9 +93,16 @@ public class FTypeUtils {
         else {
             if (val instanceof Number) return ((Number) val).doubleValue();
             else {
+                String s = val.toString();
                 try {
-                    return Double.valueOf(val.toString());
+                    return Double.valueOf(s);
                 } catch (Exception e) {
+                    String sl = s.toLowerCase();
+                    if (sl.contains("nan")) return Double.NaN;
+                    if (sl.contains("inf")) {
+                        if (sl.contains("-")) return Double.NEGATIVE_INFINITY;
+                        else return Double.POSITIVE_INFINITY;
+                    }
                     return null;
                 }
             }

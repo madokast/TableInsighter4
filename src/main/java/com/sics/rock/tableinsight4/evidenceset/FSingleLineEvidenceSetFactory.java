@@ -105,10 +105,12 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
                 final Optional<FConstant<Double>> right = interval.right();
                 if (!left.isPresent()) {
                     FAssertUtils.require(right::isPresent, () -> "The interval of predicate " + predicate + " has no bound.");
-                    localPLI.localRowIdsOf(right.get().getIndex(), interval.leftClose() ? FOperator.LET : FOperator.LT)
+                    FAssertUtils.require(right.get().getIndex() != FConstant.INDEX_NOT_INIT, () -> "Interval " + interval + " constant index not init!");
+                    localPLI.localRowIdsOf(right.get().getIndex(), interval.rightOperator())
                             .forEach(fillPredicateSet(localES, predicateSize, predicateId, partitionId));
                 } else if (!right.isPresent()) {
-                    localPLI.localRowIdsOf(left.get().getIndex(), interval.leftClose() ? FOperator.GET : FOperator.GT)
+                    FAssertUtils.require(left.get().getIndex() != FConstant.INDEX_NOT_INIT, () -> "Interval " + interval + " constant index not init!");
+                    localPLI.localRowIdsOf(left.get().getIndex(), interval.leftOperator())
                             .forEach(fillPredicateSet(localES, predicateSize, predicateId, partitionId));
                 } else {
                     localPLI.localRowIdsBetween(left.get().getIndex(), right.get().getIndex(), interval.leftClose(), interval.rightClose())

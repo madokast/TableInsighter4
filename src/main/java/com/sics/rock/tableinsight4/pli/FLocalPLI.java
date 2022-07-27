@@ -56,11 +56,11 @@ public class FLocalPLI implements Serializable {
             case GT:
                 return index2localRowIds.entrySet().stream().filter(e -> e.getKey() > index).map(Map.Entry::getValue).flatMap(List::stream);
             case LT:
-                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() < index).map(Map.Entry::getValue).flatMap(List::stream);
+                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() < index && e.getKey() >= 0).map(Map.Entry::getValue).flatMap(List::stream);
             case GET:
                 return index2localRowIds.entrySet().stream().filter(e -> e.getKey() >= index).map(Map.Entry::getValue).flatMap(List::stream);
             case LET:
-                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() <= index).map(Map.Entry::getValue).flatMap(List::stream);
+                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() <= index && e.getKey() >= 0).map(Map.Entry::getValue).flatMap(List::stream);
             default:
                 throw new RuntimeException("Operator " + operator + " not support");
         }
@@ -74,14 +74,14 @@ public class FLocalPLI implements Serializable {
                         return key >= leftIndex && key <= rightIndex;
                     })
                     .map(Map.Entry::getValue).flatMap(List::stream);
-        } else if (leftClose && !rightClose) {
+        } else if (leftClose) { // leftClose && !rightClose
             return index2localRowIds.entrySet().stream()
                     .filter(e -> {
                         long key = e.getKey();
                         return key >= leftIndex && key < rightIndex;
                     })
                     .map(Map.Entry::getValue).flatMap(List::stream);
-        } else if (!leftClose && rightClose) {
+        } else if (rightClose) { // !leftClose && rightClose
             return index2localRowIds.entrySet().stream()
                     .filter(e -> {
                         long key = e.getKey();

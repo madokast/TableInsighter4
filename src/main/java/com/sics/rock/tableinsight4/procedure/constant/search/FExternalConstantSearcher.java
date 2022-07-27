@@ -28,7 +28,7 @@ public class FExternalConstantSearcher implements FIConstantSearcher {
                 final ArrayList<String> constants = column.getConstantConfig().getExternalConstants();
                 constants.stream()
                         .map(valueType::cast).distinct()
-                        .map(FConstant::new)
+                        .map(FConstant::of)
                         .map(cons -> new FConstantInfo(tableName, columnName, valueType, cons))
                         .forEach(ret::add);
             }

@@ -62,7 +62,7 @@ public class FRatioConstantSearcher implements FIConstantSearcher {
                     .peek(t -> logger.debug("Find constant {} occurrence {} in {}.{}", t._1, t._2, tableName, columnName))
                     .map(Tuple2::_1)
                     .peek(cons -> FAssertUtils.require(valueType.instance(cons), cons + " is not instance of " + valueType))
-                    .map(FConstant::new)
+                    .map(FConstant::of)
                     .map(cons -> new FConstantInfo(tableName, columnName, valueType, cons));
         }).collect(Collectors.toList());
     }
