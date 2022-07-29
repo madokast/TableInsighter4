@@ -54,12 +54,16 @@ public class FLocalPLI implements Serializable {
             case EQ:
                 return index2localRowIds.getOrDefault(index, Collections.emptyList()).stream();
             case GT:
+                FAssertUtils.require(index >= 0, "index " + index + " is not allowed in ordered predicate");
                 return index2localRowIds.entrySet().stream().filter(e -> e.getKey() > index).map(Map.Entry::getValue).flatMap(List::stream);
             case LT:
+                FAssertUtils.require(index >= 0, "index " + index + " is not allowed in ordered predicate");
                 return index2localRowIds.entrySet().stream().filter(e -> e.getKey() < index && e.getKey() >= 0).map(Map.Entry::getValue).flatMap(List::stream);
             case GET:
+                FAssertUtils.require(index >= 0, "index " + index + " is not allowed in ordered predicate");
                 return index2localRowIds.entrySet().stream().filter(e -> e.getKey() >= index).map(Map.Entry::getValue).flatMap(List::stream);
             case LET:
+                FAssertUtils.require(index >= 0, "index " + index + " is not allowed in ordered predicate");
                 return index2localRowIds.entrySet().stream().filter(e -> e.getKey() <= index && e.getKey() >= 0).map(Map.Entry::getValue).flatMap(List::stream);
             default:
                 throw new RuntimeException("Operator " + operator + " not support");
@@ -67,6 +71,8 @@ public class FLocalPLI implements Serializable {
     }
 
     public Stream<Integer> localRowIdsBetween(long leftIndex, long rightIndex, boolean leftClose, boolean rightClose) {
+        FAssertUtils.require(leftIndex >= 0, "index " + leftIndex + " is not allowed in ordered predicate");
+        FAssertUtils.require(rightIndex >= 0, "index " + rightIndex + " is not allowed in ordered predicate");
         if (leftClose && rightClose) {
             return index2localRowIds.entrySet().stream()
                     .filter(e -> {
@@ -138,7 +144,7 @@ public class FLocalPLI implements Serializable {
     public String toString() {
         return "pid(" + partitionId + ")" +
                 index2localRowIds.entrySet().stream().map(e -> "[" + e.getKey() + ":" +
-                        e.getValue().stream().map(Objects::toString).collect(Collectors.joining(",")) + "]")
+                                e.getValue().stream().map(Objects::toString).collect(Collectors.joining(",")) + "]")
                         .collect(Collectors.joining("", "", ""));
     }
 

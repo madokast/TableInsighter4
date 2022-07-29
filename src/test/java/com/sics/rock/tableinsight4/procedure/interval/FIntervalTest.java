@@ -4,7 +4,9 @@ import com.sics.rock.tableinsight4.table.column.FValueType;
 import com.sics.rock.tableinsight4.test.env.FBasicTestEnv;
 import org.junit.Test;
 
+import java.sql.Date;
 import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class FIntervalTest extends FBasicTestEnv {
@@ -96,5 +98,24 @@ public class FIntervalTest extends FBasicTestEnv {
         assertTrue(s.get(0).constants().get(0).getConstant() instanceof String);
         assertTrue(l.get(0).constants().get(0).getConstant() instanceof Long);
         assertTrue(i.get(0).constants().get(0).getConstant() instanceof Integer);
+    }
+
+    @Test
+    public void test_date() {
+        Date today = Date.valueOf("2022-7-29");
+        Date d20 = Date.valueOf("2022-7-20");
+
+        FInterval<java.util.Date> dateFInterval = new FInterval<>(d20, today, true, false);
+
+        assertTrue(dateFInterval.including(d20));
+        assertFalse(dateFInterval.including(today));
+        assertTrue(dateFInterval.including(Date.valueOf("2022-7-25")));
+        assertFalse(dateFInterval.including(Date.valueOf("2022-6-25")));
+
+        logger.info("data interval = {}", dateFInterval);
+
+        logger.info(dateFInterval.toString(0,false));
+
+        logger.info(dateFInterval.inequalityOf("submit"));
     }
 }
