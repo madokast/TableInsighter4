@@ -1,6 +1,7 @@
 package com.sics.rock.tableinsight4.pli;
 
 import com.sics.rock.tableinsight4.predicate.FOperator;
+import com.sics.rock.tableinsight4.procedure.constant.FConstant;
 import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 
@@ -55,16 +56,18 @@ public class FLocalPLI implements Serializable {
                 return index2localRowIds.getOrDefault(index, Collections.emptyList()).stream();
             case GT:
                 FAssertUtils.require(index >= 0, "index " + index + " is not allowed in ordered predicate");
-                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() > index).map(Map.Entry::getValue).flatMap(List::stream);
+                // key > index or key -> +Inf
+                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() > index || e.getKey() == FConstant.INDEX_OF_POSITIVE_INFINITY).map(Map.Entry::getValue).flatMap(List::stream);
             case LT:
                 FAssertUtils.require(index >= 0, "index " + index + " is not allowed in ordered predicate");
-                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() < index && e.getKey() >= 0).map(Map.Entry::getValue).flatMap(List::stream);
+                // (key < index and key > 0) | key -> -Inf
+                return index2localRowIds.entrySet().stream().filter(e -> (e.getKey() < index && e.getKey() >= 0) | e.getKey() == FConstant.INDEX_OF_NEGATIVE_INFINITY).map(Map.Entry::getValue).flatMap(List::stream);
             case GET:
                 FAssertUtils.require(index >= 0, "index " + index + " is not allowed in ordered predicate");
-                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() >= index).map(Map.Entry::getValue).flatMap(List::stream);
+                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() >= index || e.getKey() == FConstant.INDEX_OF_POSITIVE_INFINITY).map(Map.Entry::getValue).flatMap(List::stream);
             case LET:
                 FAssertUtils.require(index >= 0, "index " + index + " is not allowed in ordered predicate");
-                return index2localRowIds.entrySet().stream().filter(e -> e.getKey() <= index && e.getKey() >= 0).map(Map.Entry::getValue).flatMap(List::stream);
+                return index2localRowIds.entrySet().stream().filter(e -> (e.getKey() <= index && e.getKey() >= 0) | e.getKey() == FConstant.INDEX_OF_NEGATIVE_INFINITY).map(Map.Entry::getValue).flatMap(List::stream);
             default:
                 throw new RuntimeException("Operator " + operator + " not support");
         }

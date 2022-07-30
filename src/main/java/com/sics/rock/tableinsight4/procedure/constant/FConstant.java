@@ -134,4 +134,10 @@ public class FConstant<T> implements Serializable {
     public static boolean normalValue(Object obj) {
         return specialIndexOf(obj) == INDEX_NOT_FOUND;
     }
+
+    public boolean isComparable() {
+        return index != INDEX_OF_NAN &&
+                index != INDEX_OF_NULL &&
+                constant instanceof Comparable;
+    }
 }

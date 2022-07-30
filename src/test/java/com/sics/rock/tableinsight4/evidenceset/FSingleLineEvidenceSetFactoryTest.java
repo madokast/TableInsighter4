@@ -24,11 +24,8 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-/**
- * TODO waiting for complete test
- */
-public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
+public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
     @Test
     public void test() {
@@ -147,10 +144,10 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
             logger.info(ps);
         }
 
-        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
-        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
-        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
-        FIPredicate gt1 = singleLinePredicateFactory.find(">1").get();
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get(0);
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get(0);
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get(0);
+        FIPredicate gt1 = singleLinePredicateFactory.find(">1").get(0);
 
         int eq1i = singleLinePredicateFactory.getIndex(eq1);
         int eq2i = singleLinePredicateFactory.getIndex(eq2);
@@ -215,10 +212,10 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
         assertEquals(one.getLength(null), ES.allCount());
 
-        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
-        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
-        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
-        FIPredicate get2 = singleLinePredicateFactory.find(">=2").get();
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get(0);
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get(0);
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get(0);
+        FIPredicate get2 = singleLinePredicateFactory.find(">=2").get(0);
 
         int eq1i = singleLinePredicateFactory.getIndex(eq1);
         int eq2i = singleLinePredicateFactory.getIndex(eq2);
@@ -279,10 +276,10 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
             logger.info(ps);
         }
 
-        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
-        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
-        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
-        FIPredicate lt2 = singleLinePredicateFactory.find("<2").get();
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get(0);
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get(0);
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get(0);
+        FIPredicate lt2 = singleLinePredicateFactory.find("<2").get(0);
 
         int eq1i = singleLinePredicateFactory.getIndex(eq1);
         int eq2i = singleLinePredicateFactory.getIndex(eq2);
@@ -344,10 +341,10 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
             logger.info(ps);
         }
 
-        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
-        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
-        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
-        FIPredicate let2 = singleLinePredicateFactory.find("<=2").get();
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get(0);
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get(0);
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get(0);
+        FIPredicate let2 = singleLinePredicateFactory.find("<=2").get(0);
 
         int eq1i = singleLinePredicateFactory.getIndex(eq1);
         int eq2i = singleLinePredicateFactory.getIndex(eq2);
@@ -413,10 +410,10 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
             logger.info(ps);
         }
 
-        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
-        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
-        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
-        FIPredicate in2 = singleLinePredicateFactory.find("<=2").get();
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get(0);
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get(0);
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get(0);
+        FIPredicate in2 = singleLinePredicateFactory.find("<=2").get(0);
 
         int eq1i = singleLinePredicateFactory.getIndex(eq1);
         int eq2i = singleLinePredicateFactory.getIndex(eq2);
@@ -482,10 +479,10 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
             logger.info(ps);
         }
 
-        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
-        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
-        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
-        FIPredicate in23 = singleLinePredicateFactory.find("<=").get();
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get(0);
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get(0);
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get(0);
+        FIPredicate in23 = singleLinePredicateFactory.find("<=").get(0);
 
         int eq1i = singleLinePredicateFactory.getIndex(eq1);
         int eq2i = singleLinePredicateFactory.getIndex(eq2);
@@ -551,10 +548,10 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
             logger.info(ps);
         }
 
-        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get();
-        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get();
-        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get();
-        FIPredicate l1 = singleLinePredicateFactory.find("<=").get();
+        FIPredicate eq1 = singleLinePredicateFactory.find("=1").get(0);
+        FIPredicate eq2 = singleLinePredicateFactory.find("=2").get(0);
+        FIPredicate eq3 = singleLinePredicateFactory.find("=3").get(0);
+        FIPredicate l1 = singleLinePredicateFactory.find("<=").get(0);
 
         int eq1i = singleLinePredicateFactory.getIndex(eq1);
         int eq2i = singleLinePredicateFactory.getIndex(eq2);
@@ -583,7 +580,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
     @Test
     public void test_const_special() {
-//        config().sliceLengthForPLI;
+        config().sliceLengthForPLI = 2;
 
         FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
                 null, "nan", "inf", "-inf", "123"
@@ -616,9 +613,125 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
         ES.foreach(ps -> assertEquals(1, ps.getBitSet().cardinality()));
 
-        String[] info = ES.info(100);
+        String[] info = ES.info(singleLinePredicateFactory, 100);
 
         assertEquals(one.getLength(null), info.length);
+
+        assertEquals(ES.cardinality(), ES.allCount());
+
+        logger.info("cardinality = {}", ES.cardinality());
+
+        for (String ps : info) {
+            logger.info(ps);
+        }
+    }
+
+    @Test
+    public void test_const_card() {
+        config().sliceLengthForPLI = 2;
+
+        FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
+                null, "nan", "inf", "-inf", "123", "nan", "null"
+        });
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(one));
+
+        List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+
+        FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
+                spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
+
+        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+
+        ES.foreach(ps -> assertEquals(1, ps.getBitSet().cardinality()));
+
+        String[] info = ES.info(singleLinePredicateFactory, 100);
+
+        assertEquals(one.getLength(null), info.length + 2);
+
+        assertEquals(ES.cardinality() + 2, ES.allCount());
+
+        logger.info("cardinality = {}", ES.cardinality());
+        logger.info("allCount = {}", ES.allCount());
+
+        for (String ps : info) {
+            logger.info(ps);
+        }
+    }
+
+    @Test
+    public void test_special_compare() {
+        config().sliceLengthForPLI = 2;
+
+        FTableInfo one = FExamples.create("one-row", new String[]{"a"}, new FValueType[]{FValueType.DOUBLE}, new String[]{
+                null, "nan", "inf", "-inf", "123", "nan", "null"
+        });
+
+        one.getColumns().get(0).getIntervalConstantInfo().addExternalIntervalConstant(">100");
+        one.getColumns().get(0).getIntervalConstantInfo().addExternalIntervalConstant("<123");
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(one));
+
+        List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+
+        FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
+                spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
+
+        int eq123 = singleLinePredicateFactory.findIndex("=123").get(0);
+        int lt123 = singleLinePredicateFactory.findIndex("<123").get(0);
+        int gt100 = singleLinePredicateFactory.findIndex(">100").get(0);
+        int eqN_Inf = singleLinePredicateFactory.findIndex("-Inf").get(0);
+        int eqP_Inf = singleLinePredicateFactory.findIndex("Inf").stream().filter(i->i!=eqN_Inf).findFirst().get();
+
+        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+
+        ES.foreach(ps->{
+            FBitSet bs = ps.getBitSet();
+            if (bs.get(eq123)) assertTrue(bs.get(gt100));
+            if (bs.get(eqP_Inf)) assertTrue(bs.get(gt100));
+            if (bs.get(eqN_Inf)) assertTrue(bs.get(lt123));
+        });
+
+        String[] info = ES.info(singleLinePredicateFactory, 100);
+
+        assertEquals(one.getLength(null), info.length + 2);
+
+        assertEquals(ES.cardinality() + 2, ES.allCount());
+
+        logger.info("cardinality = {}", ES.cardinality());
+        logger.info("allCount = {}", ES.allCount());
 
         for (String ps : info) {
             logger.info(ps);

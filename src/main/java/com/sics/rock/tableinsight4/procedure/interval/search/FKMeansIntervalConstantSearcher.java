@@ -53,6 +53,7 @@ public class FKMeansIntervalConstantSearcher implements FIIntervalConstantSearch
     private Optional<FIntervalConstantInfo> searchColumnIntervals(Dataset<Row> dataset, String tableName, FColumnInfo columnInfo) {
         final FIntervalConstantConfig intervalConstantInfo = columnInfo.getIntervalConstantInfo();
         final String columnName = columnInfo.getColumnName();
+        final FValueType valueType = columnInfo.getValueType();
 
         final JavaRDD<Double> doubleRDD = dataset.selectExpr(FTypeUtils.castSQLClause(columnName, FValueType.DOUBLE))
                 .toJavaRDD().map(r -> (Double) r.get(0))
@@ -71,7 +72,10 @@ public class FKMeansIntervalConstantSearcher implements FIIntervalConstantSearch
         final boolean leftEq = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_LEFT_CLOSE, this.leftClose);
         final boolean rightEq = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_RIGHT_CLOSE, this.rightClose);
         final List<FInterval<?>> intervals = FKMeansUtils.findIntervals(doubleRDD, clusterNumber, iterNumber).stream()
-                .map(lr -> new FInterval<>(lr._k, lr._v, leftEq, rightEq)).collect(Collectors.toList());
+                .map(lr -> new FInterval<>(lr._k, lr._v, leftEq, rightEq).typeCast(valueType))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
 
         if (intervals.isEmpty()) {
             logger.info("Cannot find intervals constants in {}.{}", tableName, columnName);

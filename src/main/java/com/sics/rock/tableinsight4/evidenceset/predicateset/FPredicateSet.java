@@ -1,6 +1,10 @@
 package com.sics.rock.tableinsight4.evidenceset.predicateset;
 
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
+import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
+
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Used only in evidence set
@@ -35,6 +39,13 @@ public class FPredicateSet implements FIPredicateSet {
 
     public String toString(int predicateSize) {
         return bitSet.binaryContent().substring(0, predicateSize) + "↑" + support;
+    }
+
+    @Override
+    public String toString(FPredicateFactory indexProvider) {
+        String psStr = bitSet.stream().mapToObj(indexProvider::getPredicate).map(Objects::toString)
+                .collect(Collectors.joining(" ", "[", "]"));
+        return psStr + "↑" + support;
     }
 
     @Override

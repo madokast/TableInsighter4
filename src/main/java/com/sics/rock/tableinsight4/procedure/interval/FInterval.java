@@ -52,17 +52,12 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
     private final boolean rightClose;
 
     public FInterval(T left, T right, boolean leftClose, boolean rightClose) {
-        FAssertUtils.require(left != null, "left == null");
-        FAssertUtils.require(right != null, "right == null");
 
-        this.left = FConstant.of(left);
-        this.right = FConstant.of(right);
+        this.left = left == null ? FConstant.NEGATIVE_INFINITY : FConstant.of(left);
+        this.right = right == null ? FConstant.POSITIVE_INFINITY : FConstant.of(right);
 
-        FAssertUtils.require(!this.left.equals(FConstant.POSITIVE_INFINITY), "left = +Inf");
-        FAssertUtils.require(!this.right.equals(FConstant.NEGATIVE_INFINITY), "right = -Inf");
-
-        FAssertUtils.require(!this.left.equals(FConstant.NAN), "right = NaN");
-        FAssertUtils.require(!this.right.equals(FConstant.NAN), "right = NaN");
+        FAssertUtils.require(this.left.isComparable(), this + " is invalid");
+        FAssertUtils.require(this.right.isComparable(), this + " is invalid");
 
         this.leftClose = leftClose;
         this.rightClose = rightClose;
@@ -259,6 +254,35 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
             } else {
                 return lc.toString();
             }
+        }
+    }
+
+    public Optional<FInterval<?>> typeCast(FValueType type) {
+        Comparable<?> leftConst, rightConst;
+
+        if (left().isPresent()) {
+            leftConst = (Comparable<?>) type.cast(this.left.getConstant());
+            if (leftConst == null)
+                leftConst = (Comparable<?>) type.cast(FValueType.DOUBLE.cast(this.left.getConstant()));
+        } else {
+            leftConst = null;
+        }
+
+        if (right().isPresent()) {
+            rightConst = (Comparable<?>) type.cast(this.right.getConstant());
+            if (rightConst == null)
+                rightConst = (Comparable<?>) type.cast(FValueType.DOUBLE.cast(this.right.getConstant()));
+        } else {
+            rightConst = null;
+        }
+
+        if (leftConst == null && rightConst == null) {
+            logger.info("Cannot cast {} to {}", this, type);
+            return Optional.empty();
+        } else {
+            FInterval<?> des = new FInterval(leftConst, rightConst, this.leftClose, this.rightClose);
+            logger.info("Interval {} cast to {} as {}", this, type, des);
+            return Optional.of(des);
         }
     }
 

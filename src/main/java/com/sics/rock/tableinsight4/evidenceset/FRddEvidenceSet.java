@@ -2,6 +2,7 @@ package com.sics.rock.tableinsight4.evidenceset;
 
 import com.sics.rock.tableinsight4.evidenceset.predicateset.FIPredicateSet;
 import com.sics.rock.tableinsight4.internal.SerializableConsumer;
+import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
 import com.sics.rock.tableinsight4.rule.FRule;
 import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.api.java.JavaRDD;
@@ -41,6 +42,12 @@ public class FRddEvidenceSet implements FIEvidenceSet {
      */
     private long[] predicateSupport = null;
 
+    /**
+     * the distinct size
+     * lazy init
+     */
+    private long cardinality = -1;
+
     public FRddEvidenceSet(JavaRDD<FIPredicateSet> ES, JavaSparkContext sc, int predicateSize, long allCount) {
         this.ES = ES;
         this.sc = sc;
@@ -48,18 +55,23 @@ public class FRddEvidenceSet implements FIEvidenceSet {
         this.allCount = allCount;
     }
 
-    private void lazyInit(int predSize) {
+    private synchronized void lazyInit(int predSize) {
         if (predicateSupport == null) {
-            this.predicateSupport = this.ES.mapPartitions(psIter -> {
-                final long[] supports = new long[predSize];
+            final long[] reduced = this.ES.mapPartitions(psIter -> {
+                // the last element hold the cardinality
+                final long[] supports = new long[predSize + 1];
                 Arrays.fill(supports, 0L);
                 while (psIter.hasNext()) {
                     final FIPredicateSet next = psIter.next();
                     final long support = next.getSupport();
                     next.getBitSet().stream().forEach(x -> supports[x] += support);
+                    // cardinality
+                    ++supports[predSize];
                 }
                 return Collections.singletonList(supports).iterator();
             }).reduce(FTiUtils::longArrSum);
+            this.predicateSupport = Arrays.copyOf(reduced, predSize);
+            this.cardinality = reduced[predSize];
         }
     }
 
@@ -71,6 +83,12 @@ public class FRddEvidenceSet implements FIEvidenceSet {
     @Override
     public long allCount() {
         return allCount;
+    }
+
+    @Override
+    public long cardinality() {
+        lazyInit(predicateSize);
+        return cardinality;
     }
 
     @Override
@@ -87,5 +105,10 @@ public class FRddEvidenceSet implements FIEvidenceSet {
     @Override
     public String[] info(int limit) {
         return ES.take(limit).stream().map(Objects::toString).toArray(String[]::new);
+    }
+
+    @Override
+    public String[] info(FPredicateFactory predicateIndexer, int limit) {
+        return ES.take(limit).stream().map(ps -> ps.toString(predicateIndexer)).toArray(String[]::new);
     }
 }

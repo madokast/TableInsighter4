@@ -114,8 +114,122 @@ public class FIntervalTest extends FBasicTestEnv {
 
         logger.info("data interval = {}", dateFInterval);
 
-        logger.info(dateFInterval.toString(0,false));
+        logger.info(dateFInterval.toString(0, false));
 
         logger.info(dateFInterval.inequalityOf("submit"));
+    }
+
+    @Test
+    public void test_cast() {
+        FInterval<Double> di = new FInterval<>(10.5, 20.33, true, true);
+
+        logger.info("{}", di);
+
+        FInterval<?> li = di.typeCast(FValueType.LONG).get();
+        FInterval<?> ii = di.typeCast(FValueType.INTEGER).get();
+        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+
+        logger.info("{}", li);
+        logger.info("{}", ii);
+        logger.info("{}", si);
+
+        logger.info("{}", si.typeCast(FValueType.LONG));
+        logger.info("{}", si.typeCast(FValueType.DOUBLE));
+        logger.info("{}", si.typeCast(FValueType.INTEGER));
+    }
+
+    @Test
+    public void test_cast2() {
+        FInterval<Double> di = new FInterval<>(null, 20.33, true, true);
+
+        logger.info("{}", di);
+
+        FInterval<?> li = di.typeCast(FValueType.LONG).get();
+        FInterval<?> ii = di.typeCast(FValueType.INTEGER).get();
+        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+
+        logger.info("{}", li);
+        logger.info("{}", ii);
+        logger.info("{}", si);
+
+        logger.info("{}", si.typeCast(FValueType.LONG));
+        logger.info("{}", si.typeCast(FValueType.DOUBLE));
+        logger.info("{}", si.typeCast(FValueType.INTEGER));
+    }
+
+    @Test
+    public void test_cast3() {
+        FInterval<Double> di = new FInterval<>(10.5, null, true, true);
+
+        logger.info("{}", di);
+
+        FInterval<?> li = di.typeCast(FValueType.LONG).get();
+        FInterval<?> ii = di.typeCast(FValueType.INTEGER).get();
+        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+
+        logger.info("{}", li);
+        logger.info("{}", ii);
+        logger.info("{}", si);
+
+        logger.info("{}", si.typeCast(FValueType.LONG));
+        logger.info("{}", si.typeCast(FValueType.DOUBLE));
+        logger.info("{}", si.typeCast(FValueType.INTEGER));
+    }
+
+    @Test
+    public void test_cast4() {
+        FInterval<Integer> di = new FInterval<>(1, 203, true, true);
+
+        logger.info("{}", di);
+
+        FInterval<?> li = di.typeCast(FValueType.LONG).get();
+        FInterval<?> ii = di.typeCast(FValueType.DOUBLE).get();
+        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+
+        logger.info("{}", li);
+        logger.info("{}", ii);
+        logger.info("{}", si);
+
+        logger.info("{}", si.typeCast(FValueType.LONG));
+        logger.info("{}", si.typeCast(FValueType.DOUBLE));
+        logger.info("{}", si.typeCast(FValueType.INTEGER));
+    }
+
+    @Test
+    public void test_cast5() {
+        FInterval<String> di = new FInterval<>("10.5", "20.33", true, true);
+
+        logger.info("{}", di);
+
+        FInterval<?> li = di.typeCast(FValueType.LONG).get();
+        FInterval<?> ii = di.typeCast(FValueType.INTEGER).get();
+        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+
+        logger.info("{}", li);
+        logger.info("{}", ii);
+        logger.info("{}", si);
+
+        logger.info("{}", si.typeCast(FValueType.LONG));
+        logger.info("{}", si.typeCast(FValueType.DOUBLE));
+        logger.info("{}", si.typeCast(FValueType.INTEGER));
+    }
+
+    @Test
+    public void test_cast6() {
+        FInterval<String> di = new FInterval<>("10.5", null, true, false);
+
+        logger.info("{}", di);
+
+        FInterval<?> li = di.typeCast(FValueType.LONG).get();
+        FInterval<?> ii = di.typeCast(FValueType.INTEGER).get();
+        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+
+        logger.info("{}", li);
+        logger.info("{}", ii);
+        logger.info("{}", si);
+
+        logger.info("{}", si.typeCast(FValueType.LONG));
+        logger.info("{}", si.typeCast(FValueType.DOUBLE));
+        logger.info("{}", si.typeCast(FValueType.INTEGER));
     }
 }

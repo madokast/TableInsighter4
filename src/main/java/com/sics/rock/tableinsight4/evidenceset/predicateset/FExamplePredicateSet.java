@@ -2,6 +2,7 @@ package com.sics.rock.tableinsight4.evidenceset.predicateset;
 
 import com.sics.rock.tableinsight4.internal.FRddElementIndex;
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
+import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,19 +37,24 @@ public class FExamplePredicateSet extends FPredicateSet {
         return supportIdsList.size();
     }
 
-    @Override
-    public String toString() {
-        String rowIdInfo = supportIdsList.stream().map(arr ->
+    private String rowIdInfo() {
+        return supportIdsList.stream().map(arr ->
                 Arrays.stream(arr).map(Objects::toString).collect(Collectors.joining(","))
         ).collect(Collectors.joining(","));
-        return super.toString() + "[" + rowIdInfo + "]";
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "[" + rowIdInfo() + "]";
     }
 
     @Override
     public String toString(int predicateSize) {
-        String rowIdInfo = supportIdsList.stream().map(arr ->
-                Arrays.stream(arr).map(Objects::toString).collect(Collectors.joining(","))
-        ).collect(Collectors.joining(","));
-        return super.toString(predicateSize) + "[" + rowIdInfo + "]";
+        return super.toString(predicateSize) + "[" + rowIdInfo() + "]";
+    }
+
+    @Override
+    public String toString(FPredicateFactory indexProvider) {
+        return super.toString(indexProvider) + "[" + rowIdInfo() + "]";
     }
 }

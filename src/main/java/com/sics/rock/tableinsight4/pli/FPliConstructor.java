@@ -152,10 +152,11 @@ public class FPliConstructor {
                 final List<Object> constants = columnInfo.getConstants().stream()
                         .filter(FConstant::indexNotInit).map(FConstant::getConstant)
                         .collect(Collectors.toList());
-                List<FConstant> intervalConstants = columnInfo.getIntervalConstants().stream()
+                List<Object> intervalConstants = columnInfo.getIntervalConstants().stream()
                         .map(FInterval::constants)
                         .flatMap(List::stream)
                         .filter(FConstant::indexNotInit)
+                        .map(FConstant::getConstant)
                         .collect(Collectors.toList());
                 typeBasedConstants.putIfAbsent(valueType, new HashSet<>());
                 typeBasedConstants.get(valueType).addAll(constants);
