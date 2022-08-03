@@ -1,8 +1,8 @@
 package com.sics.rock.tableinsight4.predicate.iface;
 
 import com.sics.rock.tableinsight4.predicate.FOperator;
-import com.sics.rock.tableinsight4.procedure.constant.FConstant;
-import com.sics.rock.tableinsight4.procedure.interval.FInterval;
+import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;
+import com.sics.rock.tableinsight4.preprocessing.interval.FInterval;
 
 import java.util.List;
 import java.util.Set;

@@ -2,7 +2,7 @@ package com.sics.rock.tableinsight4.predicate;
 
 import com.sics.rock.tableinsight4.predicate.iface.FIBinaryPredicate;
 import com.sics.rock.tableinsight4.predicate.iface.FIConstantPredicate;
-import com.sics.rock.tableinsight4.procedure.constant.FConstant;
+import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;
 
 import java.util.Collections;
 import java.util.List;

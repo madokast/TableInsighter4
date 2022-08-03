@@ -2,7 +2,7 @@ package com.sics.rock.tableinsight4.predicate;
 
 import com.sics.rock.tableinsight4.predicate.iface.FIIntervalPredicate;
 import com.sics.rock.tableinsight4.predicate.iface.FIUnaryPredicate;
-import com.sics.rock.tableinsight4.procedure.interval.FInterval;
+import com.sics.rock.tableinsight4.preprocessing.interval.FInterval;
 
 import java.util.Set;
 

@@ -1,13 +1,11 @@
 package com.sics.rock.tableinsight4.pli;
 
 import com.sics.rock.tableinsight4.predicate.FOperator;
-import com.sics.rock.tableinsight4.procedure.constant.FConstant;
-import com.sics.rock.tableinsight4.procedure.interval.FInterval;
+import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

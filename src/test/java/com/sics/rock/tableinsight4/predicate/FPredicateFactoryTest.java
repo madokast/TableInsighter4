@@ -1,13 +1,13 @@
 package com.sics.rock.tableinsight4.predicate;
 
 import com.sics.rock.tableinsight4.internal.FPair;
-import com.sics.rock.tableinsight4.procedure.FExternalBinaryModelHandler;
-import com.sics.rock.tableinsight4.procedure.FTableDataLoader;
-import com.sics.rock.tableinsight4.procedure.constant.FConstant;
-import com.sics.rock.tableinsight4.procedure.external.binary.FExternalBinaryModelInfo;
-import com.sics.rock.tableinsight4.procedure.external.binary.FIExternalBinaryModelCalculator;
-import com.sics.rock.tableinsight4.procedure.external.binary.FIExternalBinaryModelPredicateNameFormatter;
-import com.sics.rock.tableinsight4.procedure.interval.FInterval;
+import com.sics.rock.tableinsight4.preprocessing.FExternalBinaryModelHandler;
+import com.sics.rock.tableinsight4.preprocessing.FTableDataLoader;
+import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;
+import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.preprocessing.external.binary.FIExternalBinaryModelCalculator;
+import com.sics.rock.tableinsight4.preprocessing.external.binary.FIExternalBinaryModelPredicateNameFormatter;
+import com.sics.rock.tableinsight4.preprocessing.interval.FInterval;
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;

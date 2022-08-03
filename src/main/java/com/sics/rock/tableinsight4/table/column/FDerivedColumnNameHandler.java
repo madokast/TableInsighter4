@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.table.column;
 
 import com.sics.rock.tableinsight4.predicate.FIPredicate;
-import com.sics.rock.tableinsight4.procedure.external.binary.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelInfo;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 

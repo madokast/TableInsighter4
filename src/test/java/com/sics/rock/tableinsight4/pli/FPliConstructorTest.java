@@ -1,10 +1,10 @@
 package com.sics.rock.tableinsight4.pli;
 
-import com.sics.rock.tableinsight4.procedure.FConstantHandler;
-import com.sics.rock.tableinsight4.procedure.FExternalBinaryModelHandler;
-import com.sics.rock.tableinsight4.procedure.FIntervalsConstantHandler;
-import com.sics.rock.tableinsight4.procedure.FTableDataLoader;
-import com.sics.rock.tableinsight4.procedure.external.binary.FExternalBinaryModelInfo;
+import com.sics.rock.tableinsight4.preprocessing.FConstantHandler;
+import com.sics.rock.tableinsight4.preprocessing.FExternalBinaryModelHandler;
+import com.sics.rock.tableinsight4.preprocessing.FIntervalsConstantHandler;
+import com.sics.rock.tableinsight4.preprocessing.FTableDataLoader;
+import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FValueType;
