@@ -18,6 +18,7 @@ import com.sics.rock.tableinsight4.test.FExamples;
 import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +53,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -93,7 +94,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -133,7 +134,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -199,7 +200,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -265,7 +266,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -330,7 +331,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -399,7 +400,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -468,7 +469,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -537,7 +538,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -604,7 +605,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -652,7 +653,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -704,7 +705,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler);
+        FPredicateFactory singleLinePredicateFactory = FPredicateFactory.createSingleLinePredicateFactory(one, derivedColumnNameHandler, new ArrayList<>());
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -713,11 +714,11 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         int lt123 = singleLinePredicateFactory.findIndex("<123").get(0);
         int gt100 = singleLinePredicateFactory.findIndex(">100").get(0);
         int eqN_Inf = singleLinePredicateFactory.findIndex("-Inf").get(0);
-        int eqP_Inf = singleLinePredicateFactory.findIndex("Inf").stream().filter(i->i!=eqN_Inf).findFirst().get();
+        int eqP_Inf = singleLinePredicateFactory.findIndex("Inf").stream().filter(i -> i != eqN_Inf).findFirst().get();
 
         FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
-        ES.foreach(ps->{
+        ES.foreach(ps -> {
             FBitSet bs = ps.getBitSet();
             if (bs.get(eq123)) assertTrue(bs.get(gt100));
             if (bs.get(eqP_Inf)) assertTrue(bs.get(gt100));

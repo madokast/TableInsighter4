@@ -8,11 +8,11 @@ import org.apache.spark.api.java.function.Function2;
  *
  * @author zhaorx
  */
-public class FExamplePredicateSetMerge implements Function2<FIPredicateSet, FIPredicateSet, FIPredicateSet> {
+public class FExamplePredicateSetMerger implements Function2<FIPredicateSet, FIPredicateSet, FIPredicateSet> {
 
     private final int positiveNegativeExampleNumber;
 
-    public FExamplePredicateSetMerge(int positiveNegativeExampleNumber) {
+    public FExamplePredicateSetMerger(int positiveNegativeExampleNumber) {
         this.positiveNegativeExampleNumber = positiveNegativeExampleNumber;
     }
 

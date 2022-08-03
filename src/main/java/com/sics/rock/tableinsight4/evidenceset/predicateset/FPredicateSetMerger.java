@@ -9,11 +9,11 @@ import org.apache.spark.api.java.function.Function2;
  *
  * @author zhaorx
  */
-public class FPredicateSetMerge implements Function2<FIPredicateSet, FIPredicateSet, FIPredicateSet> {
+public class FPredicateSetMerger implements Function2<FIPredicateSet, FIPredicateSet, FIPredicateSet> {
 
-    public static final FPredicateSetMerge instance = new FPredicateSetMerge();
+    public static final FPredicateSetMerger instance = new FPredicateSetMerger();
 
-    private FPredicateSetMerge() {
+    private FPredicateSetMerger() {
     }
 
     @Override

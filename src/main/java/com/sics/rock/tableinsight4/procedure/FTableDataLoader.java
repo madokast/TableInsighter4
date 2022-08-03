@@ -51,6 +51,9 @@ public class FTableDataLoader implements FTiEnvironment {
             logger.info("Load table {} data from {}", tableName, tableDataPath);
             Dataset<Row> dataset = tableLoader.load(tableDataPath);
 
+            // TODO auto-detect columns if column list is null or empty
+            // TODO auto-detect column value type
+
             logger.info("Add row_id {} if absent on {}", idColumnName, tableName);
             dataset = idColumnAdder.addOnDatasetIfAbsent(dataset);
             ArrayList<FColumnInfo> columns = idColumnAdder.addToColumnInfoIfAbsent(tableInfo.getColumns());

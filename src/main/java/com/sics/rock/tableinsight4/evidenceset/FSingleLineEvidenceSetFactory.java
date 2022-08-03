@@ -5,23 +5,22 @@ import com.sics.rock.tableinsight4.internal.FPartitionId;
 import com.sics.rock.tableinsight4.internal.FRddElementIndex;
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
 import com.sics.rock.tableinsight4.pli.FLocalPLI;
+import com.sics.rock.tableinsight4.pli.FLocalPLIUtils;
 import com.sics.rock.tableinsight4.pli.FPLI;
-import com.sics.rock.tableinsight4.predicate.FOperator;
-import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
-import com.sics.rock.tableinsight4.predicate.FUnaryConsPredicate;
-import com.sics.rock.tableinsight4.predicate.FUnaryIntervalConsPredicate;
+import com.sics.rock.tableinsight4.predicate.*;
 import com.sics.rock.tableinsight4.predicate.iface.FIUnaryPredicate;
 import com.sics.rock.tableinsight4.procedure.constant.FConstant;
 import com.sics.rock.tableinsight4.procedure.interval.FInterval;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FColumnName;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.storage.StorageLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Tuple2;
@@ -29,6 +28,7 @@ import scala.Tuple2;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 
 public class FSingleLineEvidenceSetFactory implements Serializable {
@@ -72,10 +72,10 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
 
         })
                 // reduce depend on positiveNegativeExampleSwitch
-                .reduceByKey(this.positiveNegativeExampleSwitch ? new FExamplePredicateSetMerge(positiveNegativeExampleNumber) : FPredicateSetMerge.instance,
-                        evidenceSetPartitionNumber == -1 ? ((int) (tableLength / 1000)) + 1 : evidenceSetPartitionNumber)
+                .reduceByKey(predicateSetMerger(), evidenceSetRDDPartitionNumber())
                 .map(t -> t._2)
-                .persist(StorageLevel.MEMORY_AND_DISK())
+                // single line es store in mem only
+                .cache()
                 .setName("single_line_es_" + tableInfo.getTableName());
 
         FRddEvidenceSet ES = new FRddEvidenceSet(esRDD, sc, singleLinePredicates.size(), tableLength);
@@ -84,12 +84,22 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
         return ES;
     }
 
+    private int evidenceSetRDDPartitionNumber() {
+        int pn = evidenceSetPartitionNumber == -1 ? sc.defaultParallelism() * 2 : evidenceSetPartitionNumber;
+        logger.info("Single line evidence set RDD partition number {}", pn);
+        return pn;
+    }
+
+    private Function2<FIPredicateSet, FIPredicateSet, FIPredicateSet> predicateSetMerger() {
+        return this.positiveNegativeExampleSwitch ? new FExamplePredicateSetMerger(positiveNegativeExampleNumber) : FPredicateSetMerger.instance;
+    }
+
     private FIPredicateSet[] createSingleLineLocalES(FPredicateFactory predicates, Map<FColumnName, FLocalPLI> colPLIMap, int rowSize) {
         final FIPredicateSet[] localES = new FIPredicateSet[rowSize];
         final int predicateSize = predicates.size();
         for (int predicateId = 0; predicateId < predicateSize; predicateId++) {
             final FIUnaryPredicate predicate = (FIUnaryPredicate) predicates.getPredicate(predicateId);
-            logger.info("local ES deals with {}", predicate);
+            logger.debug("local ES deals with {}", predicate);
             final String columnName = predicate.columnName();
             final FLocalPLI localPLI = colPLIMap.get(new FColumnName(columnName));
             final int partitionId = localPLI.getPartitionId();
@@ -116,6 +126,16 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
                     localPLI.localRowIdsBetween(left.get().getIndex(), right.get().getIndex(), interval.leftClose(), interval.rightClose())
                             .forEach(fillPredicateSet(localES, predicateSize, predicateId, partitionId));
                 }
+            } else if (predicate instanceof FUnaryCrossColumnPredicate) {
+                // TODO test!
+                final String rightColumnName = ((FUnaryCrossColumnPredicate) predicate).rightColumnName();
+                final FLocalPLI rightLocalPLI = colPLIMap.get(new FColumnName(rightColumnName));
+                FLocalPLIUtils.localRowIdsOf(localPLI, rightLocalPLI, operator).flatMap(pair -> {
+                    final List<Integer> leftRowIds = pair._k; // ordered
+                    FAssertUtils.require(() -> FTiUtils.isOrdered(leftRowIds), () -> "The local rowId list is unordered. " + leftRowIds);
+                    final Stream<Integer> rightRowIds = pair._v;
+                    return rightRowIds.filter(rightRowId -> Collections.binarySearch(leftRowIds, rightRowId) >= 0);
+                }).forEach(fillPredicateSet(localES, predicateSize, predicateId, partitionId));
             } else {
                 throw new RuntimeException("Unknown predicate type " + predicate);
             }

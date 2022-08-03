@@ -283,6 +283,10 @@ public class FPliConstructor {
                     })
                     // in the reduce stage, the rdd is re-partition to the origin
                     .reduceByKey(new FPartitionIdPartitioner(numPartitions), FLocalPLI::merge)
+                    .mapToPair(t -> {
+                        t._2.sortRowIds();
+                        return t;
+                    })
                     .cache()
                     .setName("ORIGIN_PLI_" + tableName + "." + columnName);
 

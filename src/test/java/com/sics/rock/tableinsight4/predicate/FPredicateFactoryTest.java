@@ -47,7 +47,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         }
 
         FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
-                relation, new FDerivedColumnNameHandler(Collections.emptyList()));
+                relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         assertEquals(3, factory.size());
 
@@ -75,7 +75,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         }
 
         FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
-                relation, new FDerivedColumnNameHandler(Collections.emptyList()));
+                relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
     }
 
@@ -90,7 +90,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         relation.getColumns().get(3).addConstant(FConstant.of(12.32));
 
         FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
-                relation, new FDerivedColumnNameHandler(Collections.emptyList()));
+                relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         assertEquals(4, factory.size());
 
@@ -111,7 +111,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         relation.getColumns().add(colCombined);
 
         FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
-                relation, new FDerivedColumnNameHandler(Collections.emptyList()));
+                relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         assertEquals(1, factory.size());
 
@@ -143,7 +143,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         relation.getColumns().add(ci);
 
         FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
-                relation, derivedColumnNameHandler);
+                relation, derivedColumnNameHandler, new ArrayList<>());
 
         assertEquals(1, factory.size());
 
@@ -167,7 +167,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         }
 
         FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
-                relation, false, new FDerivedColumnNameHandler(Collections.emptyList()));
+                relation, false, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         for (FIPredicate predicate : factory.allPredicates()) {
             assertTrue(predicate instanceof FBinaryPredicate);
@@ -188,7 +188,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         }
 
         FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
-                relation, true, new FDerivedColumnNameHandler(Collections.emptyList()));
+                relation, true, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         for (FIPredicate predicate : factory.allPredicates()) {
             if (predicate instanceof FBinaryConsPredicate) {
@@ -212,7 +212,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         }
 
         FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
-                relation, true, new FDerivedColumnNameHandler(Collections.emptyList()));
+                relation, true, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         for (FIPredicate predicate : factory.allPredicates()) {
             if (predicate instanceof FBinaryConsPredicate) {
@@ -262,7 +262,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         relationDatasetMap.getDatasetByTableName(relation.getTableName()).show();
 
         FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
-                relation, true, new FDerivedColumnNameHandler(FTiUtils.listOf(modelInfo)));
+                relation, true, new FDerivedColumnNameHandler(FTiUtils.listOf(modelInfo)), new ArrayList<>());
 
         assertTrue(factory.allPredicates().stream().anyMatch(p -> p instanceof FBinaryModelPredicate));
 

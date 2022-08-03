@@ -1,6 +1,7 @@
 package com.sics.rock.tableinsight4.utils;
 
 import com.sics.rock.tableinsight4.internal.FPair;
+import org.apache.spark.sql.catalyst.expressions.Lead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -205,5 +206,12 @@ public class FTiUtils {
             r[i] += arr2[i];
         }
         return r;
+    }
+
+    public static <E extends Comparable<? super E>> boolean isOrdered(List<E> list) {
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(0).compareTo(list.get(1)) < 0) return false;
+        }
+        return true;
     }
 }

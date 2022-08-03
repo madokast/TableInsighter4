@@ -32,6 +32,11 @@ public class FRddEvidenceSet implements FIEvidenceSet {
 
     /**
      * the length of es
+     * single-line es ==> table-length
+     * one table cross-line ==> table-length * (table-length - 1)
+     * two table cross-line ==> table1-length * table2-length
+     *
+     * note: allCount <> rdd.count
      */
     private final long allCount;
 
@@ -97,16 +102,25 @@ public class FRddEvidenceSet implements FIEvidenceSet {
         return predicateSupport;
     }
 
+    /**
+     * test only
+     */
     @Override
     public void foreach(SerializableConsumer<FIPredicateSet> psConsumer) {
         ES.foreach(psConsumer::accept);
     }
 
+    /**
+     * test only
+     */
     @Override
     public String[] info(int limit) {
         return ES.take(limit).stream().map(Objects::toString).toArray(String[]::new);
     }
 
+    /**
+     * test only
+     */
     @Override
     public String[] info(FPredicateFactory predicateIndexer, int limit) {
         return ES.take(limit).stream().map(ps -> ps.toString(predicateIndexer)).toArray(String[]::new);

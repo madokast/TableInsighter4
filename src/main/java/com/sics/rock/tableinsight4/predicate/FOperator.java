@@ -27,4 +27,25 @@ public enum FOperator {
 
         throw new IllegalArgumentException("No operator matches symbol " + symbol);
     }
+
+    /**
+     * if a op1 b iff. b op2 a,
+     * then op1 and op2 are symmetric.
+     */
+    public FOperator symmetric() {
+        switch (this) {
+            case EQ:
+                return EQ;
+            case LT:
+                return GT;
+            case GT:
+                return LT;
+            case LET:
+                return GET;
+            case GET:
+                return LET;
+            default:
+                throw new IllegalArgumentException("Operator of " + this + " has no symmetric counterpart.");
+        }
+    }
 }

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -100,6 +101,22 @@ public class FValueType implements Serializable {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FValueType that = (FValueType) o;
+        return typeType == that.typeType &&
+                Arrays.equals(typeInfo, that.typeInfo) &&
+                Objects.equals(sparkSqlType, that.sparkSqlType);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(typeType, sparkSqlType);
+        result = 31 * result + Arrays.hashCode(typeInfo);
+        return result;
+    }
 
     private enum FTypeType implements Serializable {
         BASIC, ARRAY

@@ -2,6 +2,7 @@ package com.sics.rock.tableinsight4.predicate;
 
 import com.sics.rock.tableinsight4.internal.FIndexProvider;
 import com.sics.rock.tableinsight4.internal.FPair;
+import com.sics.rock.tableinsight4.predicate.info.FExternalPredicateInfo;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FColumnType;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
@@ -52,7 +53,7 @@ public class FPredicateFactory implements Serializable {
      * create single-line rules like t0.name = aaa
      */
     public static FPredicateFactory createSingleLinePredicateFactory(
-            FTableInfo table, FDerivedColumnNameHandler derivedColumnNameHandler) {
+            FTableInfo table, FDerivedColumnNameHandler derivedColumnNameHandler, List<FExternalPredicateInfo> otherInfos) {
         final FPredicateFactory factory = new FPredicateFactory();
 
         final String tabName = table.getTableName();
@@ -70,11 +71,14 @@ public class FPredicateFactory implements Serializable {
             ).forEach(factory::put);
         });
 
+        otherInfos.stream().map(FExternalPredicateInfo::predicates).flatMap(List::stream).forEach(factory::put);
+
         return factory;
     }
 
     public static FPredicateFactory createSingleTableCrossLinePredicateFactory(
-            FTableInfo table, boolean constantPredicate, FDerivedColumnNameHandler derivedColumnNameHandler) {
+            FTableInfo table, boolean constantPredicate, FDerivedColumnNameHandler derivedColumnNameHandler,
+            List<FExternalPredicateInfo> otherInfos) {
         FPredicateFactory factory = new FPredicateFactory();
         String tabName = table.getTableName();
         String innerTableName = table.getInnerTableName();
@@ -112,6 +116,8 @@ public class FPredicateFactory implements Serializable {
             }
 
         });
+
+        otherInfos.stream().map(FExternalPredicateInfo::predicates).flatMap(List::stream).forEach(factory::put);
 
 
         return factory;
