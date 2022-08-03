@@ -7,7 +7,8 @@ import org.junit.Test;
 import java.sql.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class FIntervalTest extends FBasicTestEnv {
 

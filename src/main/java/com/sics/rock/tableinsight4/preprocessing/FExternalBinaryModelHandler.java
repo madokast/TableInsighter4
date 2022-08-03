@@ -1,8 +1,8 @@
 package com.sics.rock.tableinsight4.preprocessing;
 
-import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelInfo;
-import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelDerivedColumnAppender;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
+import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelDerivedColumnAppender;
+import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 import org.slf4j.Logger;

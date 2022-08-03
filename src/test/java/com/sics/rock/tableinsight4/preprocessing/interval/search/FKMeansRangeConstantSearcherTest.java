@@ -60,7 +60,7 @@ public class FKMeansRangeConstantSearcherTest extends FTableInsightEnv {
 
         tableInfo.getColumns().stream().map(FColumnInfo::getIntervalConstants)
                 .flatMap(List::stream)
-                .map(r->r.splitInequalityOf("t0.colXX", 3, false))
+                .map(r -> r.splitInequalityOf("t0.colXX", 3, false))
                 .flatMap(List::stream)
                 .forEach(logger::info);
 

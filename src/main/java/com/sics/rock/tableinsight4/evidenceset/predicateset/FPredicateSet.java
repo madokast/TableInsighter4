@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.evidenceset.predicateset;
 
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
-import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -42,7 +42,7 @@ public class FPredicateSet implements FIPredicateSet {
     }
 
     @Override
-    public String toString(FPredicateFactory indexProvider) {
+    public String toString(FPredicateIndexer indexProvider) {
         String psStr = bitSet.stream().mapToObj(indexProvider::getPredicate).map(Objects::toString)
                 .collect(Collectors.joining(" ", "[", "]"));
         return psStr + "↑" + support;

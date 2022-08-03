@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.utils;
 
-import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import com.sics.rock.tableinsight4.test.FTableCreator;
+import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import org.junit.Test;
 
 import java.io.File;

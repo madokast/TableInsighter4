@@ -3,7 +3,7 @@ package com.sics.rock.tableinsight4.table.column;
 import com.sics.rock.tableinsight4.conf.FTiConfiguring;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Constant value info about a column.

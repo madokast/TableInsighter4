@@ -1,12 +1,12 @@
-package com.sics.rock.tableinsight4.predicate;
+package com.sics.rock.tableinsight4.predicate.impl;
 
+import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 
 import java.util.Set;
 
 /**
  * The binary model predicate is a binary predicate except overriding the toString method
- *
  */
 public class FBinaryModelPredicate extends FBinaryPredicate {
 

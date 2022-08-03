@@ -3,7 +3,7 @@ package com.sics.rock.tableinsight4.utils;
 import com.sics.rock.tableinsight4.test.env.FBasicTestEnv;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class FValueDefaultTest extends FBasicTestEnv {
 

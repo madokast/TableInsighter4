@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Search constants by ratio and return as FConstantInfo
  * Generate constants from FConstantConfig in columnInfo and return as FConstantInfo
- *
+ * <p>
  * All FConstantInfo convert to FConstant and stored in columnInfo
  */
 public interface FIConstantSearcher {

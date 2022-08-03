@@ -2,7 +2,7 @@ package com.sics.rock.tableinsight4.evidenceset;
 
 import com.sics.rock.tableinsight4.evidenceset.predicateset.FIPredicateSet;
 import com.sics.rock.tableinsight4.internal.SerializableConsumer;
-import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.rule.FRule;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public interface FIEvidenceSet {
     /**
      * contents of the ES in the form of predicate
      */
-    String[] info(FPredicateFactory predicateIndexer, int limit);
+    String[] info(FPredicateIndexer predicateIndexer, int limit);
 
     /**
      * consume each predicateSet in the ES

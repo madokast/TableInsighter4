@@ -2,7 +2,7 @@ package com.sics.rock.tableinsight4.evidenceset.predicateset;
 
 import com.sics.rock.tableinsight4.internal.FRddElementIndex;
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
-import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,7 +54,7 @@ public class FExamplePredicateSet extends FPredicateSet {
     }
 
     @Override
-    public String toString(FPredicateFactory indexProvider) {
+    public String toString(FPredicateIndexer indexProvider) {
         return super.toString(indexProvider) + "[" + rowIdInfo() + "]";
     }
 }

@@ -8,7 +8,7 @@ public class FEnvironmentSharer extends FAbstractEnvironmentUser implements FIEn
         this.sharer = sharer;
     }
 
-    static FEnvironmentSharer current(){
+    static FEnvironmentSharer current() {
         return new FEnvironmentSharer(Thread.currentThread());
     }
 

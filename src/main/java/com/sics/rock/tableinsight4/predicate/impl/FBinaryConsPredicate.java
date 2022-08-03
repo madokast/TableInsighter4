@@ -1,5 +1,6 @@
-package com.sics.rock.tableinsight4.predicate;
+package com.sics.rock.tableinsight4.predicate.impl;
 
+import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.predicate.iface.FIBinaryPredicate;
 import com.sics.rock.tableinsight4.predicate.iface.FIConstantPredicate;
 import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;

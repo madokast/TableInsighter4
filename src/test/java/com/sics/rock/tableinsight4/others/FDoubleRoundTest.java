@@ -98,23 +98,23 @@ public class FDoubleRoundTest extends FBasicTestEnv {
     }
 
     @Test
-    public void test_round5(){
+    public void test_round5() {
         double a1 = 123.314e-100;
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, false));
 
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, true));
     }
 
     @Test
-    public void test_round6(){
+    public void test_round6() {
         double a1 = -123.314e-100;
         // TODO
         //09:50:43.536 [main] INFO  TEST - -1.23314E-98 -> -0
@@ -123,112 +123,112 @@ public class FDoubleRoundTest extends FBasicTestEnv {
         //09:50:43.542 [main] INFO  TEST - -1.23314E-98 -> -0.000
         //09:50:43.542 [main] INFO  TEST - -1.23314E-98 -> -0.0000
         //09:50:43.542 [main] INFO  TEST - -1.23314E-98 -> -1E-98
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, false));
 
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, true));
     }
 
     @Test
-    public void test_round7(){
+    public void test_round7() {
         double a1 = 123.314e+100;
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, false));
 
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, true));
     }
 
     @Test
-    public void test_round8(){
+    public void test_round8() {
         double a1 = 123.314e+100;
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, false));
 
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, true));
     }
 
     @Test
-    public void test_round9(){
+    public void test_round9() {
         double a1 = 1.1;
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, false));
 
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, true));
     }
 
     @Test
-    public void test_round10(){
+    public void test_round10() {
         double a1 = Double.NaN;
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, false));
 
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, true));
     }
 
     @Test
-    public void test_round11(){
+    public void test_round11() {
         double a1 = Double.NEGATIVE_INFINITY;
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, false));
 
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, true));
     }
 
     @Test
-    public void test_round12(){
+    public void test_round12() {
         double a1 = Double.POSITIVE_INFINITY;
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,false));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, false));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, false));
 
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3,true));
-        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4,true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 0, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 1, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 2, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 3, true));
+        logger.info("{} -> {}", a1, FTiUtils.round(a1, 4, true));
     }
 }

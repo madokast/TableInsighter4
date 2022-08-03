@@ -2,7 +2,7 @@ package com.sics.rock.tableinsight4.evidenceset;
 
 import com.sics.rock.tableinsight4.evidenceset.predicateset.FIPredicateSet;
 import com.sics.rock.tableinsight4.internal.SerializableConsumer;
-import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.rule.FRule;
 import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.api.java.JavaRDD;
@@ -35,7 +35,7 @@ public class FRddEvidenceSet implements FIEvidenceSet {
      * single-line es ==> table-length
      * one table cross-line ==> table-length * (table-length - 1)
      * two table cross-line ==> table1-length * table2-length
-     *
+     * <p>
      * note: allCount <> rdd.count
      */
     private final long allCount;
@@ -122,7 +122,7 @@ public class FRddEvidenceSet implements FIEvidenceSet {
      * test only
      */
     @Override
-    public String[] info(FPredicateFactory predicateIndexer, int limit) {
+    public String[] info(FPredicateIndexer predicateIndexer, int limit) {
         return ES.take(limit).stream().map(ps -> ps.toString(predicateIndexer)).toArray(String[]::new);
     }
 }

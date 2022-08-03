@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.experiment;
 
-import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import com.sics.rock.tableinsight4.test.FTableCreator;
+import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import org.apache.spark.ml.classification.DecisionTreeClassificationModel;
 import org.apache.spark.ml.classification.DecisionTreeClassifier;
 import org.apache.spark.ml.feature.*;

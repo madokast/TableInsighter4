@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.table.column;
 
-import com.sics.rock.tableinsight4.utils.FTypeUtils;
 import com.sics.rock.tableinsight4.utils.FTiUtils;
+import com.sics.rock.tableinsight4.utils.FTypeUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;

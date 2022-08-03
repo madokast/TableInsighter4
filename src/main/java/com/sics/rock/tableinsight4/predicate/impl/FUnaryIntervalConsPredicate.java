@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.predicate;
+package com.sics.rock.tableinsight4.predicate.impl;
 
 import com.sics.rock.tableinsight4.predicate.iface.FIIntervalPredicate;
 import com.sics.rock.tableinsight4.predicate.iface.FIUnaryPredicate;

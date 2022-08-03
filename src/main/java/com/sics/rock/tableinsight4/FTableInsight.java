@@ -1,17 +1,18 @@
 package com.sics.rock.tableinsight4;
 
 import com.sics.rock.tableinsight4.conf.FTiConfig;
+import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
 import com.sics.rock.tableinsight4.evidenceset.FSingleLineEvidenceSetFactory;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructor;
-import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactory;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.preprocessing.FConstantHandler;
 import com.sics.rock.tableinsight4.preprocessing.FExternalBinaryModelHandler;
 import com.sics.rock.tableinsight4.preprocessing.FIntervalsConstantHandler;
 import com.sics.rock.tableinsight4.preprocessing.FTableDataLoader;
 import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelInfo;
-import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
@@ -20,7 +21,8 @@ import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entry
@@ -59,8 +61,8 @@ public class FTableInsight {
             FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
             FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-            tableDatasetMap.foreach((tabInfo, dataset)->{
-                FPredicateFactory singleLinePredicateFactory =
+            tableDatasetMap.foreach((tabInfo, dataset) -> {
+                FPredicateIndexer singleLinePredicateFactory =
                         FPredicateFactory.createSingleLinePredicateFactory(tabInfo, derivedColumnNameHandler, new ArrayList<>());
 
                 FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(

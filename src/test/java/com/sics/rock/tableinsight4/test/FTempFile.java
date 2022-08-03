@@ -1,6 +1,5 @@
 package com.sics.rock.tableinsight4.test;
 
-import com.sics.rock.tableinsight4.internal.partitioner.FPrePartitionerTest;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

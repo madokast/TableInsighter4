@@ -1,7 +1,5 @@
 package com.sics.rock.tableinsight4.utils;
 
-import java.util.Optional;
-
 /**
  * return value is null ? default : value
  *

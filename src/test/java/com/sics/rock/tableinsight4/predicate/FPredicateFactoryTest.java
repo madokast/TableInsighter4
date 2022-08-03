@@ -1,6 +1,12 @@
 package com.sics.rock.tableinsight4.predicate;
 
 import com.sics.rock.tableinsight4.internal.FPair;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactory;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
+import com.sics.rock.tableinsight4.predicate.impl.FBinaryConsPredicate;
+import com.sics.rock.tableinsight4.predicate.impl.FBinaryIntervalConsPredicate;
+import com.sics.rock.tableinsight4.predicate.impl.FBinaryModelPredicate;
+import com.sics.rock.tableinsight4.predicate.impl.FBinaryPredicate;
 import com.sics.rock.tableinsight4.preprocessing.FExternalBinaryModelHandler;
 import com.sics.rock.tableinsight4.preprocessing.FTableDataLoader;
 import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;
@@ -20,13 +26,13 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.junit.Test;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class FPredicateFactoryTest extends FTableInsightEnv {
@@ -46,7 +52,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
+        FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicateFactory(
                 relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         assertEquals(3, factory.size());
@@ -74,7 +80,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             break;
         }
 
-        FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
+        FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicateFactory(
                 relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
     }
@@ -89,7 +95,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         relation.getColumns().get(2).addConstant(FConstant.of("abc"));
         relation.getColumns().get(3).addConstant(FConstant.of(12.32));
 
-        FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
+        FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicateFactory(
                 relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         assertEquals(4, factory.size());
@@ -110,7 +116,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         colCombined.addConstant(FConstant.of("CITY 44312"));
         relation.getColumns().add(colCombined);
 
-        FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
+        FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicateFactory(
                 relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         assertEquals(1, factory.size());
@@ -142,7 +148,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         ci.addConstant(FConstant.of(1L));
         relation.getColumns().add(ci);
 
-        FPredicateFactory factory = FPredicateFactory.createSingleLinePredicateFactory(
+        FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicateFactory(
                 relation, derivedColumnNameHandler, new ArrayList<>());
 
         assertEquals(1, factory.size());
@@ -166,7 +172,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
+        FPredicateIndexer factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
                 relation, false, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         for (FIPredicate predicate : factory.allPredicates()) {
@@ -187,7 +193,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
+        FPredicateIndexer factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
                 relation, true, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         for (FIPredicate predicate : factory.allPredicates()) {
@@ -211,7 +217,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
+        FPredicateIndexer factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
                 relation, true, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
         for (FIPredicate predicate : factory.allPredicates()) {
@@ -261,7 +267,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         relationDatasetMap.getDatasetByTableName(relation.getTableName()).show();
 
-        FPredicateFactory factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
+        FPredicateIndexer factory = FPredicateFactory.createSingleTableCrossLinePredicateFactory(
                 relation, true, new FDerivedColumnNameHandler(FTiUtils.listOf(modelInfo)), new ArrayList<>());
 
         assertTrue(factory.allPredicates().stream().anyMatch(p -> p instanceof FBinaryModelPredicate));

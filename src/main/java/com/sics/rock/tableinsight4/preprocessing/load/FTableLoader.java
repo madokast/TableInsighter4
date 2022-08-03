@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.preprocessing.load;
 
-import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.conf.FConfigIllegalException;
+import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.preprocessing.load.impl.FCsvTableLoader;
 import com.sics.rock.tableinsight4.preprocessing.load.impl.FJDBCTableLoader;
 import com.sics.rock.tableinsight4.preprocessing.load.impl.FOrcTableLoader;

@@ -1,7 +1,6 @@
 package com.sics.rock.tableinsight4.utils;
 
 import com.sics.rock.tableinsight4.internal.FPair;
-import org.apache.spark.sql.catalyst.expressions.Lead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

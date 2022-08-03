@@ -101,6 +101,7 @@ public class FSparkJoinTest extends FSparkEnv {
         ages.join(heights, name1.equalTo(name2), "left").drop(name2).show();
 
     }
+
     @Test
     public void test_drop_foreign_key_but_name_equal() {
         Dataset<Row> ages = FSparkSqlUtils.createTable(spark, 2,

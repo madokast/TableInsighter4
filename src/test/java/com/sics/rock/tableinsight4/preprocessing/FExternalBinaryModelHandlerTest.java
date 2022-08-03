@@ -2,8 +2,8 @@ package com.sics.rock.tableinsight4.preprocessing;
 
 import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelInfo;
-import com.sics.rock.tableinsight4.preprocessing.external.binary.FIExternalBinaryModelPredicateNameFormatter;
 import com.sics.rock.tableinsight4.preprocessing.external.binary.FIExternalBinaryModelCalculator;
+import com.sics.rock.tableinsight4.preprocessing.external.binary.FIExternalBinaryModelPredicateNameFormatter;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.test.FExamples;

@@ -33,7 +33,7 @@ public enum FColumnType {
      * 1600 Pennsylvania Avenue, Washington, DC             0
      * Cedars-Sinai Medical Center, RD                      1
      * Cedars-Sinai Medical Center                          1
-     *
+     * <p>
      * The column "$EX_001" derived by results of external binary model,
      * tell the address is the same or not.
      */

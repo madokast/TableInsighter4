@@ -7,8 +7,12 @@ import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
 import com.sics.rock.tableinsight4.pli.FLocalPLI;
 import com.sics.rock.tableinsight4.pli.FLocalPLIUtils;
 import com.sics.rock.tableinsight4.pli.FPLI;
-import com.sics.rock.tableinsight4.predicate.*;
+import com.sics.rock.tableinsight4.predicate.FOperator;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.predicate.iface.FIUnaryPredicate;
+import com.sics.rock.tableinsight4.predicate.impl.FUnaryConsPredicate;
+import com.sics.rock.tableinsight4.predicate.impl.FUnaryCrossColumnPredicate;
+import com.sics.rock.tableinsight4.predicate.impl.FUnaryIntervalConsPredicate;
 import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;
 import com.sics.rock.tableinsight4.preprocessing.interval.FInterval;
 import com.sics.rock.tableinsight4.table.FTableInfo;
@@ -43,9 +47,9 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
 
     private final int positiveNegativeExampleNumber;
 
-    public FIEvidenceSet singleLineEvidenceSet(FTableInfo tableInfo, FPLI PLI, FPredicateFactory singleLinePredicates, long tableLength) {
+    public FIEvidenceSet singleLineEvidenceSet(FTableInfo tableInfo, FPLI PLI, FPredicateIndexer singleLinePredicates, long tableLength) {
 
-        Broadcast<FPredicateFactory> predicatesBroadcast = sc.broadcast(singleLinePredicates);
+        Broadcast<FPredicateIndexer> predicatesBroadcast = sc.broadcast(singleLinePredicates);
 
         final JavaPairRDD<FPartitionId, Map<FColumnName, FLocalPLI>> tablePLI = PLI.getTablePLI(tableInfo);
 
@@ -94,7 +98,7 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
         return this.positiveNegativeExampleSwitch ? new FExamplePredicateSetMerger(positiveNegativeExampleNumber) : FPredicateSetMerger.instance;
     }
 
-    private FIPredicateSet[] createSingleLineLocalES(FPredicateFactory predicates, Map<FColumnName, FLocalPLI> colPLIMap, int rowSize) {
+    private FIPredicateSet[] createSingleLineLocalES(FPredicateIndexer predicates, Map<FColumnName, FLocalPLI> colPLIMap, int rowSize) {
         final FIPredicateSet[] localES = new FIPredicateSet[rowSize];
         final int predicateSize = predicates.size();
         for (int predicateId = 0; predicateId < predicateSize; predicateId++) {

@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.conf;
 
-import com.sics.rock.tableinsight4.utils.FTypeUtils;
 import com.sics.rock.tableinsight4.utils.FTiUtils;
+import com.sics.rock.tableinsight4.utils.FTypeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

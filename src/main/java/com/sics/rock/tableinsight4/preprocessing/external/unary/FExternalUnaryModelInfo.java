@@ -8,5 +8,4 @@ package com.sics.rock.tableinsight4.preprocessing.external.unary;
 public class FExternalUnaryModelInfo {
 
 
-
 }

@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  * @author zhaorx
  */
-public abstract class FAbstractEnvironmentUser implements FIEnvironmentUser{
+public abstract class FAbstractEnvironmentUser implements FIEnvironmentUser {
 
     @Override
     public final int hashCode() {

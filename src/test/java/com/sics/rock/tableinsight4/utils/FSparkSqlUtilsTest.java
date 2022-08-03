@@ -8,7 +8,6 @@ import org.junit.Test;
 import java.util.Collections;
 
 /**
- *
  * @author zhaorx
  */
 public class FSparkSqlUtilsTest extends FSparkEnv {

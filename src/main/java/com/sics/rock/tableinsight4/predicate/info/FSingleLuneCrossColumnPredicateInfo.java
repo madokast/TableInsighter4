@@ -7,8 +7,6 @@ import java.util.List;
 public class FSingleLuneCrossColumnPredicateInfo implements FExternalPredicateInfo {
 
 
-
-
     @Override
     public List<FIPredicate> predicates() {
         return null;

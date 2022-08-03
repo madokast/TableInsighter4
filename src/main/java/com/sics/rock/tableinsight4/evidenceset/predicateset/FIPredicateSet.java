@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.evidenceset.predicateset;
 
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
-import com.sics.rock.tableinsight4.predicate.FPredicateFactory;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 
 import java.io.Serializable;
 
@@ -17,5 +17,5 @@ public interface FIPredicateSet extends Serializable {
 
     long getSupport();
 
-    String toString(FPredicateFactory indexProvider);
+    String toString(FPredicateIndexer indexProvider);
 }

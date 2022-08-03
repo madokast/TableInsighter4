@@ -1,7 +1,6 @@
 package com.sics.rock.tableinsight4.predicate;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -35,10 +34,10 @@ public interface FIPredicate extends Serializable {
 
     /**
      * identifier
-     *
+     * <p>
      * relative table column of this predicate
      * for compatibility between predicates
-     *
+     * <p>
      * Derived column names should revert to origin ones
      */
     Set<String> innerTabCols();

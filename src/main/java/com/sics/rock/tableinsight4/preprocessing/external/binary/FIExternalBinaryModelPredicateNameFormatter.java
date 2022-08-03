@@ -17,7 +17,7 @@ public interface FIExternalBinaryModelPredicateNameFormatter {
     /**
      * similar('levenshtein' , t0.ac, t1.ac, 0.85)
      */
-    class FSimilarPredicateNameFormatter implements FIExternalBinaryModelPredicateNameFormatter{
+    class FSimilarPredicateNameFormatter implements FIExternalBinaryModelPredicateNameFormatter {
 
         private final FDerivedColumnNameHandler derivedColumnNameHandler;
         private final List<String> leftColumnNames;
@@ -54,8 +54,8 @@ public interface FIExternalBinaryModelPredicateNameFormatter {
         private final String algorithmName;
 
         public FMachineLearningPredicateNameFormatter(FDerivedColumnNameHandler derivedColumnNameHandler,
-                                              List<String> leftColumnNames, List<String> rightColumnNames,
-                                              String algorithmName) {
+                                                      List<String> leftColumnNames, List<String> rightColumnNames,
+                                                      String algorithmName) {
             this.derivedColumnNameHandler = derivedColumnNameHandler;
             this.leftColumnNames = leftColumnNames;
             this.rightColumnNames = rightColumnNames;

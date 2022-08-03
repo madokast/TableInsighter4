@@ -1,8 +1,8 @@
 package com.sics.rock.tableinsight4.table.column;
 
+import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.predicate.FIPredicate;
 import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelInfo;
-import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 
 import java.util.*;
@@ -71,10 +71,11 @@ public class FDerivedColumnNameHandler implements FTiEnvironment {
 
     /**
      * identifier of predicate
+     *
      * @see FIPredicate#innerTabCols()
      */
     public Set<String> innerTabCols(String tabName, String innerTableName, String columnName) {
-        if(isDerivedBinaryModelColumnName(columnName)) {
+        if (isDerivedBinaryModelColumnName(columnName)) {
             FExternalBinaryModelInfo modelInfo = extractModelInfo(columnName);
             if (modelInfo.getLeftTableName().equals(tabName)) {
                 return modelInfo.getLeftColumns().stream().map(c -> innerTableName + tableColumnLinker + c).collect(Collectors.toSet());

@@ -1,10 +1,10 @@
 package com.sics.rock.tableinsight4.preprocessing;
 
+import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.preprocessing.constant.FConstantInfo;
 import com.sics.rock.tableinsight4.preprocessing.constant.search.FExternalConstantSearcher;
 import com.sics.rock.tableinsight4.preprocessing.constant.search.FIConstantSearcher;
 import com.sics.rock.tableinsight4.preprocessing.constant.search.FRatioConstantSearcher;
-import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import org.slf4j.Logger;

@@ -1,14 +1,13 @@
-package com.sics.rock.tableinsight4.predicate;
+package com.sics.rock.tableinsight4.predicate.impl;
 
+import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.predicate.iface.FIUnaryPredicate;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Set;
 
 /**
  * single line cross column predicate
  * t0.xxx > t0.yyy
- *
  *
  * @author zhaorx
  */
