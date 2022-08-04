@@ -13,11 +13,6 @@ import java.util.List;
 public interface FIEvidenceSet {
 
     /**
-     * calculate the support info of rules
-     */
-    List<FRule> applyOn(List<FRule> rules);
-
-    /**
      * size of the ES
      */
     long allCount();

@@ -35,7 +35,7 @@ public interface FIPredicate extends Serializable {
     /**
      * identifier
      * <p>
-     * relative table column of this predicate
+     * relative table column of this predicate (innerTableName + tableColumnLinker + columnName)
      * for compatibility between predicates
      * <p>
      * Derived column names should revert to origin ones

@@ -42,6 +42,9 @@ public class FBinaryConsPredicate implements FIConstantPredicate, FIBinaryPredic
         return toString("^");
     }
 
+    /**
+     * ti.col op const ^ tj.col op const
+     */
     public String toString(String syntaxConjunction) {
         return String.format("t%d.%s %s %s %s t%d.%s %s %s",
                 leftTableIndex(), columnName, operator.symbol, constant.toUserString(),

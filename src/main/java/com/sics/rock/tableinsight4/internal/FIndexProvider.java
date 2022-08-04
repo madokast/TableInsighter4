@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author HPI-Information-Systems/Metanome
+ */
 public class FIndexProvider<T> implements Serializable {
 
     private Map<T, Integer> indexes = new HashMap<>();

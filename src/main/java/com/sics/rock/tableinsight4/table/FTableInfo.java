@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -64,16 +65,20 @@ public class FTableInfo implements Serializable {
     /*---------------------- column view -----------------------*/
 
     public List<FColumnInfo> intervalRequiredColumnsView() {
-        final List<FColumnInfo> view = columns.stream()
-                .filter(c -> !c.isSkip())
-                .filter(c -> c.getIntervalConstantInfo().isFindIntervalConstant())
-                .collect(Collectors.toList());
-        return Collections.unmodifiableList(view);
+        return columnsView(c -> !c.isSkip() && c.getIntervalConstantInfo().isFindIntervalConstant());
     }
 
     public List<FColumnInfo> nonSkipColumnsView() {
+        return columnsView(c -> !c.isSkip());
+    }
+
+    public List<FColumnInfo> nonTargetColumnsView() {
+        return columnsView(c -> !c.isTarget());
+    }
+
+    private List<FColumnInfo> columnsView(Predicate<FColumnInfo> filter) {
         final List<FColumnInfo> view = columns.stream()
-                .filter(c -> !c.isSkip())
+                .filter(filter)
                 .collect(Collectors.toList());
         return Collections.unmodifiableList(view);
     }

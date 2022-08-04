@@ -14,6 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * a predicate set used in one rule find
+ * the main function of this class is providing a indexer of predicate
+ *
+ * @author zhaorx
+ */
 public class FPredicateIndexer implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FPredicateIndexer.class);
@@ -92,6 +98,9 @@ public class FPredicateIndexer implements Serializable {
         return size() == 0;
     }
 
+    /**
+     * created by predicate factory
+     */
     FPredicateIndexer() {
     }
 

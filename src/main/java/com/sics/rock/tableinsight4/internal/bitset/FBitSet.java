@@ -13,6 +13,8 @@ import java.util.stream.StreamSupport;
  * <p>
  * bs.set(0) -> 10000....
  * bs.set(3) -> 00010....
+ *
+ * @author zhaorx
  */
 public class FBitSet implements Serializable {
 
@@ -36,6 +38,10 @@ public class FBitSet implements Serializable {
         int wi = i / Long.SIZE;
         i = i % Long.SIZE;
         words[wi] |= (HIGHEST >>> i);
+    }
+
+    public void fill() {
+        Arrays.fill(words, 0xffff_ffff_ffff_ffffL);
     }
 
     /**
@@ -317,6 +323,9 @@ public class FBitSet implements Serializable {
         return stream().boxed().collect(Collectors.toList());
     }
 
+    /**
+     * this object size in bytes
+     */
     public long heapSize() {
         // size of this pointer = 8 markWord + 4 clsPtr + 4 longArr + 0 pad = 16 B
         long thisObj = 8 + 4 + 4;
