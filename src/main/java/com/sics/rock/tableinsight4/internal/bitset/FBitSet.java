@@ -32,6 +32,13 @@ public class FBitSet implements Serializable {
     }
 
     /**
+     * create bitset using the words
+     */
+    public static FBitSet of(long[] words) {
+        return new FBitSet(words);
+    }
+
+    /**
      * set i-th bit as true
      */
     public void set(int i) {
@@ -323,19 +330,33 @@ public class FBitSet implements Serializable {
         return stream().boxed().collect(Collectors.toList());
     }
 
-    /**
-     * this object size in bytes
-     */
-    public long heapSize() {
-        // size of this pointer = 8 markWord + 4 clsPtr + 4 longArr + 0 pad = 16 B
-        long thisObj = 8 + 4 + 4;
-        // size of long array = 8 markWord + 4 clsPtr + 4 int_for_length + 8 long + 0 pad
-        long arrSize = 8 + 4 + 4 + Long.BYTES * words.length;
-        return thisObj + arrSize;
-    }
-
     public int size() {
         return words.length * Long.SIZE;
+    }
+
+    public int wordsLength() {
+        return this.words.length;
+    }
+
+    /**
+     * expose words
+     */
+    public long[] getWords() {
+        return words;
+    }
+
+    /**
+     * size of this bitset object of the capacity
+     */
+    public static int objectSize(int capacity) {
+        int wordNumber = capacity / Long.SIZE;
+        if (capacity % Long.SIZE != 0) ++wordNumber;
+        return
+                // size of this pointer = 8 markWord + 4 clsPtr + 4 longArr + 0 pad = 16 B
+                8 + 4 + 4 +
+                        // size of long array = 8 markWord + 4 clsPtr + 4 int_for_length + 0 pad
+                        8 + 4 + 4 +
+                        Long.BYTES * wordNumber;
     }
 }
 

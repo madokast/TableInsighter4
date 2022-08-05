@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * a predicate set used in one rule find
+ * a predicate set used in one rule finding
  * the main function of this class is providing a indexer of predicate
  *
  * @author zhaorx
@@ -122,4 +122,9 @@ public class FPredicateIndexer implements Serializable {
         return find(feature).stream().map(this::getIndex).collect(Collectors.toList());
     }
 
+    public int getUnaryPredicateT0ByT1(int index) {
+        FAssertUtils.require(() -> constPredT10Map.containsKey(index),
+                () -> "constPredT10Map does not contain key " + getPredicate(index));
+        return this.constPredT10Map.get(index);
+    }
 }

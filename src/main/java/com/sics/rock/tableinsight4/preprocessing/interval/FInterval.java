@@ -10,10 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * interval
@@ -309,5 +306,21 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
             return right.getConstant().compareTo(v) >= (rightClose ? 0 : 1) &&
                     v.compareTo(left.getConstant()) >= (leftClose ? 0 : 1);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FInterval<?> fInterval = (FInterval<?>) o;
+        return leftClose == fInterval.leftClose &&
+                rightClose == fInterval.rightClose &&
+                Objects.equals(left, fInterval.left) &&
+                Objects.equals(right, fInterval.right);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(left, right, leftClose, rightClose);
     }
 }

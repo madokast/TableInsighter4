@@ -64,6 +64,7 @@ public class FBitSetSearchTree {
 
     private boolean containSubSet(FBitSet bitSet, int searchFrom) {
         if (contain) return true;
+        if (subTrees.isEmpty()) return false;
 
         for (int next = bitSet.nextSetBit(searchFrom); next >= 0; next = bitSet.nextSetBit(next + 1)) {
             FBitSetSearchTree subTree = subTrees.get(next);

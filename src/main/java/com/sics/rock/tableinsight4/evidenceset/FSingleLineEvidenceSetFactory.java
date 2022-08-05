@@ -131,7 +131,6 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
                             .forEach(fillPredicateSet(localES, predicateSize, predicateId, partitionId));
                 }
             } else if (predicate instanceof FUnaryCrossColumnPredicate) {
-                // TODO test!
                 final String rightColumnName = ((FUnaryCrossColumnPredicate) predicate).rightColumnName();
                 final FLocalPLI rightLocalPLI = colPLIMap.get(new FColumnName(rightColumnName));
                 FLocalPLIUtils.localRowIdsOf(localPLI, rightLocalPLI, operator).flatMap(pair -> {

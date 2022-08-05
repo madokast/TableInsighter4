@@ -1,5 +1,6 @@
 package com.sics.rock.tableinsight4.internal.bitset;
 
+import org.apache.spark.util.SizeEstimator;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -471,6 +472,15 @@ public class FBitSetTest {
             }
             assertEquals(set, look);
 
+        }
+    }
+
+    @Test
+    public void test_objSize() {
+        for (int i = 0; i < 200; i+=10) {
+            FBitSet bitSet = new FBitSet(i);
+            int size = FBitSet.objectSize(i);
+            assertEquals(size, SizeEstimator.estimate(bitSet));
         }
     }
 }

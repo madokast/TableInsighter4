@@ -45,9 +45,11 @@ public class FRule {
     }
 
     /**
-     * length of the left hand side
+     * number of the left hand side predicate
+     * since there are some combined predicates {FBinaryConsPredicate} and {FBinaryIntervalConsPredicate},
+     * the lhsLength != xs.cardinality
      */
-    public int xsLength(FPredicateIndexer predicateIndexer) {
+    public int lhsLength(FPredicateIndexer predicateIndexer) {
         return xs.stream().map(x -> predicateIndexer.getPredicate(x).length()).sum();
     }
 

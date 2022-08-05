@@ -28,6 +28,11 @@ public interface FIEvidenceSet {
     long[] predicateSupport();
 
     /**
+     * run rules on this evidence set
+     */
+    void applyOn(List<FRule> rules);
+
+    /**
      * contents of the ES in the form of 01 bitset
      */
     String[] info(int limit);

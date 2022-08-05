@@ -15,8 +15,8 @@ import java.util.Set;
  * <p>
  * This predicate is just combination of two individual unary constant predicates,
  * which have the same table, column and constant but tuple-id is 0 and 1 respectively.
- * To combine them eases the construction of rules.
- * Because there are some restrictions in rules.
+ * To combine them eases the construction of rules,
+ * because there are some restrictions in rules.
  *
  * @author zhaorx
  */

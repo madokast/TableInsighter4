@@ -2,14 +2,21 @@ package com.sics.rock.tableinsight4.evidenceset;
 
 import com.sics.rock.tableinsight4.evidenceset.predicateset.FIPredicateSet;
 import com.sics.rock.tableinsight4.internal.SerializableConsumer;
+import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
+import com.sics.rock.tableinsight4.rule.FRule;
+import com.sics.rock.tableinsight4.rule.FRuleBodyTO;
+import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.broadcast.Broadcast;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * @author zhaorx
@@ -75,6 +82,49 @@ public class FRddEvidenceSet implements FIEvidenceSet {
             }).reduce(FTiUtils::longArrSum);
             this.predicateSupport = Arrays.copyOf(reduced, predSize);
             this.cardinality = reduced[predSize];
+        }
+    }
+
+    @Override
+    public void applyOn(List<FRule> rules) {
+        FAssertUtils.require(() -> rules.stream().allMatch(FRule::isAllZero), "Verify non-zero rules");
+
+        FRuleBodyTO to = new FRuleBodyTO(rules);
+        Broadcast<FRuleBodyTO> toBroadcast = sc.broadcast(to);
+
+        long[] reducedSupportInfo = ES.mapPartitions(psIter -> {
+            FRuleBodyTO ruleBodyTOB = toBroadcast.getValue();
+            int ruleSize = ruleBodyTOB.getRuleNumber();
+
+            // supportInfos 前 ruleSize 放 xSupp，后 ruleSize 放 supp
+            long[] supportInfos = new long[ruleSize * 2];
+            Arrays.fill(supportInfos, 0L);
+
+            while (psIter.hasNext()) {
+                FIPredicateSet ps = psIter.next();
+                FBitSet psBit = ps.getBitSet();
+                long count = ps.getSupport();
+                IntStream.range(0, ruleSize).parallel().forEach(i -> {
+                    FBitSet xs = ruleBodyTOB.ruleLhs(i);
+                    int y = ruleBodyTOB.ruleRhs(i);
+                    if (xs.isSubSetOf(psBit)) {
+                        // xSupp
+                        supportInfos[i] += count;
+                        if (psBit.get(y)) {
+                            // supp
+                            supportInfos[i + ruleSize] += count;
+                        }
+                    }
+                });
+            }
+            return Collections.singletonList(supportInfos).iterator();
+        }).reduce(FTiUtils::longArrSum);
+
+        int size = rules.size();
+        for (int i = 0; i < size; i++) {
+            FRule rule = rules.get(i);
+            rule.xSupport = reducedSupportInfo[i];
+            rule.support = reducedSupportInfo[i + size];
         }
     }
 
