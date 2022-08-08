@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * Configs in a task.
+ * Configs in a TI task.
  *
  * @author zhaorx
  */
@@ -24,11 +24,35 @@ public class FTiConfig {
     @FConfigItem(name = "ti.rule.confidence", description = "Confidence rate of rules")
     public Double confidence = 0.8;
 
-    @FConfigItem(name = "ti.rule.syntax.conjunction", description = "The symbol of logical operation conjunction in rule (e.g., ^, ⋀, &, &&)")
+    @FConfigItem(name = "ti.rule.syntax.conjunction", description = "The symbol of logical operation conjunction in rule. e.g., ^, ⋀, &, &&")
     public String syntaxConjunction = "⋀";
 
-    @FConfigItem(name = "ti.rule.syntax.implication", description = "The symbol of logical operation implication in rule (e.g. ->, =>, →")
+    @FConfigItem(name = "ti.rule.syntax.implication", description = "The symbol of logical operation implication in rule. e.g. ->, =>, →")
     public String syntaxImplication = "->";
+
+    @FConfigItem(name = "ti.rule.find.singleLine", description = "Do single-line rule finding of each table.")
+    public Boolean singleLineRuleFind = true;
+
+    @FConfigItem(name = "ti.rule.find.singleTableCrossLine", description = "Do single-table cross-line (2-line) rule finding of each table.")
+    public Boolean singleTableCrossLineRuleFind = true;
+
+    @FConfigItem(name = "ti.rule.find.crossTableCrossLine", description = "Do cross-table (2-line) cross-line (2-line) rule finding of each two tables.")
+    public Boolean crossTableCrossLineRuleFind = true;
+
+    @FConfigItem(name = "ti.rule.maxLength", description = "The max number of predicates of a rule. The min value is 2 since the simplest rule is p1 -> p2 consisting of 2 predicates.")
+    public Integer maxRuleLength = 20;
+
+    @FConfigItem(name = "ti.rule.maxNumber", description = "The max number of rules in each rule find task. The rule finding will stop when number of rules beyond this maximum.")
+    public Integer maxRuleNumber = 100_0000;
+
+    @FConfigItem(name = "ti.rule.find.timeoutMinute", description = "The max processing time of rule finding in minute.")
+    public Integer ruleFindTimeoutMinute = 5;
+
+    @FConfigItem(name = "ti.rule.find.maxNeedCreateChildrenRuleNumber", description = "The max number of rules that need create children. Keep the number under the limit preventing OOM.")
+    public Integer maxNeedCreateChildrenRuleNumber = 1000_0000;
+
+    @FConfigItem(name = "ti.rule.find.batchSizeMB", description = "The batch size of rules for validation in each loop, in MB.")
+    public Integer ruleFindBatchSizeMB = 30;
 
     @FConfigItem(name = "ti.rule.positiveNegativeExample.switch", description = "The switch of positive/negative examples.")
     public Boolean positiveNegativeExampleSwitch = true;
@@ -101,6 +125,9 @@ public class FTiConfig {
     @FConfigItem(name = "ti.internal.evidenceSet.partitionNumber", description = "The partition number of RDD which implements " +
             "the internal data structure evidence set. Number -1 means automatic determining.")
     public Integer evidenceSetPartitionNumber = -1;
+
+    @FConfigItem(name = "ti.internal.randomSeed", description = "The random seed used in sampling.")
+    public Long randomSeed = 1L;
 
     public static FTiConfig defaultConfig() {
         return new FTiConfig();

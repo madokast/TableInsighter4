@@ -10,18 +10,9 @@ import java.util.Set;
  */
 public class FBinaryModelPredicate extends FBinaryPredicate {
 
-    private final String modelPredicateString;
-
     public FBinaryModelPredicate(String leftTableName, String rightTableName,
-                                 String derivedColumnName, Set<String> innerTabCols,
-                                 String modelPredicateString) {
+                                 String derivedColumnName, Set<String> innerTabCols) {
         super(leftTableName, rightTableName, derivedColumnName, derivedColumnName, FOperator.EQ, innerTabCols);
-        this.modelPredicateString = modelPredicateString;
-    }
-
-    @Override
-    public String toString() {
-        return modelPredicateString;
     }
 
     public String toString(FDerivedColumnNameHandler derivedColumnNameHandler) {

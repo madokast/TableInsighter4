@@ -151,7 +151,7 @@ public class FRuleFinder implements FIRuleFinder {
         int lessSupportPsByXCt = 0;
         int lessSupportPsByXYCt = 0;
 
-        boolean needCreateChildrenOverflowReport = true;
+        boolean needCreateChildrenOverflowReportFlag = true;
 
         for (FRule rule : verifiedRules) {
             boolean supportFlag = rule.support >= leastSupport;
@@ -173,9 +173,9 @@ public class FRuleFinder implements FIRuleFinder {
                     needCreateChildren.offer(rule);
                     needCreateChildrenCt++;
                 } else {
-                    if (needCreateChildrenOverflowReport) {
+                    if (needCreateChildrenOverflowReportFlag) {
                         logger.warn("The number of rules that need created children exceed {}, stopping put into", maxNeedCreateChildrenRuleNumber);
-                        needCreateChildrenOverflowReport = false;
+                        needCreateChildrenOverflowReportFlag = false;
                     }
                 }
             }

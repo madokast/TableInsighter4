@@ -4,6 +4,8 @@ import com.sics.rock.tableinsight4.conf.FTiConfig;
 import com.sics.rock.tableinsight4.test.env.FSparkEnv;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -14,7 +16,13 @@ import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Parameterized.class)
 public class FTiEnvironmentTest extends FSparkEnv {
+
+    @Parameterized.Parameters
+    public static Object[][] __() {
+        return new Object[10][0];
+    }
 
     @Test
     public void test_create_destroy() {
@@ -64,7 +72,7 @@ public class FTiEnvironmentTest extends FSparkEnv {
         final FTiConfig config = FTiConfig.defaultConfig();
         FTiEnvironment.create(spark, config);
         final FEnvironmentOwner owner = FEnvironmentOwner.current();
-        IntStream.range(0, 40).parallel().forEach(i -> {
+        IntStream.range(0, 400).parallel().forEach(i -> {
             FTiEnvironment.shareFrom(owner);
             // FTiEnvironment.returnBack(owner);
         });
@@ -77,7 +85,7 @@ public class FTiEnvironmentTest extends FSparkEnv {
         final FTiConfig config = FTiConfig.defaultConfig();
         FTiEnvironment.create(spark, config);
         final FEnvironmentOwner owner = FEnvironmentOwner.current();
-        IntStream.range(0, 40).parallel().forEach(i -> {
+        IntStream.range(0, 400).parallel().forEach(i -> {
             final FTiEnvironment env = new FTiEnvironment() {
             };
             final FTiConfig nil = env.config();

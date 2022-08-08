@@ -53,7 +53,6 @@ public class FSparkUtils {
         JavaPairRDD<RK, Tuple2<MK, V>> unionRDD = RDDs.get(0);
         for (int i = 1; i < RDDs.size(); i++) {
             unionRDD = unionRDD.union(RDDs.get(i));
-            logger.debug("Union count {}", unionRDD.count());
         }
         unionRDD = unionRDD.cache().setName("swapKey_" + UUID.randomUUID());
 

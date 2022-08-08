@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.evidenceset;
 
 import com.sics.rock.tableinsight4.evidenceset.predicateset.FIPredicateSet;
-import com.sics.rock.tableinsight4.internal.SerializableConsumer;
+import com.sics.rock.tableinsight4.internal.FSerializableConsumer;
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.rule.FRule;
@@ -149,7 +149,7 @@ public class FRddEvidenceSet implements FIEvidenceSet {
      * test only
      */
     @Override
-    public void foreach(SerializableConsumer<FIPredicateSet> psConsumer) {
+    public void foreach(FSerializableConsumer<FIPredicateSet> psConsumer) {
         ES.foreach(psConsumer::accept);
     }
 

@@ -24,9 +24,10 @@ public class FPredicateFactory {
     private static final Logger logger = LoggerFactory.getLogger(FPredicateFactory.class);
 
     /**
-     * create single-line rules like t0.name = aaa
+     * create single-line predicate like t0.name = aaa
+     * the unary (single-line) constant predicates and unary (single-line) interval constant predicates will be created in default
      */
-    public static FPredicateIndexer createSingleLinePredicateFactory(
+    public static FPredicateIndexer createSingleLinePredicates(
             FTableInfo table, FDerivedColumnNameHandler derivedColumnNameHandler, List<FExternalPredicateInfo> otherInfos) {
         final FPredicateIndexer predicateIndexer = new FPredicateIndexer();
 
@@ -50,8 +51,16 @@ public class FPredicateFactory {
         return predicateIndexer;
     }
 
-    public static FPredicateIndexer createSingleTableCrossLinePredicateFactory(
-            FTableInfo table, boolean constantPredicate, FDerivedColumnNameHandler derivedColumnNameHandler,
+    /**
+     * create single-table cross-line (2-line) predicates like t0.name = t1.name
+     * in default:
+     * the unary (single-line) constant predicates
+     * the unary (single-line) interval constant predicates
+     * the binary (2-line) predicates
+     * are created
+     */
+    public static FPredicateIndexer createSingleTableCrossLinePredicates(
+            FTableInfo table, boolean constantPredicateFlag, FDerivedColumnNameHandler derivedColumnNameHandler,
             List<FExternalPredicateInfo> otherInfos) {
         FPredicateIndexer predicateIndexer = new FPredicateIndexer();
         String tabName = table.getTableName();
@@ -62,7 +71,7 @@ public class FPredicateFactory {
             // identifier
             final Set<String> innerTabCols = derivedColumnNameHandler.innerTabCols(tabName, innerTableName, columnName);
 
-            if (constantPredicate) {
+            if (constantPredicateFlag) {
                 columnInfo.getConstants().stream().flatMap(cons -> {
                     FIPredicate t0 = new FUnaryConsPredicate(tabName, columnName, 0, FOperator.EQ, cons, innerTabCols);
                     FIPredicate t1 = new FUnaryConsPredicate(tabName, columnName, 1, FOperator.EQ, cons, innerTabCols);
@@ -83,10 +92,7 @@ public class FPredicateFactory {
 
             if (columnInfo.getColumnType().equals(FColumnType.EXTERNAL_BINARY_MODEL)) {
 
-                predicateIndexer.put(new FBinaryModelPredicate(tabName, tabName, columnName, innerTabCols,
-                        derivedColumnNameHandler.extractModelInfo(columnName)
-                                .getPredicateNameFormatter().format(0, 1))
-                );
+                predicateIndexer.put(new FBinaryModelPredicate(tabName, tabName, columnName, innerTabCols));
             }
 
         });
@@ -95,6 +101,14 @@ public class FPredicateFactory {
 
 
         return predicateIndexer;
+    }
+
+    public static FPredicateIndexer createMultiTableCrossLinePredicates(
+            FTableInfo leftTable, FTableInfo rightTable, boolean constantPredicateFlag,
+            FDerivedColumnNameHandler derivedColumnNameHandler, List<FExternalPredicateInfo> otherInfos) {
+
+
+        return null;
     }
 
 

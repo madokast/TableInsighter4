@@ -29,11 +29,11 @@ final class FTiEnvironmentHolder {
 
     private static Map<FEnvironmentSharer, FEnvironmentOwner> SHARER_OWNER_MAP = new ConcurrentHashMap<>();
 
-    static void put(FEnvironmentOwner user, SparkSession spark, FTiConfig config) {
-        SPARK_SESSION_MAP.put(user, spark);
-        CONFIG_MAP.put(user, config);
+    static void put(FEnvironmentOwner owner, SparkSession spark, FTiConfig config) {
+        SPARK_SESSION_MAP.put(owner, spark);
+        CONFIG_MAP.put(owner, config);
         // Only sharers can access env. The owner need share his env to himself to access it.
-        share(user, user);
+        share(owner, owner);
         clean();
     }
 

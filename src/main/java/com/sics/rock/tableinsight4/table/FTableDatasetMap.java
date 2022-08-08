@@ -4,6 +4,8 @@ import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,6 +78,9 @@ public class FTableDatasetMap {
         }
     }
 
+    public List<FTableInfo> allTableInfos() {
+        return new ArrayList<>(tableInfoMap.values());
+    }
 
     @Override
     public String toString() {

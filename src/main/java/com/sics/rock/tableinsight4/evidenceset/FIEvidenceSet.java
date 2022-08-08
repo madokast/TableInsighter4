@@ -1,7 +1,7 @@
 package com.sics.rock.tableinsight4.evidenceset;
 
 import com.sics.rock.tableinsight4.evidenceset.predicateset.FIPredicateSet;
-import com.sics.rock.tableinsight4.internal.SerializableConsumer;
+import com.sics.rock.tableinsight4.internal.FSerializableConsumer;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.rule.FRule;
 
@@ -46,6 +46,6 @@ public interface FIEvidenceSet {
      * consume each predicateSet in the ES
      * the method is used for debug only
      */
-    void foreach(SerializableConsumer<FIPredicateSet> psConsumer);
+    void foreach(FSerializableConsumer<FIPredicateSet> psConsumer);
 }
 
