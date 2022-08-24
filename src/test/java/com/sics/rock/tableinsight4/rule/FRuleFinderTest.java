@@ -1,8 +1,8 @@
 package com.sics.rock.tableinsight4.rule;
 
-import com.sics.rock.tableinsight4.evidenceset.FEvidenceSetFactoryBuilder;
+import com.sics.rock.tableinsight4.evidenceset.factory.FEvidenceSetFactoryBuilder;
 import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
-import com.sics.rock.tableinsight4.evidenceset.FSingleLineEvidenceSetFactory;
+import com.sics.rock.tableinsight4.evidenceset.factory.FSingleLineEvidenceSetFactory;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructorFactory;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactory;
@@ -44,7 +44,7 @@ public class FRuleFinderTest extends FTableInsightEnv {
 
             FSingleLineEvidenceSetFactory singleLineEvidenceSetFactory = new FEvidenceSetFactoryBuilder().buildSingleLineEvidenceSetFactory();
 
-            FIEvidenceSet singleLineEvidenceSet = singleLineEvidenceSetFactory.singleLineEvidenceSet(
+            FIEvidenceSet singleLineEvidenceSet = singleLineEvidenceSetFactory.create(
                     tabInfo, PLI, singleLinePredicateIndexer, tabInfo.getLength(dataset::count));
 
             FRuleFactory ruleFactory = new FRuleFactory(singleLinePredicateIndexer, Collections.singletonList(tabInfo), 20, config().tableColumnLinker);

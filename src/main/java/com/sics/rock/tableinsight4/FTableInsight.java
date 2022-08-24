@@ -2,9 +2,9 @@ package com.sics.rock.tableinsight4;
 
 import com.sics.rock.tableinsight4.conf.FTiConfig;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
-import com.sics.rock.tableinsight4.evidenceset.FEvidenceSetFactoryBuilder;
+import com.sics.rock.tableinsight4.evidenceset.factory.FEvidenceSetFactoryBuilder;
 import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
-import com.sics.rock.tableinsight4.evidenceset.FSingleLineEvidenceSetFactory;
+import com.sics.rock.tableinsight4.evidenceset.factory.FSingleLineEvidenceSetFactory;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructor;
 import com.sics.rock.tableinsight4.pli.FPliConstructorFactory;
@@ -76,7 +76,7 @@ public class FTableInsight {
                     FPredicateIndexer singleLinePredicateIndexer =
                             FPredicateFactory.createSingleLinePredicates(tableInfo, derivedColumnNameHandler, new ArrayList<>());
                     FSingleLineEvidenceSetFactory evidenceSetFactory = new FEvidenceSetFactoryBuilder().buildSingleLineEvidenceSetFactory();
-                    FIEvidenceSet singleLineEvidenceSet = evidenceSetFactory.singleLineEvidenceSet(tableInfo, PLI,
+                    FIEvidenceSet singleLineEvidenceSet = evidenceSetFactory.create(tableInfo, PLI,
                             singleLinePredicateIndexer, tableInfo.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(tableInfo.getInnerTableName()).count()));
                     FIRuleFinder ruleFinder = new FRuleFinderBuilder().build(singleLinePredicateIndexer, Collections.singletonList(tableInfo), singleLineEvidenceSet);
 

@@ -95,7 +95,7 @@ public class FRuleFactory {
                 // In any case, the lhs/x predicates are the compatible and addable predicates of rhs/y
                 FBitSet xs = compatiblePredicatesMap.get(y);
                 xs.stream().forEach(x -> {
-                    // 只有 addablePredicates 谓词才可以
+                    // addable only
                     if (addablePredicates.get(x)) {
                         // check length of lhs/predicate if maxLhsSize is 1
                         if (maxLhsSize == 1 && predicateIndexer.getPredicate(x).length() > 1) return;

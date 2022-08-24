@@ -96,7 +96,8 @@ public class FRddEvidenceSet implements FIEvidenceSet {
             FRuleBodyTO ruleBodyTOB = toBroadcast.getValue();
             int ruleSize = ruleBodyTOB.getRuleNumber();
 
-            // supportInfos 前 ruleSize 放 xSupp，后 ruleSize 放 supp
+            // supportInfos[:ruleSize] = x-support
+            // supportInfos[ruleSize+1:] = rule-support
             long[] supportInfos = new long[ruleSize * 2];
             Arrays.fill(supportInfos, 0L);
 

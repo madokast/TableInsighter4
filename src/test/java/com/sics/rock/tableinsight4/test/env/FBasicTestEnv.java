@@ -11,5 +11,4 @@ public abstract class FBasicTestEnv {
 
     protected static final Logger logger = LoggerFactory.getLogger("TEST");
 
-
 }

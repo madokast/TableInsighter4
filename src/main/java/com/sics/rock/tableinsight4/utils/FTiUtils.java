@@ -36,11 +36,9 @@ public class FTiUtils {
     }
 
     public static <E> Map<E, Long> createUnionFindSet(List<FPair<E, E>> unionCases) {
-        // 所有元素
         final List<E> allElements = unionCases.stream().flatMap(p -> Stream.of(p._k, p._v))
                 .distinct().collect(Collectors.toList());
 
-        // 编号
         Map<E, Integer> elementIndex = new HashMap<>();
         for (int i = 0; i < allElements.size(); i++) {
             elementIndex.put(allElements.get(i), i);

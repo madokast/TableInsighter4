@@ -188,7 +188,7 @@ public class FRuleFinder implements FIRuleFinder {
                 }
             }
 
-            // 如果 support 没达标，则 xs^y 加入 lessSupportPs
+            // if not support, put xs^Y into lessSupportPs
             if (!supportFlag) {
                 FBitSet xy = rule.xs.copy();
                 xy.set(rule.y);

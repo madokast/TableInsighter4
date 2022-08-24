@@ -1,5 +1,6 @@
 package com.sics.rock.tableinsight4.evidenceset;
 
+import com.sics.rock.tableinsight4.evidenceset.factory.FSingleLineEvidenceSetFactory;
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructor;
@@ -82,7 +83,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
 
-        final FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        final FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         ES.foreach(ps -> {
             FBitSet bs = ps.getBitSet();
@@ -162,7 +163,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
 
-        final FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        final FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         ES.foreach(ps -> {
             FBitSet bs = ps.getBitSet();
@@ -243,7 +244,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
 
-        final FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        final FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         ES.foreach(ps -> {
             FBitSet bs = ps.getBitSet();
@@ -324,7 +325,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
 
-        final FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        final FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         ES.foreach(ps -> {
             FBitSet bs = ps.getBitSet();
@@ -405,7 +406,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
 
-        final FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        final FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         ES.foreach(ps -> {
             FBitSet bs = ps.getBitSet();

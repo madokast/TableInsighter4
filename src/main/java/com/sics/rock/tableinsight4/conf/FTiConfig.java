@@ -122,6 +122,9 @@ public class FTiConfig {
             "The value decide the PLI number and may affect the speed of ES construction. The recommended value may be 1000 ~ 2500. ")
     public Integer sliceLengthForPLI = 1000;
 
+    @FConfigItem(name = "ti.internal.PLIBroadcastSizeMB", description = "The broadcast size in MByte. PLI will be broadcast in binary-line evidence set construction.")
+    public Integer PLIBroadcastSizeMB = 1;
+
     @FConfigItem(name = "ti.internal.evidenceSet.partitionNumber", description = "The partition number of RDD which implements " +
             "the internal data structure evidence set. Number -1 means automatic determining.")
     public Integer evidenceSetPartitionNumber = -1;

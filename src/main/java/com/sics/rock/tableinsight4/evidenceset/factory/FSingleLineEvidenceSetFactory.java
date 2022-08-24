@@ -1,5 +1,7 @@
-package com.sics.rock.tableinsight4.evidenceset;
+package com.sics.rock.tableinsight4.evidenceset.factory;
 
+import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
+import com.sics.rock.tableinsight4.evidenceset.FRddEvidenceSet;
 import com.sics.rock.tableinsight4.evidenceset.predicateset.*;
 import com.sics.rock.tableinsight4.internal.FPartitionId;
 import com.sics.rock.tableinsight4.internal.FRddElementIndex;
@@ -47,7 +49,7 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
 
     private final int positiveNegativeExampleNumber;
 
-    public FIEvidenceSet singleLineEvidenceSet(FTableInfo tableInfo, FPLI PLI, FPredicateIndexer singleLinePredicates, long tableLength) {
+    public FIEvidenceSet create(FTableInfo tableInfo, FPLI PLI, FPredicateIndexer singleLinePredicates, long tableLength) {
 
         Broadcast<FPredicateIndexer> predicatesBroadcast = sc.broadcast(singleLinePredicates);
 

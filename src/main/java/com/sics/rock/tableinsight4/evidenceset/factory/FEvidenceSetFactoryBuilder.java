@@ -1,4 +1,4 @@
-package com.sics.rock.tableinsight4.evidenceset;
+package com.sics.rock.tableinsight4.evidenceset.factory;
 
 import com.sics.rock.tableinsight4.conf.FTiConfig;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
@@ -11,9 +11,9 @@ public class FEvidenceSetFactoryBuilder implements FTiEnvironment {
                 config.positiveNegativeExampleSwitch, config.positiveNegativeExampleNumber);
     }
 
-    public FBinaryLineEvidenceSetFactory buildBinaryLineEvidenceSetFactory(boolean sameTableFlag) {
+    public FBinaryLineEvidenceSetFactory buildBinaryLineEvidenceSetFactory() {
         final FTiConfig config = config();
-        return new FBinaryLineEvidenceSetFactory(spark(), sameTableFlag);
+        return new FBinaryLineEvidenceSetFactory(spark(), config.PLIBroadcastSizeMB);
     }
 
 

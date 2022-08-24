@@ -1,5 +1,6 @@
 package com.sics.rock.tableinsight4.evidenceset;
 
+import com.sics.rock.tableinsight4.evidenceset.factory.FSingleLineEvidenceSetFactory;
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructor;
@@ -59,7 +60,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         assertEquals(one.getLength(null), ES.allCount());
 
@@ -100,7 +101,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         assertEquals(one.getLength(null), ES.allCount());
 
@@ -140,7 +141,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         for (String ps : ES.info(100)) {
             logger.info(ps);
@@ -206,7 +207,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         for (String ps : ES.info(100)) {
             logger.info(ps);
@@ -272,7 +273,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         for (String ps : ES.info(100)) {
             logger.info(ps);
@@ -337,7 +338,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         for (String ps : ES.info(100)) {
             logger.info(ps);
@@ -406,7 +407,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         for (String ps : ES.info(100)) {
             logger.info(ps);
@@ -475,7 +476,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         for (String ps : ES.info(100)) {
             logger.info(ps);
@@ -544,7 +545,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         for (String ps : ES.info(100)) {
             logger.info(ps);
@@ -611,7 +612,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         ES.foreach(ps -> assertEquals(1, ps.getBitSet().cardinality()));
 
@@ -659,7 +660,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         ES.foreach(ps -> assertEquals(1, ps.getBitSet().cardinality()));
 
@@ -717,7 +718,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         int eqN_Inf = singleLinePredicateFactory.findIndex("-Inf").get(0);
         int eqP_Inf = singleLinePredicateFactory.findIndex("Inf").stream().filter(i -> i != eqN_Inf).findFirst().get();
 
-        FIEvidenceSet ES = evidenceSetFactory.singleLineEvidenceSet(one, PLI, singleLinePredicateFactory, one.getLength(null));
+        FIEvidenceSet ES = evidenceSetFactory.create(one, PLI, singleLinePredicateFactory, one.getLength(null));
 
         ES.foreach(ps -> {
             FBitSet bs = ps.getBitSet();
