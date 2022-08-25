@@ -3,7 +3,6 @@ package com.sics.rock.tableinsight4.table.column;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * typedef String ColumnName
@@ -30,7 +29,7 @@ public class FColumnName implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(columnName);
+        return columnName.hashCode();
     }
 
     @Override

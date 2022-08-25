@@ -1,6 +1,8 @@
 package com.sics.rock.tableinsight4.predicate;
 
-public enum FOperator {
+import java.io.Serializable;
+
+public enum FOperator implements Serializable {
 
     EQ("="),
 

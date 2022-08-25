@@ -91,7 +91,6 @@ public class FPredicateFactory {
             }
 
             if (columnInfo.getColumnType().equals(FColumnType.EXTERNAL_BINARY_MODEL)) {
-
                 predicateIndexer.put(new FBinaryModelPredicate(tabName, tabName, columnName, innerTabCols));
             }
 

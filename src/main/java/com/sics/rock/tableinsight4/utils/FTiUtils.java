@@ -211,4 +211,17 @@ public class FTiUtils {
         }
         return true;
     }
+
+    @SuppressWarnings("unchecked")
+    public static <E> List<E>[] slice(List<E> list, int sliceLength) {
+        final int totalSize = list.size();
+        int sliceNumber = totalSize / sliceLength;
+        if (totalSize % sliceLength != 0) ++sliceNumber;
+
+        List<E>[] ret = new List[sliceNumber];
+        for (int i = 0; i < sliceNumber; i++) {
+            ret[i] = list.subList(i * sliceLength, Math.min(totalSize, (i + 1) * sliceLength));
+        }
+        return ret;
+    }
 }

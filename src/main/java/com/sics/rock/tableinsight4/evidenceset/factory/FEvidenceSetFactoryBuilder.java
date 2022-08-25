@@ -13,7 +13,8 @@ public class FEvidenceSetFactoryBuilder implements FTiEnvironment {
 
     public FBinaryLineEvidenceSetFactory buildBinaryLineEvidenceSetFactory() {
         final FTiConfig config = config();
-        return new FBinaryLineEvidenceSetFactory(spark(), config.PLIBroadcastSizeMB);
+        return new FBinaryLineEvidenceSetFactory(spark(), config.evidenceSetPartitionNumber,
+                config.positiveNegativeExampleSwitch, config.positiveNegativeExampleNumber);
     }
 
 

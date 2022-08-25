@@ -25,9 +25,9 @@ public class FLocalPLIUtils {
                 return leftPLI.entrySet().stream()
                         .filter(e -> rightPLI.containsKey(e.getKey()))
                         .map(e -> {
-                            Long index = e.getKey();
-                            List<Integer> leftRowIds = e.getValue();
-                            List<Integer> rightRowIds = rightPLI.get(index);
+                            final Long index = e.getKey();
+                            final List<Integer> leftRowIds = e.getValue();
+                            final List<Integer> rightRowIds = rightPLI.get(index);
                             return new FPair<>(leftRowIds, rightRowIds.stream());
                         });
             case GT:
@@ -38,9 +38,9 @@ public class FLocalPLIUtils {
                         // non-negative index for comparing
                         .filter(e -> e.getKey() >= 0L)
                         .map(e -> {
-                            Long index = e.getKey();
-                            List<Integer> leftRowIds = e.getValue();
-                            Stream<Integer> rightRowIds = rightLocalPLI.localRowIdsOf(index, operator.symmetric());
+                            final Long index = e.getKey();
+                            final List<Integer> leftRowIds = e.getValue();
+                            final Stream<Integer> rightRowIds = rightLocalPLI.localRowIdsOf(index, operator.symmetric());
                             return new FPair<>(leftRowIds, rightRowIds);
                         });
             default:

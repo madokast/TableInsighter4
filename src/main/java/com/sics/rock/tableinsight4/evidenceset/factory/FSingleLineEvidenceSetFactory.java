@@ -62,7 +62,7 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
             FAssertUtils.require(!singleIter.hasNext(), () -> "One PLI RDD partition contains more than one element. " +
                     "The record partition-ids of the first two elements are " + localPLITuple._1 + " and " + singleIter.next()._1 + " respectively.");
 
-            logger.info("single line local ES builds of partition-{}", localPLITuple._1);
+            logger.debug("single line local ES builds of partition-{}", localPLITuple._1);
             final Map<FColumnName, FLocalPLI> colPLIMap = localPLITuple._2;
             if (colPLIMap.isEmpty()) return Collections.emptyIterator();
 
@@ -82,7 +82,7 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
                 .map(t -> t._2)
                 // single line es store in mem only
                 .cache()
-                .setName("single_line_es_" + tableInfo.getTableName());
+                .setName("s_es_" + tableInfo.getTableName());
 
         FRddEvidenceSet ES = new FRddEvidenceSet(esRDD, sc, singleLinePredicates.size(), tableLength);
         logger.info("### Table {} single line ES built. allCount is {}", tableInfo.getTableName(), ES.allCount());
@@ -91,13 +91,13 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
     }
 
     private int evidenceSetRDDPartitionNumber() {
-        int pn = evidenceSetPartitionNumber == -1 ? sc.defaultParallelism() * 2 : evidenceSetPartitionNumber;
+        int pn = this.evidenceSetPartitionNumber == -1 ? sc.defaultParallelism() * 2 : this.evidenceSetPartitionNumber;
         logger.info("Single line evidence set RDD partition number {}", pn);
         return pn;
     }
 
     private Function2<FIPredicateSet, FIPredicateSet, FIPredicateSet> predicateSetMerger() {
-        return this.positiveNegativeExampleSwitch ? new FExamplePredicateSetMerger(positiveNegativeExampleNumber) : FPredicateSetMerger.instance;
+        return this.positiveNegativeExampleSwitch ? new FExamplePredicateSetMerger(this.positiveNegativeExampleNumber) : FPredicateSetMerger.instance;
     }
 
     private FIPredicateSet[] createSingleLineLocalES(FPredicateIndexer predicates, Map<FColumnName, FLocalPLI> colPLIMap, int rowSize) {

@@ -32,17 +32,26 @@ public class FLocalBatchPairRDDIterable<K, V> implements Iterable<List<Tuple2<K,
 
     private transient final List<Tuple2<K, V>> firstBatch;
 
-
-    private FLocalBatchPairRDDIterable(JavaPairRDD<K, V> RDD, int batchPartitionNumber) {
+    FLocalBatchPairRDDIterable(JavaPairRDD<K, V> RDD, int batchPartitionNumber) {
         this.RDD = RDD;
         this.batchPartitionNumber = batchPartitionNumber;
         this.firstBatch = filterCollect(RDD, 0, batchPartitionNumber);
     }
 
     private static <K, V> List<Tuple2<K, V>> filterCollect(JavaPairRDD<K, V> RDD, int startingPartitionId, int endingPartitionId) {
+        if (endingPartitionId == startingPartitionId + 1) return filterCollect(RDD, startingPartitionId);
+
         return RDD.mapPartitions(iter -> {
             int pid = TaskContext.getPartitionId();
             if (pid >= startingPartitionId && pid < endingPartitionId) return iter;
+            else return Collections.emptyIterator();
+        }).collect();
+    }
+
+    private static <K, V> List<Tuple2<K, V>> filterCollect(JavaPairRDD<K, V> RDD, int partitionId) {
+        return RDD.mapPartitions(iter -> {
+            int pid = TaskContext.getPartitionId();
+            if (pid == partitionId) return iter;
             else return Collections.emptyIterator();
         }).collect();
     }
@@ -53,11 +62,12 @@ public class FLocalBatchPairRDDIterable<K, V> implements Iterable<List<Tuple2<K,
         final long partitionNumber = statistics.getPartitionNumber();
         final long totalSizeByte = statistics.getEstimatedSize();
         double eachBathSizeByte = totalSizeByte * 1D / partitionNumber;
-        final int batchPartitionNumber = ((int) (batchSizeByte / eachBathSizeByte)) + 1;
-        logger.info("Create LocalBatchPairRDDIterable. RDD size is {} MB and partitionNumber is {}. " +
+        int batchPartitionNumber = (int) (batchSizeByte / eachBathSizeByte);
+        if (batchPartitionNumber == 0) ++batchPartitionNumber;
+        logger.info("Create LocalBatchPairRDDIterable.　The RDD size is {} MB and partitionNumber is {}. " +
                         "Each batch contains {} partition(s). A batch size is about {} MB",
-                statistics.getEstimatedSizeMB(), partitionNumber, batchPartitionNumber,
-                eachBathSizeByte * batchPartitionNumber / 1024 / 1024);
+                statistics.getEstimatedSizeMBString(), partitionNumber, batchPartitionNumber,
+                String.format("%.3f", eachBathSizeByte * batchPartitionNumber / 1024 / 1024));
         return new FLocalBatchPairRDDIterable<>(RDD, batchPartitionNumber);
     }
 

@@ -1,33 +1,58 @@
 package com.sics.rock.tableinsight4.evidenceset.factory;
 
+import com.sics.rock.tableinsight4.evidenceset.FEmptyEvidenceSet;
 import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
+import com.sics.rock.tableinsight4.evidenceset.FRddEvidenceSet;
+import com.sics.rock.tableinsight4.evidenceset.predicateset.*;
 import com.sics.rock.tableinsight4.internal.FPartitionId;
+import com.sics.rock.tableinsight4.internal.FRddElementIndex;
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
 import com.sics.rock.tableinsight4.pli.FLocalPLI;
+import com.sics.rock.tableinsight4.pli.FLocalPLIUtils;
 import com.sics.rock.tableinsight4.pli.FPLI;
+import com.sics.rock.tableinsight4.predicate.FIPredicate;
+import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
+import com.sics.rock.tableinsight4.predicate.impl.FBinaryPredicate;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FColumnName;
+import com.sics.rock.tableinsight4.utils.FAssertUtils;
+import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.storage.StorageLevel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import scala.Tuple2;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Binary-line evidence set factory
+ * <p>
+ * The writer has to admit the complication of these codes
  */
 public class FBinaryLineEvidenceSetFactory implements Serializable {
 
-    private final SparkSession spark;
+    private static final Logger logger = LoggerFactory.getLogger(FBinaryLineEvidenceSetFactory.class);
 
-    private final JavaSparkContext sc;
+    private transient final JavaSparkContext sc;
 
-    private final int PLIBroadcastSizeMB;
+    private final int evidenceSetPartitionNumber;
+
+    private final boolean positiveNegativeExampleSwitch;
+
+    private final int positiveNegativeExampleNumber;
+
+    private static final Map<Class<? extends FIPredicate>, Integer> PREDICATE_TYPE_MAP = new HashMap<>();
 
 
     public FIEvidenceSet createSingleTableBinaryLineEvidenceSet(
@@ -41,6 +66,7 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
         return create(leftTableInfo, rightTableInfo, PLI, predicates, leftTableLength, rightTableLength, false);
     }
 
+    @SuppressWarnings("unchecked")
     private FIEvidenceSet create(
             FTableInfo leftTableInfo, FTableInfo rightTableInfo, FPLI PLI,
             FPredicateIndexer predicates, long leftTableLength, long rightTableLength, boolean sameTableFlag) {
@@ -48,20 +74,174 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
         final JavaPairRDD<FPartitionId, Map<FColumnName, FLocalPLI>> leftPLI = PLI.getTablePLI(leftTableInfo);
         final JavaPairRDD<FPartitionId, Map<FColumnName, FLocalPLI>> rightPLI = PLI.getTablePLI(rightTableInfo);
 
+        final int numPartitions = evidenceSetRDDPartitionNumber(leftTableLength, rightTableLength, sameTableFlag);
+
         // a list holds ES in section. The binary-line ES is constructed in cartesian product.
-        // However the cartesian product between RDDs conducted by spark is OOM inclined.
-        // A manual cartesian product is coded in final
-        final List<JavaPairRDD<FBitSet, Long>> ESSectionList = new ArrayList<>();
+        // However the cartesian product between RDDs conducted by spark is OOM inclined. (i.e. leftPLI.cartesian(rightPLI))
+        // A manual cartesian product is coded below
+        final List<JavaPairRDD<FBitSet, FIPredicateSet>> localESRDDList = IntStream.range(0, leftPLI.getNumPartitions()).parallel().mapToObj(leftPartitionId -> {
+            final List<Tuple2<FPartitionId, Map<FColumnName, FLocalPLI>>> _singleList = leftPLI.filter(t -> t._1.value == leftPartitionId).collect();
+            FAssertUtils.require(() -> _singleList.size() == 1, () -> "Wrong Code!");
+            final FPartitionId leftLocalPLIPartitionId = _singleList.get(0)._1;
+            final Map<FColumnName, FLocalPLI> leftLocalPLI = _singleList.get(0)._2;
+            if (leftLocalPLI.isEmpty()) return null;
+            final Broadcast<Map<FColumnName, FLocalPLI>> leftLocalPLIBC = sc.broadcast(leftLocalPLI);
 
-        // batch size of PLI in each broadcasting
-        final int batchSizeMB = PLIBroadcastSizeMB * Runtime.getRuntime().availableProcessors();
+            JavaPairRDD<FBitSet, FIPredicateSet> localESRDD = rightPLI.mapPartitionsToPair(_singleIter -> {
+                FAssertUtils.require(_singleIter.hasNext(), "PLI RDD contains empty partition. Code bug?");
+                final Tuple2<FPartitionId, Map<FColumnName, FLocalPLI>> rightLocalPLITuple = _singleIter.next();
+                FAssertUtils.require(!_singleIter.hasNext(), () -> "One PLI RDD partition contains more than one element. " +
+                        "The record partition-ids of the first two elements are " + rightLocalPLITuple._1 + " and " + _singleIter.next()._1 + " respectively.");
 
-        return null;
+                logger.debug("binary line local ES builds of partition-{}-{}", leftLocalPLIPartitionId, rightLocalPLITuple._1);
+
+                final Map<FColumnName, FLocalPLI> rightLocalPLI = rightLocalPLITuple._2;
+                if (rightLocalPLI.isEmpty()) return Collections.emptyIterator();
+                final Map<FColumnName, FLocalPLI> leftLocalPLIEX = leftLocalPLIBC.getValue();
+                final FPredicateIndexer allPredicates = predicatesBroadcast.getValue();
+
+                final int leftMaxRowId = leftLocalPLIEX.values().stream().mapToInt(FLocalPLI::getMaxLocalRowId).max().orElse(-1);
+                final int rightMaxRowId = rightLocalPLI.values().stream().mapToInt(FLocalPLI::getMaxLocalRowId).max().orElse(-1);
+
+                final FIPredicateSet[] localES = createBinaryLineLocalES(allPredicates, leftLocalPLIEX, rightLocalPLI, leftMaxRowId + 1, rightMaxRowId + 1, sameTableFlag);
+                return Arrays.stream(localES).filter(Objects::nonNull).map(ps -> new Tuple2<>(ps.getBitSet(), ps)).iterator();
+            })
+                    .reduceByKey(predicateSetMerger(), numPartitions)
+                    .persist(StorageLevel.MEMORY_AND_DISK())
+                    .setName("b_section_es_" + leftLocalPLIPartitionId + "_" + leftTableInfo.getTableName() + "_" + rightTableInfo.getTableName());
+            // compute ahead otherwise the spark will fail in reduction phase.
+            logger.info("Binary-line local es count = {}", localESRDD.count());
+            return localESRDD;
+
+        }).collect(Collectors.toList());
+        if (localESRDDList.isEmpty()) return FEmptyEvidenceSet.getInstance();
+
+        final JavaRDD<FIPredicateSet> es = FTiUtils.mergeReduce(localESRDDList, (r1, r2) ->
+                r1.union(r2).reduceByKey(predicateSetMerger(), numPartitions))
+                .orElse(JavaPairRDD.fromJavaRDD((JavaRDD<Tuple2<FBitSet, FIPredicateSet>>) (JavaRDD) sc.emptyRDD()))
+                .map(Tuple2::_2)
+                .persist(StorageLevel.MEMORY_AND_DISK())
+                .setName("b_es_" + leftTableInfo.getTableName() + "_" + rightTableInfo.getTableName());
+
+        final FIEvidenceSet evidenceSet = new FRddEvidenceSet(es, sc, predicates.size(), sameTableFlag ? leftTableLength * (leftTableLength - 1) : leftTableLength * rightTableLength);
+        logger.info("### Table {}-{} binary line ES built. cardinality is {}", leftTableInfo.getTableName(), rightTableInfo.getTableName(), evidenceSet.cardinality());
+        return evidenceSet;
     }
 
-    public FBinaryLineEvidenceSetFactory(SparkSession spark, int PLIBroadcastSizeMB) {
-        this.spark = spark;
+
+    private FIPredicateSet[] createBinaryLineLocalES(
+            FPredicateIndexer allPredicates,
+            Map<FColumnName, FLocalPLI> leftPLISection, Map<FColumnName, FLocalPLI> rightPLISection,
+            int leftRowSize, int rightRowSize, boolean sameTableFlag) {
+        final FIPredicateSet[] localES = new FIPredicateSet[leftRowSize * rightRowSize];
+        final int predicateSize = allPredicates.size();
+        for (int predicateId = 0; predicateId < predicateSize; predicateId++) {
+            final FIPredicate predicate = allPredicates.getPredicate(predicateId);
+            switch (PREDICATE_TYPE_MAP.getOrDefault(predicate.getClass(), -1)) {
+                case FBinaryPredicateID:
+                    doBinaryPredicate(predicate, localES, leftPLISection, rightPLISection, leftRowSize, predicateSize, predicateId);
+                    break;
+                default:
+                    throw new RuntimeException("Unknown predicate type " + predicate);
+            }
+        }
+
+
+        if (sameTableFlag) {
+            final int leftPartitionId = leftPLISection.values().stream().findAny().get().getPartitionId();
+            final int rightPartitionId = rightPLISection.values().stream().findAny().get().getPartitionId();
+            if (leftPartitionId == rightPartitionId) {
+                for (int localRowId = 0; localRowId < Math.max(leftRowSize, rightRowSize); localRowId++) {
+                    final int rowId = localRowId + localRowId * leftRowSize;
+                    if (rowId >= localES.length) break;
+                    localES[rowId] = null;
+                }
+            }
+        }
+
+        return localES;
+    }
+
+    private void doBinaryPredicate(FIPredicate predicate, FIPredicateSet[] localES,
+                                   Map<FColumnName, FLocalPLI> leftPLISection,
+                                   Map<FColumnName, FLocalPLI> rightPLISection,
+                                   int leftRowSize, int predicateSize, int predicateId) {
+        final FBinaryPredicate binaryPredicate = (FBinaryPredicate) predicate;
+        final FColumnName leftCol = new FColumnName(binaryPredicate.leftCol());
+        final FColumnName rightCol = new FColumnName(binaryPredicate.rightCol());
+        final FOperator operator = predicate.operator();
+
+        final FLocalPLI leftPLI = leftPLISection.get(leftCol);
+        final FLocalPLI rightPLI = rightPLISection.get(rightCol);
+
+        final int leftPartitionId = leftPLI.getPartitionId();
+        final int rightPartitionId = rightPLI.getPartitionId();
+
+        FLocalPLIUtils.localRowIdsOf(leftPLI, rightPLI, operator).forEach(leftRightRowIds -> {
+            List<Integer> leftLocalRowIds = leftRightRowIds._k;
+            Stream<Integer> rightLocalRowIds = leftRightRowIds._v;
+            rightLocalRowIds.forEach(rightLocalRowId ->
+                    leftLocalRowIds.forEach(leftLocalRowId ->
+                            fillLocalES(localES, leftRowSize, predicateSize, predicateId,
+                                    leftPartitionId, rightPartitionId, leftLocalRowId, rightLocalRowId)
+                    )
+            );
+        });
+    }
+
+    // inline
+    private void fillLocalES(FIPredicateSet[] localES, int leftRowSize,
+                             int predicateSize, int predicateId,
+                             int leftPartitionId, int rightPartitionId,
+                             int leftLocalRowId, int rightLocalRowId) {
+        final int tupleId = leftLocalRowId + rightLocalRowId * leftRowSize;
+        FIPredicateSet ps = localES[tupleId];
+        if (ps == null) {
+            if (positiveNegativeExampleSwitch) {
+                ps = new FExamplePredicateSet(new FBitSet(predicateSize), 1L);
+                // record left and right partitionId:offset for example
+                ((FExamplePredicateSet) ps).add(new FRddElementIndex[]{
+                        new FRddElementIndex(leftPartitionId, leftLocalRowId),
+                        new FRddElementIndex(rightPartitionId, rightLocalRowId)
+                });
+            } else {
+                ps = new FPredicateSet(new FBitSet(predicateSize), 1L);
+            }
+            localES[tupleId] = ps;
+        }
+        ps.getBitSet().set(predicateId);
+    }
+
+    private int evidenceSetRDDPartitionNumber(long leftTableLength, long rightTableLength, boolean sameTableFlag) {
+        final int pn;
+        if (this.evidenceSetPartitionNumber == -1) {
+            final long tupleSize = sameTableFlag ? leftTableLength * (leftTableLength - 1) : leftTableLength * rightTableLength;
+            // a section holds 1m tuple-pair
+            final int sectionNumber = (int) (tupleSize >> 20);
+            pn = Math.max(sc.defaultParallelism(), sectionNumber);
+        } else {
+            pn = this.evidenceSetPartitionNumber;
+        }
+        logger.info("Binary line evidence set RDD partition number {}", pn);
+        return pn;
+    }
+
+    private Function2<FIPredicateSet, FIPredicateSet, FIPredicateSet> predicateSetMerger() {
+        return this.positiveNegativeExampleSwitch ? new FExamplePredicateSetMerger(this.positiveNegativeExampleNumber) : FPredicateSetMerger.instance;
+    }
+
+    public FBinaryLineEvidenceSetFactory(SparkSession spark, int evidenceSetPartitionNumber,
+                                         boolean positiveNegativeExampleSwitch, int positiveNegativeExampleNumber) {
         this.sc = JavaSparkContext.fromSparkContext(spark.sparkContext());
-        this.PLIBroadcastSizeMB = PLIBroadcastSizeMB;
+        this.positiveNegativeExampleSwitch = positiveNegativeExampleSwitch;
+        this.positiveNegativeExampleNumber = positiveNegativeExampleNumber;
+        this.evidenceSetPartitionNumber = evidenceSetPartitionNumber;
+    }
+
+
+    private static final int FBinaryPredicateID = 1;
+
+    static {
+        PREDICATE_TYPE_MAP.put(FBinaryPredicate.class, FBinaryPredicateID);
     }
 }

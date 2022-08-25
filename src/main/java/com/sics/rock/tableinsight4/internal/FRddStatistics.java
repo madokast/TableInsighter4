@@ -51,7 +51,7 @@ public class FRddStatistics {
         // trimToSize
         sampleData = new ArrayList<>(sampleData);
 
-        final double size = SizeEstimator.estimate(sampleData) * 1. / sampleData.size() * this.count;
+        final double size = SizeEstimator.estimate(sampleData) * 1D / sampleData.size() * this.count;
 
         this.estimatedSize = (long) size;
     }
@@ -105,7 +105,11 @@ public class FRddStatistics {
     }
 
     public double getEstimatedSizeMB() {
-        return estimatedSize / 1024. / 1024.;
+        return estimatedSize / 1024D / 1024D;
+    }
+
+    public String getEstimatedSizeMBString() {
+        return String.format("%.3f", getEstimatedSizeMB());
     }
 
     public long getCount() {
