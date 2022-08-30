@@ -27,7 +27,6 @@ public class FLocalPLI implements Serializable {
 
     /**
      * A partition create a FLocalPLI
-     * For debug and assert
      */
     private final int partitionId;
 

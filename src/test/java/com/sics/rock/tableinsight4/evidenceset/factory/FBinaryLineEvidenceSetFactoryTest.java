@@ -21,13 +21,14 @@ import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
     @Test
-    public void createSingleTableBinaryLineEvidenceSet() {
+    public void test_binary_pred() {
 
         config().sliceLengthForPLI = 2;
 
@@ -83,6 +84,76 @@ public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
         logger.info("cardinality = {}", ES.cardinality());
         logger.info("allCount = {}", ES.allCount());
+        logger.info("predicateSupport = {}", Arrays.toString(ES.predicateSupport()));
+
+        Assert.assertArrayEquals(new long[]{12, 6}, ES.predicateSupport());
+
+        for (String ps : info) {
+            logger.info(ps);
+        }
+
+    }
+
+    @Test
+    public void test_constant_pred() {
+
+        config().sliceLengthForPLI = 3;
+
+        final FTableInfo table = FExamples.create("two-row", new String[]{"name", "age"},
+                new FValueType[]{FValueType.STRING, FValueType.STRING}, new String[]{
+                        "zhangsan,26",
+                        "zhangsan,26",
+                        "zhangsan,26",
+                        "zhangsan,24"
+                });
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(Collections.singletonList(table));
+
+        final List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        final FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        final FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        final FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        final FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        final FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+
+        final FPredicateIndexer singleLinePredicateFactory = FPredicateFactory.createSingleTableCrossLinePredicates(
+                table, true, derivedColumnNameHandler, Collections.emptyList());
+
+        for (FIPredicate predicate : singleLinePredicateFactory.allPredicates()) {
+            logger.info("predicate = " + predicate);
+        }
+
+//        final int p_name_i = singleLinePredicateFactory.findIndex("name").get(0);
+//        final int p_age_i = singleLinePredicateFactory.findIndex("age").get(0);
+
+        final FBinaryLineEvidenceSetFactory evidenceSetFactory = new FEvidenceSetFactoryBuilder().buildBinaryLineEvidenceSetFactory();
+
+        final FIEvidenceSet ES = evidenceSetFactory.createSingleTableBinaryLineEvidenceSet(
+                table, PLI, singleLinePredicateFactory, table.getLength(null));
+
+        ES.foreach(ps -> {
+            FBitSet bs = ps.getBitSet();
+
+//            if (bs.get(p_age_i)) Assert.assertTrue(bs.get(p_name_i));
+        });
+
+        String[] info = ES.info(singleLinePredicateFactory, 100);
+
+        logger.info("cardinality = {}", ES.cardinality());
+        logger.info("allCount = {}", ES.allCount());
+        logger.info("predicateSupport = {}", Arrays.toString(ES.predicateSupport()));
+
+//        Assert.assertArrayEquals(new long[]{12, 6}, ES.predicateSupport());
 
         for (String ps : info) {
             logger.info(ps);

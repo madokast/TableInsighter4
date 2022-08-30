@@ -316,9 +316,10 @@ public class FPliConstructor {
             final StructType schema = dataset.schema();
             final JavaPairRDD<Row, FRddElementIndex> eleIndexTabRDD = FRddElementIndexUtils
                     .rddElementIndex(dataset.toJavaRDD()).cache().setName("Element_index_table_" + tableName);
-            final JavaPairRDD<FPartitionId, Map<FColumnName, FLocalPLI>> pliOfTable = createPLI(tableInfo, schema, eleIndexTabRDD, typedOrderedIndex);
 
+            final JavaPairRDD<FPartitionId, Map<FColumnName, FLocalPLI>> pliOfTable = createPLI(tableInfo, schema, eleIndexTabRDD, typedOrderedIndex);
             PLI.putTablePLI(tableInfo, pliOfTable);
+
             if (positiveNegativeExampleSwitch) {
                 final JavaPairRDD<FRddElementIndex, Long> elementIndexIDMap = createElementIndexIDMap(schema, eleIndexTabRDD);
                 PLI.putTableIDColumnMap(tableInfo, elementIndexIDMap);
