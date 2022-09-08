@@ -71,8 +71,8 @@ public class FKMeansIntervalConstantSearcher implements FIIntervalConstantSearch
         final int clusterNumber = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_K_MEANS_CLUSTER_NUMBER, this.clusterNumber);
         final boolean leftEq = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_LEFT_CLOSE, this.leftClose);
         final boolean rightEq = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_RIGHT_CLOSE, this.rightClose);
-        final List<FInterval<?>> intervals = FKMeansUtils.findIntervals(doubleRDD, clusterNumber, iterNumber).stream()
-                .map(lr -> new FInterval<>(lr._k, lr._v, leftEq, rightEq).typeCast(valueType))
+        final List<FInterval> intervals = FKMeansUtils.findIntervals(doubleRDD, clusterNumber, iterNumber).stream()
+                .map(lr -> new FInterval(lr._k, lr._v, leftEq, rightEq).typeCast(valueType))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());

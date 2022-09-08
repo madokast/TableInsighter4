@@ -6,6 +6,7 @@ import org.junit.Test;
 public class FConstantTest extends FBasicTestEnv {
 
     @Test
+    @SuppressWarnings("all")
     public void test_of() {
         logger.info("{}", FConstant.of(null));
         logger.info("{}", FConstant.of(Math.sqrt(-2)));

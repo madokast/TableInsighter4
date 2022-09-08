@@ -17,6 +17,7 @@ import com.sics.rock.tableinsight4.predicate.iface.FIBinaryPredicate;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryModelPredicate;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryPredicate;
 import com.sics.rock.tableinsight4.predicate.impl.FUnaryConsPredicate;
+import com.sics.rock.tableinsight4.predicate.impl.FUnaryIntervalConsPredicate;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FColumnName;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
@@ -155,6 +156,9 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
                     doUnaryConsPredicate((FUnaryConsPredicate) predicate, localES, leftPLISection, rightPLISection,
                             rightRowSize, leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId);
                     break;
+                case FUnaryIntervalConsPredicateID:
+//                    doFUnaryIntervalConsPredicate();
+                    break;
                 default:
                     // TODO impl all
                     // throw new RuntimeException("Unknown predicate type " + predicate);
@@ -211,6 +215,10 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
                 }
             });
         }
+    }
+
+    private void doFUnaryIntervalConsPredicate(FUnaryIntervalConsPredicate predicate, FIPredicateSet[] localES) {
+
     }
 
     private void doBinaryPredicate(FIBinaryPredicate predicate, FIPredicateSet[] localES,
@@ -298,11 +306,13 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
     private static final int FBinaryPredicateID = 1;
     private static final int FBinaryModelPredicateID = 2;
     private static final int FUnaryConsPredicateID = 3;
+    private static final int FUnaryIntervalConsPredicateID = 4;
 
     static {
         PREDICATE_TYPE_MAP.put(FBinaryPredicate.class, FBinaryPredicateID);
         PREDICATE_TYPE_MAP.put(FBinaryModelPredicate.class, FBinaryModelPredicateID);
         PREDICATE_TYPE_MAP.put(FUnaryConsPredicate.class, FUnaryConsPredicateID);
+        PREDICATE_TYPE_MAP.put(FUnaryIntervalConsPredicate.class, FUnaryIntervalConsPredicateID);
 
     }
 }

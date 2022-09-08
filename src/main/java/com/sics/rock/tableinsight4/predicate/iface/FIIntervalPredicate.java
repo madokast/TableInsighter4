@@ -17,9 +17,8 @@ public interface FIIntervalPredicate extends FIConstantPredicate {
     FInterval interval();
 
     @Override
-    @SuppressWarnings("unchecked")
     default List<FConstant<?>> allConstants() {
-        return (List<FConstant<?>>) interval().constants();
+        return interval().constants();
     }
 
     @Override

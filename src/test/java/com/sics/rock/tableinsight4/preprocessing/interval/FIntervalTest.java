@@ -70,25 +70,25 @@ public class FIntervalTest extends FBasicTestEnv {
 
     @Test
     public void including() {
-        logger.info("" + ((FInterval<Double>) FInterval.of("5", FValueType.DOUBLE).get(0)).including(5.));
-        logger.info("" + ((FInterval<Double>) FInterval.of("5", FValueType.DOUBLE).get(1)).including(5.));
-        logger.info("" + ((FInterval<Double>) FInterval.of("5.1", FValueType.DOUBLE).get(0)).including(5.));
-        logger.info("" + ((FInterval<Double>) FInterval.of("5.1", FValueType.DOUBLE).get(1)).including(5.));
+        logger.info("" + FInterval.of("5", FValueType.DOUBLE).get(0).including(5.));
+        logger.info("" + FInterval.of("5", FValueType.DOUBLE).get(1).including(5.));
+        logger.info("" + FInterval.of("5.1", FValueType.DOUBLE).get(0).including(5.));
+        logger.info("" + FInterval.of("5.1", FValueType.DOUBLE).get(1).including(5.));
 
-        logger.info("" + ((FInterval<Double>) FInterval.of("  >50", FValueType.DOUBLE).get(0)).including(5.));
-        logger.info("" + ((FInterval<Double>) FInterval.of("<=  100.00001", FValueType.DOUBLE).get(0)).including(5.));
+        logger.info("" + FInterval.of("  >50", FValueType.DOUBLE).get(0).including(5.));
+        logger.info("" + FInterval.of("<=  100.00001", FValueType.DOUBLE).get(0).including(5.));
 
-        logger.info("" + ((FInterval<Double>) FInterval.of(I1, FValueType.DOUBLE).get(0)).including(5.));
-        logger.info("" + ((FInterval<Double>) FInterval.of(I2, FValueType.DOUBLE).get(0)).including(5.));
-        logger.info("" + ((FInterval<Double>) FInterval.of(I3, FValueType.DOUBLE).get(0)).including(5.));
+        logger.info("" + FInterval.of(I1, FValueType.DOUBLE).get(0).including(5.));
+        logger.info("" + FInterval.of(I2, FValueType.DOUBLE).get(0).including(5.));
+        logger.info("" + FInterval.of(I3, FValueType.DOUBLE).get(0).including(5.));
     }
 
     @Test
     public void test_type() {
-        List<FInterval<?>> d = FInterval.of("123", FValueType.DOUBLE);
-        List<FInterval<?>> s = FInterval.of("123", FValueType.STRING);
-        List<FInterval<?>> l = FInterval.of("123", FValueType.LONG);
-        List<FInterval<?>> i = FInterval.of("123", FValueType.INTEGER);
+        List<FInterval> d = FInterval.of("123", FValueType.DOUBLE);
+        List<FInterval> s = FInterval.of("123", FValueType.STRING);
+        List<FInterval> l = FInterval.of("123", FValueType.LONG);
+        List<FInterval> i = FInterval.of("123", FValueType.INTEGER);
 
         logger.info("type = {}", d);
         logger.info("type = {}", s);
@@ -106,7 +106,7 @@ public class FIntervalTest extends FBasicTestEnv {
         Date today = Date.valueOf("2022-7-29");
         Date d20 = Date.valueOf("2022-7-20");
 
-        FInterval<java.util.Date> dateFInterval = new FInterval<>(d20, today, true, false);
+        FInterval dateFInterval = new FInterval(d20, today, true, false);
 
         assertTrue(dateFInterval.including(d20));
         assertFalse(dateFInterval.including(today));
@@ -122,13 +122,13 @@ public class FIntervalTest extends FBasicTestEnv {
 
     @Test
     public void test_cast() {
-        FInterval<Double> di = new FInterval<>(10.5, 20.33, true, true);
+        FInterval di = new FInterval(10.5, 20.33, true, true);
 
         logger.info("{}", di);
 
-        FInterval<?> li = di.typeCast(FValueType.LONG).get();
-        FInterval<?> ii = di.typeCast(FValueType.INTEGER).get();
-        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+        FInterval li = di.typeCast(FValueType.LONG).orElseThrow(RuntimeException::new);
+        FInterval ii = di.typeCast(FValueType.INTEGER).orElseThrow(RuntimeException::new);
+        FInterval si = di.typeCast(FValueType.STRING).orElseThrow(RuntimeException::new);
 
         logger.info("{}", li);
         logger.info("{}", ii);
@@ -141,13 +141,13 @@ public class FIntervalTest extends FBasicTestEnv {
 
     @Test
     public void test_cast2() {
-        FInterval<Double> di = new FInterval<>(null, 20.33, true, true);
+        FInterval di = new FInterval(null, 20.33, true, true);
 
         logger.info("{}", di);
 
-        FInterval<?> li = di.typeCast(FValueType.LONG).get();
-        FInterval<?> ii = di.typeCast(FValueType.INTEGER).get();
-        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+        FInterval li = di.typeCast(FValueType.LONG).orElseThrow(RuntimeException::new);
+        FInterval ii = di.typeCast(FValueType.INTEGER).orElseThrow(RuntimeException::new);
+        FInterval si = di.typeCast(FValueType.STRING).orElseThrow(RuntimeException::new);
 
         logger.info("{}", li);
         logger.info("{}", ii);
@@ -160,13 +160,13 @@ public class FIntervalTest extends FBasicTestEnv {
 
     @Test
     public void test_cast3() {
-        FInterval<Double> di = new FInterval<>(10.5, null, true, true);
+        FInterval di = new FInterval(10.5, null, true, true);
 
         logger.info("{}", di);
 
-        FInterval<?> li = di.typeCast(FValueType.LONG).get();
-        FInterval<?> ii = di.typeCast(FValueType.INTEGER).get();
-        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+        FInterval li = di.typeCast(FValueType.LONG).orElseThrow(RuntimeException::new);
+        FInterval ii = di.typeCast(FValueType.INTEGER).orElseThrow(RuntimeException::new);
+        FInterval si = di.typeCast(FValueType.STRING).orElseThrow(RuntimeException::new);
 
         logger.info("{}", li);
         logger.info("{}", ii);
@@ -179,13 +179,13 @@ public class FIntervalTest extends FBasicTestEnv {
 
     @Test
     public void test_cast4() {
-        FInterval<Integer> di = new FInterval<>(1, 203, true, true);
+        FInterval di = new FInterval(1, 203, true, true);
 
         logger.info("{}", di);
 
-        FInterval<?> li = di.typeCast(FValueType.LONG).get();
-        FInterval<?> ii = di.typeCast(FValueType.DOUBLE).get();
-        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+        FInterval li = di.typeCast(FValueType.LONG).orElseThrow(RuntimeException::new);
+        FInterval ii = di.typeCast(FValueType.DOUBLE).orElseThrow(RuntimeException::new);
+        FInterval si = di.typeCast(FValueType.STRING).orElseThrow(RuntimeException::new);
 
         logger.info("{}", li);
         logger.info("{}", ii);
@@ -198,13 +198,13 @@ public class FIntervalTest extends FBasicTestEnv {
 
     @Test
     public void test_cast5() {
-        FInterval<String> di = new FInterval<>("10.5", "20.33", true, true);
+        FInterval di = new FInterval("10.5", "20.33", true, true);
 
         logger.info("{}", di);
 
-        FInterval<?> li = di.typeCast(FValueType.LONG).get();
-        FInterval<?> ii = di.typeCast(FValueType.INTEGER).get();
-        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+        FInterval li = di.typeCast(FValueType.LONG).orElseThrow(RuntimeException::new);
+        FInterval ii = di.typeCast(FValueType.INTEGER).orElseThrow(RuntimeException::new);
+        FInterval si = di.typeCast(FValueType.STRING).orElseThrow(RuntimeException::new);
 
         logger.info("{}", li);
         logger.info("{}", ii);
@@ -217,13 +217,13 @@ public class FIntervalTest extends FBasicTestEnv {
 
     @Test
     public void test_cast6() {
-        FInterval<String> di = new FInterval<>("10.5", null, true, false);
+        FInterval di = new FInterval("10.5", null, true, false);
 
         logger.info("{}", di);
 
-        FInterval<?> li = di.typeCast(FValueType.LONG).get();
-        FInterval<?> ii = di.typeCast(FValueType.INTEGER).get();
-        FInterval<?> si = di.typeCast(FValueType.STRING).get();
+        FInterval li = di.typeCast(FValueType.LONG).orElseThrow(RuntimeException::new);
+        FInterval ii = di.typeCast(FValueType.INTEGER).orElseThrow(RuntimeException::new);
+        FInterval si = di.typeCast(FValueType.STRING).orElseThrow(RuntimeException::new);
 
         logger.info("{}", li);
         logger.info("{}", ii);

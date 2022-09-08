@@ -83,6 +83,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicates(
                 relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
 
+        logger.info("factory {}", factory);
     }
 
     @Test
@@ -198,10 +199,10 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         for (FIPredicate predicate : factory.allPredicates()) {
             if (predicate instanceof FBinaryConsPredicate) {
-                assertTrue(((FBinaryConsPredicate) predicate).toString().contains("t1"));
+                assertTrue(predicate.toString().contains("t1"));
             }
             if (predicate instanceof FBinaryIntervalConsPredicate) {
-                assertTrue(((FBinaryIntervalConsPredicate) predicate).toString().contains("t1"));
+                assertTrue(predicate.toString().contains("t1"));
             }
         }
     }
@@ -222,10 +223,10 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         for (FIPredicate predicate : factory.allPredicates()) {
             if (predicate instanceof FBinaryConsPredicate) {
-                assertTrue(((FBinaryConsPredicate) predicate).toString().contains("t1"));
+                assertTrue(predicate.toString().contains("t1"));
             }
             if (predicate instanceof FBinaryIntervalConsPredicate) {
-                assertTrue(((FBinaryIntervalConsPredicate) predicate).toString().contains("t1"));
+                assertTrue(predicate.toString().contains("t1"));
             }
         }
     }

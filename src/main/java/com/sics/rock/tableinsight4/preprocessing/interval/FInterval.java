@@ -19,7 +19,7 @@ import java.util.*;
  * [left, right)
  * [left, right]
  */
-public class FInterval<T extends Comparable<T>> implements Serializable {
+public class FInterval implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FInterval.class);
 
@@ -34,9 +34,9 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
     private static final String LEFT_CLOSE = "[";
     private static final String RIGHT_CLOSE = "]";
 
-    private final FConstant<T> left;
+    private final FConstant<Comparable> left;
 
-    private final FConstant<T> right;
+    private final FConstant<Comparable> right;
 
     /**
      * left in the interval if true
@@ -48,7 +48,7 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
      */
     private final boolean rightClose;
 
-    public FInterval(T left, T right, boolean leftClose, boolean rightClose) {
+    public FInterval(Comparable left, Comparable right, boolean leftClose, boolean rightClose) {
 
         this.left = left == null ? FConstant.NEGATIVE_INFINITY : FConstant.of(left);
         this.right = right == null ? FConstant.POSITIVE_INFINITY : FConstant.of(right);
@@ -108,7 +108,7 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
      * 2. "op number". Like ">5", ">=10", "≤20"
      * 3. "interval". Like "[3,5]", "(12,30]"
      */
-    public static List<FInterval<?>> of(String intervalLike, FValueType type) throws IllegalArgumentException {
+    public static List<FInterval> of(String intervalLike, FValueType type) throws IllegalArgumentException {
         if (StringUtils.isBlank(intervalLike)) throw new IllegalArgumentException(intervalLike + " is blank");
         intervalLike = intervalLike.trim();
         if (intervalLike.startsWith(LEFT_OPEN) || intervalLike.startsWith(LEFT_CLOSE)) {
@@ -209,16 +209,16 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
         return rightClose ? RIGHT_CLOSE : RIGHT_OPEN;
     }
 
-    public Optional<FConstant<T>> left() {
+    public Optional<FConstant<?>> left() {
         return left.equals(FConstant.NEGATIVE_INFINITY) ? Optional.empty() : Optional.of(left);
     }
 
-    public Optional<FConstant<T>> right() {
+    public Optional<FConstant<?>> right() {
         return right.equals(FConstant.POSITIVE_INFINITY) ? Optional.empty() : Optional.of(right);
     }
 
-    public List<FConstant<T>> constants() {
-        List<FConstant<T>> ret = new ArrayList<>(2);
+    public List<FConstant<?>> constants() {
+        List<FConstant<?>> ret = new ArrayList<>(2);
         left().ifPresent(ret::add);
         right().ifPresent(ret::add);
         return ret;
@@ -245,7 +245,7 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
         if (left.equals(FConstant.NEGATIVE_INFINITY)) {
             return left.getConstant().toString();
         } else {
-            T lc = left.getConstant();
+            Comparable lc = left.getConstant();
             if (lc instanceof Double || lc instanceof Float) {
                 return FTiUtils.round(((Number) lc).doubleValue(), maxDecimalPlace, allowExponentialForm);
             } else {
@@ -254,7 +254,7 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
         }
     }
 
-    public Optional<FInterval<?>> typeCast(FValueType type) {
+    public Optional<FInterval> typeCast(FValueType type) {
         Comparable<?> leftConst, rightConst;
 
         if (left().isPresent()) {
@@ -277,7 +277,7 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
             logger.info("Cannot cast {} to {}", this, type);
             return Optional.empty();
         } else {
-            FInterval<?> des = new FInterval(leftConst, rightConst, this.leftClose, this.rightClose);
+            FInterval des = new FInterval(leftConst, rightConst, this.leftClose, this.rightClose);
             logger.info("Interval {} cast to {} as {}", this, type, des);
             return Optional.of(des);
         }
@@ -287,7 +287,7 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
         if (right.equals(FConstant.POSITIVE_INFINITY)) {
             return right.getConstant().toString();
         } else {
-            T rc = right.getConstant();
+            Comparable rc = right.getConstant();
             if (rc instanceof Double || rc instanceof Float) {
                 return FTiUtils.round(((Number) rc).doubleValue(), maxDecimalPlace, allowExponentialForm);
             } else {
@@ -297,7 +297,7 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
     }
 
     // test only
-    public boolean including(T v) {
+    public boolean including(Comparable v) {
         if (left.equals(FConstant.NEGATIVE_INFINITY)) {
             return right.getConstant().compareTo(v) >= (rightClose ? 0 : 1);
         } else if (right.equals(FConstant.POSITIVE_INFINITY)) {
@@ -312,7 +312,7 @@ public class FInterval<T extends Comparable<T>> implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FInterval<?> fInterval = (FInterval<?>) o;
+        FInterval fInterval = (FInterval) o;
         return leftClose == fInterval.leftClose &&
                 rightClose == fInterval.rightClose &&
                 Objects.equals(left, fInterval.left) &&

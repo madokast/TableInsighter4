@@ -31,7 +31,7 @@ public class FExternalIntervalConstantImporter implements FIIntervalConstantSear
                 FValueType valueType = column.getValueType();
                 final ArrayList<String> externalIntervalConstants = column.getIntervalConstantInfo().getExternalIntervalConstants();
                 for (String externalIntervalConstant : externalIntervalConstants) {
-                    final List<FInterval<?>> intervalList = FInterval.of(externalIntervalConstant, valueType);
+                    final List<FInterval> intervalList = FInterval.of(externalIntervalConstant, valueType);
                     ret.add(FIntervalConstantInfo.externalColumnIntervalConstant(tableName, columnName, intervalList));
                 }
             }

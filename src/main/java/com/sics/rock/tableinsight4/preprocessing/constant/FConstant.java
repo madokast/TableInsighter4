@@ -27,8 +27,8 @@ public class FConstant<T> implements Serializable {
     public static final long INDEX_OF_NAN = -6L;
 
     public static final FConstant NULL = new FConstant<>("null", INDEX_OF_NULL);
-    public static final FConstant POSITIVE_INFINITY = new FConstant<>("Inf", INDEX_OF_POSITIVE_INFINITY);
-    public static final FConstant NEGATIVE_INFINITY = new FConstant<>("-Inf", INDEX_OF_NEGATIVE_INFINITY);
+    public static final FConstant<Comparable> POSITIVE_INFINITY = new FConstant<>("Inf", INDEX_OF_POSITIVE_INFINITY);
+    public static final FConstant<Comparable> NEGATIVE_INFINITY = new FConstant<>("-Inf", INDEX_OF_NEGATIVE_INFINITY);
     public static final FConstant NAN = new FConstant<>("NaN", INDEX_OF_NAN);
 
     private static final Map<Long, FConstant> SPECIAL_CONST_MAP = FTiUtils.mapOf(INDEX_OF_NULL, NULL,
