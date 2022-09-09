@@ -140,6 +140,20 @@ public class FInterval implements Serializable {
         }
     }
 
+    public void validate() {
+        final Optional<FConstant<?>> left = this.left();
+        final Optional<FConstant<?>> right = this.right();
+        if (!left.isPresent()) {
+            FAssertUtils.require(right::isPresent, () -> "The interval " + this + " has no bound.");
+            FAssertUtils.require(right.get().getIndex() != FConstant.INDEX_NOT_INIT, () -> "Interval " + this + " constant index not init!");
+        } else if (!right.isPresent()) {
+            FAssertUtils.require(left.get().getIndex() != FConstant.INDEX_NOT_INIT, () -> "Interval " + this + " constant index not init!");
+        } else {
+            FAssertUtils.require(left.get().getIndex() != FConstant.INDEX_NOT_INIT, () -> "Interval " + this + " constant index not init!");
+            FAssertUtils.require(right.get().getIndex() != FConstant.INDEX_NOT_INIT, () -> "Interval " + this + " constant index not init!");
+        }
+    }
+
     /**
      * Relative inequality
      * [a, b] + mid => a ≤ mid ≤ b
@@ -148,14 +162,14 @@ public class FInterval implements Serializable {
     public String inequalityOf(String middle, int maxDecimalPlace, boolean allowExponentialForm) {
         if (left.equals(FConstant.NEGATIVE_INFINITY)) {
             String r = rightString(maxDecimalPlace, allowExponentialForm);
-            return middle + " " + lessInequality(rightClose) + " " + r;
+            return middle + " " + lessInequality(rightClose) + " '" + r + "'";
         } else if (right.equals(FConstant.POSITIVE_INFINITY)) {
             String l = leftString(maxDecimalPlace, allowExponentialForm);
-            return middle + " " + greatInequality(leftClose) + " " + l;
+            return middle + " " + greatInequality(leftClose) + " '" + l + "'";
         } else {
             String r = rightString(maxDecimalPlace, allowExponentialForm);
             String l = leftString(maxDecimalPlace, allowExponentialForm);
-            return l + " " + lessInequality(leftClose) + " " + middle + " " + lessInequality(rightClose) + " " + r;
+            return l + " '" + lessInequality(leftClose) + "' " + middle + " '" + lessInequality(rightClose) + "' " + r;
         }
     }
 

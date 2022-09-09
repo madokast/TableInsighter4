@@ -6,6 +6,7 @@ import com.sics.rock.tableinsight4.utils.FAssertUtils;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -160,4 +161,9 @@ public class FLocalPLI implements Serializable {
         return index2localRowIds.keySet().stream();
     }
 
+    public void checkPartitionId(final int expect) {
+        FAssertUtils.require(expect == partitionId,
+                () -> "Partition Id inconsistent! The expected partition id " + expect +
+                        " but the partition id of this Local PLI is " + partitionId);
+    }
 }

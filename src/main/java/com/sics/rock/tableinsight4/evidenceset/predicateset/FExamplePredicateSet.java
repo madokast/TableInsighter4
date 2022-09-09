@@ -40,7 +40,7 @@ public class FExamplePredicateSet extends FPredicateSet {
     private String rowIdInfo() {
         return supportIdsList.stream().map(arr ->
                 Arrays.stream(arr).map(Objects::toString).collect(Collectors.joining("x", "(", ")"))
-        ).collect(Collectors.joining(",", "[", "]"));
+        ).collect(Collectors.joining(","));
     }
 
     @Override

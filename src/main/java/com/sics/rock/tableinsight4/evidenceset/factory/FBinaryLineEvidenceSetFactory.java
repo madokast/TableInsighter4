@@ -14,10 +14,9 @@ import com.sics.rock.tableinsight4.predicate.FIPredicate;
 import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.predicate.iface.FIBinaryPredicate;
-import com.sics.rock.tableinsight4.predicate.impl.FBinaryModelPredicate;
-import com.sics.rock.tableinsight4.predicate.impl.FBinaryPredicate;
-import com.sics.rock.tableinsight4.predicate.impl.FUnaryConsPredicate;
-import com.sics.rock.tableinsight4.predicate.impl.FUnaryIntervalConsPredicate;
+import com.sics.rock.tableinsight4.predicate.impl.*;
+import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;
+import com.sics.rock.tableinsight4.preprocessing.interval.FInterval;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FColumnName;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
@@ -157,7 +156,12 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
                             rightRowSize, leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId);
                     break;
                 case FUnaryIntervalConsPredicateID:
-//                    doFUnaryIntervalConsPredicate();
+                    doFUnaryIntervalConsPredicate((FUnaryIntervalConsPredicate) predicate, localES, leftPLISection, rightPLISection,
+                            rightRowSize, leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId);
+                    break;
+                case FBinaryConsPredicateID:
+                    doBinaryConsPredicate((FBinaryConsPredicate) predicate, localES, leftPLISection, rightPLISection,
+                            leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId);
                     break;
                 default:
                     // TODO impl all
@@ -191,11 +195,8 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
         final FOperator operator = predicate.operator();
 
         if (left) {
-            FLocalPLI leftLocalPLI = leftPLISection.get(columnName);
-
-            FAssertUtils.require(leftPartitionId == leftLocalPLI.getPartitionId(),
-                    () -> "Partition Id inconsistent! The pair-key tells " + leftPartitionId +
-                            " but the value PLI object tells " + leftLocalPLI.getPartitionId());
+            final FLocalPLI leftLocalPLI = leftPLISection.get(columnName);
+            if (FAssertUtils.ASSERT) leftLocalPLI.checkPartitionId(leftPartitionId);
 
             leftLocalPLI.localRowIdsOf(constantIndex, operator).forEach(leftLocalRowId -> {
                 for (int rightLocalRowId = 0; rightLocalRowId < rightRowSize; rightLocalRowId++) {
@@ -203,11 +204,8 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
                 }
             });
         } else {
-            FLocalPLI rightLocalPLI = rightPLISection.get(columnName);
-
-            FAssertUtils.require(rightPartitionId == rightLocalPLI.getPartitionId(),
-                    () -> "Partition Id inconsistent! The pair-key tells " + leftPartitionId +
-                            " but the value PLI object tells " + rightLocalPLI.getPartitionId());
+            final FLocalPLI rightLocalPLI = rightPLISection.get(columnName);
+            if (FAssertUtils.ASSERT) rightLocalPLI.checkPartitionId(rightPartitionId);
 
             rightLocalPLI.localRowIdsOf(constantIndex, operator).forEach(rightLocalRowId -> {
                 for (int leftLocalRowId = 0; leftLocalRowId < leftRowSize; leftLocalRowId++) {
@@ -217,8 +215,75 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
         }
     }
 
-    private void doFUnaryIntervalConsPredicate(FUnaryIntervalConsPredicate predicate, FIPredicateSet[] localES) {
+    private void doBinaryConsPredicate(final FBinaryConsPredicate predicate, final FIPredicateSet[] localES,
+                                       final Map<FColumnName, FLocalPLI> leftPLISection,
+                                       final Map<FColumnName, FLocalPLI> rightPLISection,
+                                       final int leftRowSize, final int predicateSize,
+                                       final int predicateId, final int leftPartitionId, final int rightPartitionId) {
+        // todo
+    }
 
+    private void doFUnaryIntervalConsPredicate(FUnaryIntervalConsPredicate predicate, FIPredicateSet[] localES,
+                                               Map<FColumnName, FLocalPLI> leftPLISection,
+                                               Map<FColumnName, FLocalPLI> rightPLISection,
+                                               int rightRowSize, int leftRowSize,
+                                               int predicateSize, int predicateId,
+                                               int leftPartitionId, int rightPartitionId) {
+        final FInterval interval = predicate.interval();
+        if (FAssertUtils.ASSERT) interval.validate();
+        final Optional<FConstant<?>> intervalLeft = interval.left();
+        final Optional<FConstant<?>> intervalRight = interval.right();
+
+        final boolean left = predicate.tupleIndex() == 0;
+        final FColumnName columnName = new FColumnName(predicate.columnName());
+
+        if (left) {
+            final FLocalPLI leftLocalPLI = leftPLISection.get(columnName);
+            if (FAssertUtils.ASSERT) leftLocalPLI.checkPartitionId(leftPartitionId);
+            if (!intervalLeft.isPresent()) {
+                leftLocalPLI.localRowIdsOf(intervalRight.get().getIndex(), interval.rightOperator()).forEach(leftLocalRowId -> {
+                    for (int rightLocalRowId = 0; rightLocalRowId < rightRowSize; rightLocalRowId++) {
+                        fillLocalES(localES, leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId, leftLocalRowId, rightLocalRowId);
+                    }
+                });
+            } else if (!intervalRight.isPresent()) {
+                leftLocalPLI.localRowIdsOf(intervalLeft.get().getIndex(), interval.leftOperator()).forEach(leftLocalRowId -> {
+                    for (int rightLocalRowId = 0; rightLocalRowId < rightRowSize; rightLocalRowId++) {
+                        fillLocalES(localES, leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId, leftLocalRowId, rightLocalRowId);
+                    }
+                });
+            } else {
+                leftLocalPLI.localRowIdsBetween(intervalLeft.get().getIndex(), intervalRight.get().getIndex(),
+                        interval.leftClose(), interval.rightClose()).forEach(leftLocalRowId -> {
+                    for (int rightLocalRowId = 0; rightLocalRowId < rightRowSize; rightLocalRowId++) {
+                        fillLocalES(localES, leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId, leftLocalRowId, rightLocalRowId);
+                    }
+                });
+            }
+        } else { // right, tuple-id = 1
+            final FLocalPLI rightLocalPLI = rightPLISection.get(columnName);
+            if (FAssertUtils.ASSERT) rightLocalPLI.checkPartitionId(rightPartitionId);
+            if (!intervalLeft.isPresent()) {
+                rightLocalPLI.localRowIdsOf(intervalRight.get().getIndex(), interval.rightOperator()).forEach(rightLocalRowId -> {
+                    for (int leftLocalRowId = 0; leftLocalRowId < leftRowSize; leftLocalRowId++) {
+                        fillLocalES(localES, leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId, leftLocalRowId, rightLocalRowId);
+                    }
+                });
+            } else if (!intervalRight.isPresent()) {
+                rightLocalPLI.localRowIdsOf(intervalLeft.get().getIndex(), interval.leftOperator()).forEach(rightLocalRowId -> {
+                    for (int leftLocalRowId = 0; leftLocalRowId < leftRowSize; leftLocalRowId++) {
+                        fillLocalES(localES, leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId, leftLocalRowId, rightLocalRowId);
+                    }
+                });
+            } else {
+                rightLocalPLI.localRowIdsBetween(intervalLeft.get().getIndex(), intervalRight.get().getIndex(),
+                        interval.leftClose(), interval.rightClose()).forEach(rightLocalRowId -> {
+                    for (int leftLocalRowId = 0; leftLocalRowId < leftRowSize; leftLocalRowId++) {
+                        fillLocalES(localES, leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId, leftLocalRowId, rightLocalRowId);
+                    }
+                });
+            }
+        }
     }
 
     private void doBinaryPredicate(FIBinaryPredicate predicate, FIPredicateSet[] localES,
@@ -234,12 +299,8 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
         final FLocalPLI leftPLI = leftPLISection.get(leftCol);
         final FLocalPLI rightPLI = rightPLISection.get(rightCol);
 
-        FAssertUtils.require(leftPartitionId == leftPLI.getPartitionId(),
-                () -> "Partition Id inconsistent! The pair-key tells " + leftPartitionId + " but the value PLI object tells " + leftPLI.getPartitionId());
-
-        FAssertUtils.require(rightPartitionId == rightPLI.getPartitionId(),
-                () -> "Partition Id inconsistent! The pair-key tells " + leftPartitionId + " but the value PLI object tells " + leftPLI.getPartitionId());
-
+        if (FAssertUtils.ASSERT) leftPLI.checkPartitionId(leftPartitionId);
+        if (FAssertUtils.ASSERT) rightPLI.checkPartitionId(rightPartitionId);
 
         FLocalPLIUtils.localRowIdsOf(leftPLI, rightPLI, operator).forEach(leftRightRowIds -> {
             List<Integer> leftLocalRowIds = leftRightRowIds._k;
@@ -307,12 +368,14 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
     private static final int FBinaryModelPredicateID = 2;
     private static final int FUnaryConsPredicateID = 3;
     private static final int FUnaryIntervalConsPredicateID = 4;
+    private static final int FBinaryConsPredicateID = 5;
 
     static {
         PREDICATE_TYPE_MAP.put(FBinaryPredicate.class, FBinaryPredicateID);
         PREDICATE_TYPE_MAP.put(FBinaryModelPredicate.class, FBinaryModelPredicateID);
         PREDICATE_TYPE_MAP.put(FUnaryConsPredicate.class, FUnaryConsPredicateID);
         PREDICATE_TYPE_MAP.put(FUnaryIntervalConsPredicate.class, FUnaryIntervalConsPredicateID);
+        PREDICATE_TYPE_MAP.put(FBinaryConsPredicate.class, FBinaryConsPredicateID);
 
     }
 }
