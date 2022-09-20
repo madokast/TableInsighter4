@@ -29,7 +29,7 @@ public class FRuleBodyTOTest extends FBasicTestEnv {
                 return new FRule(xs, y);
             }).collect(Collectors.toList());
 
-            FRuleBodyTO to = new FRuleBodyTO(rules);
+            FRuleBodyTO to = FRuleBodyTO.create(rules, true);
 
             IntStream.range(0, 1000).forEach(i -> {
                 FBitSet xs = to.ruleLhs(i);
@@ -57,7 +57,7 @@ public class FRuleBodyTOTest extends FBasicTestEnv {
 
             long origin = SizeEstimator.estimate(rules);
 
-            FRuleBodyTO to = new FRuleBodyTO(rules);
+            FRuleBodyTO to = FRuleBodyTO.create(rules, true);
             long compress = SizeEstimator.estimate(to);
 
             double ratio = (double) compress / origin;

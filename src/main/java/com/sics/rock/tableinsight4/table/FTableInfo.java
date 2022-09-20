@@ -121,5 +121,16 @@ public class FTableInfo implements Serializable {
         this.columns = columns;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final FTableInfo that = (FTableInfo) o;
+        return innerTableName.equals(that.innerTableName);
+    }
 
+    @Override
+    public int hashCode() {
+        return innerTableName.hashCode();
+    }
 }

@@ -1,7 +1,6 @@
 package com.sics.rock.tableinsight4.internal;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * The position of an element in rdd is determined by its partitionId and offset.
@@ -38,7 +37,7 @@ public class FRddElementIndex implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(partitionId, offset);
+        return (partitionId << 16) + offset;
     }
 
     @Override

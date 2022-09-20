@@ -166,4 +166,31 @@ public class FSparkUtils {
 
         return sc.parallelize(elements);
     }
+
+
+    /**
+     * localize a map from pair-rdd, retaining designated keys
+     */
+    public static <K, V> Map<K, V> localizeRDDMap(final JavaPairRDD<K, V> map, final List<K> keyList) {
+        final JavaSparkContext sc = JavaSparkContext.fromSparkContext(map.context());
+        final JavaRDD<K> keyRDD = sc.parallelize(keyList);
+
+        return keyRDD.mapToPair(key -> new Tuple2<>(key, null))
+                .leftOuterJoin(map)
+                .filter(kvv -> kvv._2._2.isPresent())
+                .map(kvv -> new Tuple2<>(kvv._1, kvv._2._2.get()))
+                .collect().stream().collect(Collectors.toMap(Tuple2::_1, Tuple2::_2));
+    }
+
+    /**
+     * @param map     a map implemented by pair-rdd
+     * @param keyList list of keys
+     * @return list of values mapped from keyList
+     */
+    public static <K, V> List<V> mappingByMapRDD(final JavaPairRDD<K, V> map, final List<K> keyList) {
+
+        final Map<K, V> localizedMap = localizeRDDMap(map, keyList);
+
+        return keyList.stream().map(key -> localizedMap.getOrDefault(key, null)).collect(Collectors.toList());
+    }
 }

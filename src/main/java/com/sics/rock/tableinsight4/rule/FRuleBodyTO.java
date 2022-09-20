@@ -40,12 +40,7 @@ public class FRuleBodyTO implements Serializable {
      */
     private final int lhsArrayLength;
 
-    public FRuleBodyTO(List<FRule> rules) {
-        FAssertUtils.require(() -> !rules.isEmpty(), "Rule lise is empty");
-        FAssertUtils.require(() -> rules.stream().allMatch(FRule::isAllZero), "Rule has been executed");
-        FAssertUtils.require(() -> rules.stream().mapToInt(r -> r.xs.wordsLength()).distinct().count() == 1,
-                "The x bitset length of the rules are inconsistent");
-
+    private FRuleBodyTO(List<FRule> rules) {
         int size = rules.size();
 
         lhsArrayLength = rules.get(0).xs.wordsLength();
@@ -59,6 +54,17 @@ public class FRuleBodyTO implements Serializable {
             System.arraycopy(xsArr, 0, lhsData, lhsArrayLength * i, lhsArrayLength);
             rhsData[i] = (short) rule.y;
         }
+    }
+
+    public static FRuleBodyTO create(List<FRule> rules, boolean ruleRunning) {
+        if (ruleRunning) {
+            FAssertUtils.require(() -> !rules.isEmpty(), "Rule lise is empty");
+            FAssertUtils.require(() -> rules.stream().allMatch(FRule::isAllZero), "Rule has been executed");
+            FAssertUtils.require(() -> rules.stream().mapToInt(r -> r.xs.wordsLength()).distinct().count() == 1,
+                    "The x bitset length of the rules are inconsistent");
+        }
+
+        return new FRuleBodyTO(rules);
     }
 
 

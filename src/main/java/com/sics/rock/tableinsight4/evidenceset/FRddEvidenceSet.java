@@ -1,6 +1,7 @@
 package com.sics.rock.tableinsight4.evidenceset;
 
 import com.sics.rock.tableinsight4.evidenceset.predicateset.FIPredicateSet;
+import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.internal.FSerializableConsumer;
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
@@ -11,17 +12,18 @@ import com.sics.rock.tableinsight4.utils.FTiUtils;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.broadcast.Broadcast;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
  * @author zhaorx
  */
 public class FRddEvidenceSet implements FIEvidenceSet {
+
+    private static final Logger logger = LoggerFactory.getLogger(FRddEvidenceSet.class);
 
     /**
      * data
@@ -89,7 +91,7 @@ public class FRddEvidenceSet implements FIEvidenceSet {
     public void applyOn(List<FRule> rules) {
         FAssertUtils.require(() -> rules.stream().allMatch(FRule::isAllZero), "Verify non-zero rules");
 
-        FRuleBodyTO to = new FRuleBodyTO(rules);
+        FRuleBodyTO to = FRuleBodyTO.create(rules, true);
         Broadcast<FRuleBodyTO> toBroadcast = sc.broadcast(to);
 
         long[] reducedSupportInfo = ES.mapPartitions(psIter -> {
@@ -127,6 +129,84 @@ public class FRddEvidenceSet implements FIEvidenceSet {
             rule.xSupport = reducedSupportInfo[i];
             rule.support = reducedSupportInfo[i + size];
         }
+    }
+
+    /**
+     * find examples which meet the rule and rule.x but y
+     * pair._k = predicate-sets meeting rule
+     * pair._k = predicate-sets meeting rule.x but y
+     */
+    @Override
+    public FPair<List<FIPredicateSet>, List<FIPredicateSet>>[] examples(final List<FRule> rules, final int limit) {
+        FRuleBodyTO to = FRuleBodyTO.create(rules, false);
+        Broadcast<FRuleBodyTO> toBroadcast = sc.broadcast(to);
+
+        final FPair<List<FIPredicateSet>, List<FIPredicateSet>>[] examples = ES.mapPartitions(psIter -> {
+            FRuleBodyTO ruleBodyTOB = toBroadcast.getValue();
+            int ruleSize = ruleBodyTOB.getRuleNumber();
+
+            @SuppressWarnings("unchecked") final FPair<List<FIPredicateSet>, List<FIPredicateSet>>[] res = new FPair[ruleSize];
+
+            while (psIter.hasNext()) {
+                FIPredicateSet ps = psIter.next();
+                FBitSet psBit = ps.getBitSet();
+                IntStream.range(0, ruleSize).parallel().forEach(i -> {
+                    FBitSet xs = ruleBodyTOB.ruleLhs(i);
+                    int y = ruleBodyTOB.ruleRhs(i);
+                    if (xs.isSubSetOf(psBit)) {
+                        if (res[i] == null) res[i] = new FPair<>(new ArrayList<>(), new ArrayList<>());
+                        if (psBit.get(y)) {
+                            final List<FIPredicateSet> ruleExamples = res[i]._k;
+                            if (ruleExamples.size() < limit) ruleExamples.add(ps);
+                        } else {
+                            final List<FIPredicateSet> ruleButYExamples = res[i]._v;
+                            if (ruleButYExamples.size() < limit) ruleButYExamples.add(ps);
+                        }
+                    }
+
+                });
+            }
+            return Collections.singletonList(res).iterator();
+        }).reduce((l1, l2) -> {
+            for (int i = 0; i < l1.length; i++) {
+                // examples of rule-i
+                FPair<List<FIPredicateSet>, List<FIPredicateSet>> p1 = l1[i];
+                final FPair<List<FIPredicateSet>, List<FIPredicateSet>> p2 = l2[i];
+
+                // check p1 null and write back
+                if (p1 == null) {
+                    p1 = new FPair<>(new ArrayList<>(), new ArrayList<>());
+                    l1[i] = p1;
+                }
+
+                if (p1._k.size() < limit && p2 != null && p2._k != null) {
+                    final List<FIPredicateSet> p2Val = p2._k.subList(0, Math.min(p2._k.size(), limit - p1._k.size()));
+                    p1._k.addAll(p2Val);
+                }
+                if (p1._v.size() < limit && p2 != null && p2._v != null) {
+                    final List<FIPredicateSet> p2Val = p2._v.subList(0, Math.min(p2._v.size(), limit - p1._v.size()));
+                    p1._v.addAll(p2Val);
+                }
+            }
+
+            return l1;
+        });
+
+        if (FAssertUtils.ASSERT) {
+            for (int i = 0; i < rules.size(); i++) {
+                final FRule rule = rules.get(i);
+                final FPair<List<FIPredicateSet>, List<FIPredicateSet>> example = examples[i];
+                final List<FIPredicateSet> ruleExamples = example._k;
+                final List<FIPredicateSet> ruleButYExamples = example._v;
+
+                FAssertUtils.require(ruleExamples.size() == Math.min(limit, rule.support),
+                        () -> "Rule(" + rule + ")'s support is " + rule.support + ", but support example number is " + ruleExamples.size());
+                FAssertUtils.require(ruleButYExamples.size() == Math.min(limit, rule.unSupport()),
+                        () -> "Rule(" + rule + ")'s unSupport is " + rule.unSupport() + ", but unSupport example number is " + ruleButYExamples.size());
+            }
+        }
+
+        return examples;
     }
 
     @Override

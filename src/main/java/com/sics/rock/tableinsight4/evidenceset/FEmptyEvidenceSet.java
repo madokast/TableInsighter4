@@ -1,6 +1,7 @@
 package com.sics.rock.tableinsight4.evidenceset;
 
 import com.sics.rock.tableinsight4.evidenceset.predicateset.FIPredicateSet;
+import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.internal.FSerializableConsumer;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.rule.FRule;
@@ -37,6 +38,11 @@ public class FEmptyEvidenceSet implements FIEvidenceSet {
     @Override
     public void applyOn(List<FRule> rules) {
         throw new NotImplementedException("Run rules on empty evidence set");
+    }
+
+    @Override
+    public FPair<List<FIPredicateSet>, List<FIPredicateSet>>[] examples(final List<FRule> rules, final int limit) {
+        throw new NotImplementedException("Find examples on empty evidence set");
     }
 
     @Override

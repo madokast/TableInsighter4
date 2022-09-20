@@ -5,6 +5,7 @@ import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
 import com.sics.rock.tableinsight4.internal.bitset.FBitSetSearchTree;
 import com.sics.rock.tableinsight4.predicate.FIPredicate;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
+import com.sics.rock.tableinsight4.predicate.iface.FIConstantPredicate;
 import com.sics.rock.tableinsight4.predicate.iface.FIUnaryPredicate;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import org.slf4j.Logger;
@@ -65,8 +66,8 @@ public class FRuleFinder implements FIRuleFinder {
     private FBitSetSearchTree lessSupportPredicateSet = new FBitSetSearchTree();
 
 
-    public FRuleFinder(FRuleFactory ruleFactory, FIEvidenceSet evidenceSet, double cover, double confidence,
-                       int maxRuleNumber, int maxNeedCreateChildrenRuleNumber, long timeout, long batchHeapSizeMB) {
+    FRuleFinder(FRuleFactory ruleFactory, FIEvidenceSet evidenceSet, double cover, double confidence,
+                int maxRuleNumber, int maxNeedCreateChildrenRuleNumber, long timeout, long batchHeapSizeMB) {
         this.ruleFactory = ruleFactory;
         this.predicateIndexer = ruleFactory.getPredicateIndexer();
         this.maxLhsSize = ruleFactory.getMaxLhsSize();
@@ -227,6 +228,7 @@ public class FRuleFinder implements FIRuleFinder {
         if (yp instanceof FIUnaryPredicate && ((FIUnaryPredicate) yp).tupleIndex() == 1) {
             // if yp is single line predicate and tuple-id is 1, this is multi-line rule finding
             // if there only one predicate in xs, it must be the tuple-id = 0 predicate correspond to yp
+            // which is invalid. However, its offspring may be valid. The evaluation of these rules is necessary.
             if (xs.cardinality() == 1) {
                 FAssertUtils.require(
                         () -> predicateIndexer.getUnaryPredicateT0ByT1(xs.nextSetBit(0)) == y,
@@ -237,8 +239,8 @@ public class FRuleFinder implements FIRuleFinder {
 
         // when multi-line rule finding
         if (ruleFactory.isMultiLinePredicateExistence()) {
-            // all xs predicates are single-line
-            if (xs.stream().allMatch(x -> predicateIndexer.getPredicate(x) instanceof FIUnaryPredicate)) {
+            // all xs predicates are constant / interval predicates
+            if (xs.stream().mapToObj(predicateIndexer::getPredicate).allMatch(x -> x instanceof FIConstantPredicate)) {
                 return false;
             }
         }
