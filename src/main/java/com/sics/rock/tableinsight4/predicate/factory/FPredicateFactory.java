@@ -72,18 +72,32 @@ public class FPredicateFactory {
             final Set<String> innerTabCols = derivedColumnNameHandler.innerTabCols(tabName, innerTableName, columnName);
 
             if (constantPredicateFlag) {
-                columnInfo.getConstants().stream().flatMap(cons -> {
+                columnInfo.getConstants().forEach(cons -> {
                     FIPredicate t0 = new FUnaryConsPredicate(tabName, columnName, 0, FOperator.EQ, cons, innerTabCols);
                     FIPredicate t1 = new FUnaryConsPredicate(tabName, columnName, 1, FOperator.EQ, cons, innerTabCols);
                     FIPredicate t01 = new FBinaryConsPredicate(tabName, columnName, FOperator.EQ, cons, innerTabCols);
-                    return Stream.of(t0, t1, t01);
-                }).forEach(predicateIndexer::put);
-                columnInfo.getIntervalConstants().stream().flatMap(interval -> {
+
+                    // order matters!!
+                    predicateIndexer.put(t0);
+                    predicateIndexer.put(t1);
+                    predicateIndexer.put(t01);
+
+                    predicateIndexer.insertConstPredT01Map(t0, t1);
+                    predicateIndexer.insertConstBiPred2DivisionPred(t01, t0, t1);
+
+                });
+                columnInfo.getIntervalConstants().forEach(interval -> {
                     FIPredicate t0 = new FUnaryIntervalConsPredicate(tabName, columnName, 0, interval, innerTabCols);
                     FIPredicate t1 = new FUnaryIntervalConsPredicate(tabName, columnName, 1, interval, innerTabCols);
                     FIPredicate t01 = new FBinaryIntervalConsPredicate(tabName, columnName, interval, innerTabCols);
-                    return Stream.of(t0, t1, t01);
-                }).forEach(predicateIndexer::put);
+
+                    predicateIndexer.put(t0);
+                    predicateIndexer.put(t1);
+                    predicateIndexer.put(t01);
+
+                    predicateIndexer.insertConstPredT01Map(t0, t1);
+                    predicateIndexer.insertConstBiPred2DivisionPred(t01, t0, t1);
+                });
             }
 
             if (columnInfo.getColumnType().equals(FColumnType.NORMAL)) {

@@ -73,6 +73,16 @@ public class FPredicateIndexer implements Serializable {
         logger.info("Create predicate NO.{} {}", getIndex(predicate), predicate);
     }
 
+    void insertConstPredT01Map(FIPredicate t0ConstPredicate, FIPredicate t1ConstPredicate) {
+        constPredT01Map.put(getIndex(t0ConstPredicate), getIndex(t1ConstPredicate));
+        constPredT10Map.put(getIndex(t1ConstPredicate), getIndex(t0ConstPredicate));
+    }
+
+    void insertConstBiPred2DivisionPred(FIPredicate constBinaryPredicate,
+                                        FIPredicate t0ConstPredicate, FIPredicate t1ConstPredicate) {
+        constBiPred2DivisionPred.put(getIndex(constBinaryPredicate), new FPair<>(getIndex(t0ConstPredicate), getIndex(t1ConstPredicate)));
+    }
+
     /**
      * divided consUnaryPredicates of consBiPredicate
      * input: like t0.name = aaa ^ t1.name = aaa
@@ -105,21 +115,29 @@ public class FPredicateIndexer implements Serializable {
     }
 
     /**
-     * find predicate by feature
+     * find predicate by keywords
      * debug only
      */
-    public List<FIPredicate> find(String feature) {
-        return this.allPredicates().stream().filter(p ->
-                feature.chars().mapToObj(ch -> String.valueOf((char) ch)).allMatch(ch -> p.toString().contains(ch))
-        ).collect(Collectors.toList());
+    public List<FIPredicate> find(String keywords) {
+        final char[] keywordArr = keywords.toCharArray();
+        return this.allPredicates().stream().filter(p -> {
+            final String pStr = p.toString();
+            int start = 0;
+            for (final char f : keywordArr) {
+                final int id = pStr.indexOf(f, start);
+                if (id < 0) return false;
+                else start = id + 1;
+            }
+            return start > 0;
+        }).collect(Collectors.toList());
     }
 
     /**
-     * find predicate index by feature
+     * find predicate index by keywords
      * debug only
      */
-    public List<Integer> findIndex(String feature) {
-        return find(feature).stream().map(this::getIndex).collect(Collectors.toList());
+    public List<Integer> findIndex(String keywords) {
+        return find(keywords).stream().map(this::getIndex).collect(Collectors.toList());
     }
 
     public int getUnaryPredicateT0ByT1(int index) {

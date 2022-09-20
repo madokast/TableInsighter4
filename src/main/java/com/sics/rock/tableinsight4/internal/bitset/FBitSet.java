@@ -134,6 +134,7 @@ public class FBitSet implements Serializable {
      * @return previous bit sit (true) index or -1 if not found
      */
     public int previousSetBit(int fromIncluding) {
+        if (fromIncluding < 0) return -1;
         if (words.length == 0) return -1;
 
         // word of from

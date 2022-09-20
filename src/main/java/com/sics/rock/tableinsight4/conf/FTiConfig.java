@@ -39,6 +39,9 @@ public class FTiConfig {
     @FConfigItem(name = "ti.rule.find.crossTableCrossLine", description = "Do cross-table (2-line) cross-line (2-line) rule finding of each two tables.")
     public Boolean crossTableCrossLineRuleFind = true;
 
+    @FConfigItem(name = "ti.rule.find.constPredicateCrossLine", description = "Create constant predicates in cross line rule finding.")
+    public Boolean constPredicateCrossLine = true;
+
     @FConfigItem(name = "ti.rule.maxLength", description = "The max number of predicates of a rule. The min value is 2 since the simplest rule is p1 -> p2 consisting of 2 predicates.")
     public Integer maxRuleLength = 20;
 
