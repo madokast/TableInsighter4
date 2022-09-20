@@ -4,6 +4,7 @@ import com.sics.rock.tableinsight4.evidenceset.FEmptyEvidenceSet;
 import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
 import com.sics.rock.tableinsight4.evidenceset.FRddEvidenceSet;
 import com.sics.rock.tableinsight4.evidenceset.predicateset.*;
+import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.internal.FPartitionId;
 import com.sics.rock.tableinsight4.internal.FRddElementIndex;
 import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
@@ -160,12 +161,11 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
                             rightRowSize, leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId);
                     break;
                 case FBinaryConsPredicateID:
-                    doBinaryConsPredicate((FBinaryConsPredicate) predicate, localES, leftPLISection, rightPLISection,
-                            leftRowSize, predicateSize, predicateId, leftPartitionId, rightPartitionId);
+                case FBinaryIntervalPredicateID:
+                    doBinaryConsPredicate(localES, predicateId, allPredicates);
                     break;
                 default:
-                    // TODO impl all
-                    // throw new RuntimeException("Unknown predicate type " + predicate);
+                    throw new RuntimeException("Unknown predicate type " + predicate + " in binary-line ES construction.");
             }
         }
 
@@ -215,12 +215,20 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
         }
     }
 
-    private void doBinaryConsPredicate(final FBinaryConsPredicate predicate, final FIPredicateSet[] localES,
-                                       final Map<FColumnName, FLocalPLI> leftPLISection,
-                                       final Map<FColumnName, FLocalPLI> rightPLISection,
-                                       final int leftRowSize, final int predicateSize,
-                                       final int predicateId, final int leftPartitionId, final int rightPartitionId) {
-        // todo
+    private void doBinaryConsPredicate(final FIPredicateSet[] localES, final int predicateId,
+                                       FPredicateIndexer predicateIndexer) {
+        // create by its unary const predicates
+        final FPair<Integer, Integer> divideConsPredicates = predicateIndexer.getDivideConsPred(predicateId);
+        final int leftConstPredicate = divideConsPredicates._k;
+        final int rightConstPredicate = divideConsPredicates._v;
+        for (final FIPredicateSet ps : localES) {
+            if (ps != null) {
+                final FBitSet bitSet = ps.getBitSet();
+                if (bitSet.get(leftConstPredicate) && bitSet.get(rightConstPredicate)) {
+                    bitSet.set(predicateId);
+                }
+            }
+        }
     }
 
     private void doFUnaryIntervalConsPredicate(FUnaryIntervalConsPredicate predicate, FIPredicateSet[] localES,
@@ -369,6 +377,7 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
     private static final int FUnaryConsPredicateID = 3;
     private static final int FUnaryIntervalConsPredicateID = 4;
     private static final int FBinaryConsPredicateID = 5;
+    private static final int FBinaryIntervalPredicateID = 6;
 
     static {
         PREDICATE_TYPE_MAP.put(FBinaryPredicate.class, FBinaryPredicateID);
@@ -376,6 +385,7 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
         PREDICATE_TYPE_MAP.put(FUnaryConsPredicate.class, FUnaryConsPredicateID);
         PREDICATE_TYPE_MAP.put(FUnaryIntervalConsPredicate.class, FUnaryIntervalConsPredicateID);
         PREDICATE_TYPE_MAP.put(FBinaryConsPredicate.class, FBinaryConsPredicateID);
+        PREDICATE_TYPE_MAP.put(FBinaryIntervalConsPredicate.class, FBinaryIntervalPredicateID);
 
     }
 }
