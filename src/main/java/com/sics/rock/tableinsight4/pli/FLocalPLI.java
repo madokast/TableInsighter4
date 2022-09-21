@@ -6,7 +6,6 @@ import com.sics.rock.tableinsight4.utils.FAssertUtils;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -159,6 +158,10 @@ public class FLocalPLI implements Serializable {
 
     public Stream<Long> indexStream() {
         return index2localRowIds.keySet().stream();
+    }
+
+    public Iterator<Map.Entry<Long, List<Integer>>> indexRowIdsIterator() {
+        return index2localRowIds.entrySet().iterator();
     }
 
     public void checkPartitionId(final int expect) {

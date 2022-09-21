@@ -113,6 +113,12 @@ public class FTiUtils {
         return new HashSet<>(listOf(es));
     }
 
+    public static <E> Set<E> setUnion(final Set<E> s1, final Set<E> s2) {
+        final Set<E> union = new HashSet<>(s1);
+        union.addAll(s2);
+        return union;
+    }
+
     public static <T> Map<T, Integer> indexArray(T[] array) {
 
         FAssertUtils.require(() -> Arrays.stream(array).distinct().count() == (long) array.length,

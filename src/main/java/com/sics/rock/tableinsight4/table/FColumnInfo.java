@@ -146,4 +146,9 @@ public class FColumnInfo implements Serializable {
     public ArrayList<FInterval> getIntervalConstants() {
         return intervalConstants;
     }
+
+    @Override
+    public String toString() {
+        return columnName;
+    }
 }

@@ -5,7 +5,6 @@ import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
 import com.sics.rock.tableinsight4.evidenceset.factory.FBinaryLineEvidenceSetFactory;
 import com.sics.rock.tableinsight4.evidenceset.factory.FEvidenceSetFactoryBuilder;
-import com.sics.rock.tableinsight4.evidenceset.factory.FSingleLineEvidenceSetFactory;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructor;
 import com.sics.rock.tableinsight4.pli.FPliConstructorFactory;
@@ -74,33 +73,32 @@ public class FTableInsight {
             final FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
 
             final List<FTableInfo> allTableInfos = tableDatasetMap.allTableInfos();
+
             allTableInfos.forEach(tableInfo -> {
                 if (config.singleLineRuleFind) {// single-line
-                    final FPredicateIndexer singleLinePredicateIndexer =
+                    final FPredicateIndexer predicates =
                             FPredicateFactory.createSingleLinePredicates(tableInfo, derivedColumnNameHandler, new ArrayList<>());
-                    final FSingleLineEvidenceSetFactory evidenceSetFactory = new FEvidenceSetFactoryBuilder().buildSingleLineEvidenceSetFactory();
-                    final FIEvidenceSet singleLineEvidenceSet = evidenceSetFactory.create(tableInfo, PLI,
-                            singleLinePredicateIndexer,
-                            tableInfo.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(tableInfo.getInnerTableName()).count()));
-                    final FIRuleFinder ruleFinder = new FRuleFinderBuilder().build(singleLinePredicateIndexer, Collections.singletonList(tableInfo), singleLineEvidenceSet);
+                    final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder()
+                            .buildSingleLineEvidenceSetFactory().create(tableInfo, PLI, predicates,
+                                    tableInfo.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(tableInfo.getInnerTableName()).count()));
+                    final FIRuleFinder ruleFinder = new FRuleFinderBuilder().build(predicates, Collections.singletonList(tableInfo), evidenceSet);
 
                     final List<FRule> rules = ruleFinder.find();
-                    allRules.addAll(FRuleVO.create(rules, PLI, singleLineEvidenceSet, singleLinePredicateIndexer, Collections.singletonList(tableInfo),
+                    allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, Collections.singletonList(tableInfo),
                             config.syntaxConjunction, config.syntaxImplication, config.positiveNegativeExampleNumber));
                 }
 
                 if (config.singleTableCrossLineRuleFind) {// single-table-cross-line
-                    final FPredicateIndexer singleTableCrossLinePredicateIndexer =
+                    final FPredicateIndexer predicates =
                             FPredicateFactory.createSingleTableCrossLinePredicates(tableInfo, config.constPredicateCrossLine, derivedColumnNameHandler, new ArrayList<>());
-                    final FBinaryLineEvidenceSetFactory binaryLineEvidenceSetFactory = new FEvidenceSetFactoryBuilder().buildBinaryLineEvidenceSetFactory();
-                    final FIEvidenceSet binaryLineEvidenceSet = binaryLineEvidenceSetFactory.createSingleTableBinaryLineEvidenceSet(tableInfo, PLI,
-                            singleTableCrossLinePredicateIndexer,
+                    final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder().buildBinaryLineEvidenceSetFactory()
+                            .createSingleTableBinaryLineEvidenceSet(tableInfo, PLI, predicates,
                             tableInfo.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(tableInfo.getInnerTableName()).count()));
-                    final FIRuleFinder ruleFinder = new FRuleFinderBuilder().build(singleTableCrossLinePredicateIndexer,
-                            Collections.singletonList(tableInfo), binaryLineEvidenceSet);
+                    final FIRuleFinder ruleFinder = new FRuleFinderBuilder().build(predicates,
+                            Collections.singletonList(tableInfo), evidenceSet);
 
                     final List<FRule> rules = ruleFinder.find();
-                    allRules.addAll(FRuleVO.create(rules, PLI, binaryLineEvidenceSet, singleTableCrossLinePredicateIndexer, FTiUtils.listOf(tableInfo, tableInfo),
+                    allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, FTiUtils.listOf(tableInfo, tableInfo),
                             config.syntaxConjunction, config.syntaxImplication, config.positiveNegativeExampleNumber));
 
                 }
@@ -111,7 +109,19 @@ public class FTableInsight {
                     final FTableInfo leftTable = allTableInfos.get(i);
                     for (int j = i + 1; j < allTableInfos.size(); j++) {
                         final FTableInfo rightTable = allTableInfos.get(j);
-                        // TODO
+                        final FPredicateIndexer predicates = FPredicateFactory.createMultiTableCrossLinePredicates(
+                                leftTable, rightTable, derivedColumnNameHandler, PLI, tableDatasetMap,
+                                config.crossColumnThreshold, Collections.emptyList());
+                        final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder().buildBinaryLineEvidenceSetFactory()
+                                .createBinaryTableBinaryLineEvidenceSet(leftTable, rightTable, PLI, predicates,
+                                        leftTable.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(leftTable.getInnerTableName()).count()),
+                                        rightTable.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(rightTable.getInnerTableName()).count()));
+                        final FIRuleFinder ruleFinder = new FRuleFinderBuilder().build(predicates, FTiUtils.listOf(leftTable, rightTable), evidenceSet);
+                        final List<FRule> rules = ruleFinder.find();
+
+                        allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates,
+                                FTiUtils.listOf(leftTable, rightTable),
+                                config.syntaxConjunction, config.syntaxImplication, config.positiveNegativeExampleNumber));
                     }
                 }
             }

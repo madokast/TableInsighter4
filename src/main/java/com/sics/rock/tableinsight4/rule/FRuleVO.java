@@ -51,6 +51,7 @@ public class FRuleVO {
                                        final String conjunctionSymbol, final String implicationSymbol,
                                        final int positiveNegativeExampleNumber) {
         final int ruleSize = rules.size();
+        if (ruleSize == 0) return Collections.emptyList();
 
         final FPositiveNegativeExample[] supportExamplesList = new FPositiveNegativeExample[ruleSize];
         final FPositiveNegativeExample[] unSupportExamplesList = new FPositiveNegativeExample[ruleSize];
@@ -87,6 +88,15 @@ public class FRuleVO {
 
             fillExample(supportExamples, tableInfoList, tab2eleId2ColIdMap, examples._k, positiveNegativeExampleNumber);
             fillExample(unSupportExamples, tableInfoList, tab2eleId2ColIdMap, examples._v, positiveNegativeExampleNumber);
+
+            if (FAssertUtils.ASSERT) {
+                final FRule rule = rules.get(i);
+
+                FAssertUtils.require(supportExamples.size() == Math.min(positiveNegativeExampleNumber, rule.support),
+                        () -> "Rule(" + rule + ")'s support is " + rule.support + ", but support example number is " + supportExamples.size());
+                FAssertUtils.require(unSupportExamples.size() == Math.min(positiveNegativeExampleNumber, rule.unSupport()),
+                        () -> "Rule(" + rule + ")'s unSupport is " + rule.unSupport() + ", but unSupport example number is " + unSupportExamples.size());
+            }
 
             supportExamplesList[i] = supportExamples;
             unSupportExamplesList[i] = unSupportExamples;

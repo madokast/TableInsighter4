@@ -133,4 +133,9 @@ public class FTableInfo implements Serializable {
     public int hashCode() {
         return innerTableName.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return tableName + "(" + innerTableName + ")";
+    }
 }

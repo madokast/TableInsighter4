@@ -14,6 +14,11 @@ public class FDerivedColumnNameHandler implements FTiEnvironment {
     private final String combineColumnLinker = config().combineColumnLinker;
     private final String combineColumnLinkerRegex = config().combineColumnLinkerRegex;
     private final String tableColumnLinker = config().tableColumnLinker;
+    private final String externalBinaryModelDerivedColumnSuffix = config().externalBinaryModelDerivedColumnSuffix;
+    // model-id -> info
+    private final Map<String, FExternalBinaryModelInfo> cachedModelInfoMap;
+
+    /*============================ combined column handler ====================================*/
 
     public String deriveCombinedColumn(List<String> combinedColumnNames) {
         return String.join(combineColumnLinker, combinedColumnNames);
@@ -37,8 +42,7 @@ public class FDerivedColumnNameHandler implements FTiEnvironment {
         }
     }
 
-    private final String externalBinaryModelDerivedColumnSuffix = config().externalBinaryModelDerivedColumnSuffix;
-    private final Map<String, FExternalBinaryModelInfo> cachedModelInfoMap;
+    /*============================ model column handler ====================================*/
 
     public String deriveModelColumn(String modelId) {
         FAssertUtils.require(() -> cachedModelInfoMap.containsKey(modelId),
@@ -69,8 +73,10 @@ public class FDerivedColumnNameHandler implements FTiEnvironment {
                 .collect(Collectors.toMap(FExternalBinaryModelInfo::getId, Function.identity()));
     }
 
+    /*============================ derived column handler ====================================*/
+
     /**
-     * identifier of predicate
+     * create a identifier/identifiers of the column
      *
      * @see FIPredicate#innerTabCols()
      */

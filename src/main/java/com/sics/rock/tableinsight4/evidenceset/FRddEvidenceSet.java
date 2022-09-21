@@ -141,7 +141,7 @@ public class FRddEvidenceSet implements FIEvidenceSet {
         FRuleBodyTO to = FRuleBodyTO.create(rules, false);
         Broadcast<FRuleBodyTO> toBroadcast = sc.broadcast(to);
 
-        final FPair<List<FIPredicateSet>, List<FIPredicateSet>>[] examples = ES.mapPartitions(psIter -> {
+        return ES.mapPartitions(psIter -> {
             FRuleBodyTO ruleBodyTOB = toBroadcast.getValue();
             int ruleSize = ruleBodyTOB.getRuleNumber();
 
@@ -191,22 +191,6 @@ public class FRddEvidenceSet implements FIEvidenceSet {
 
             return l1;
         });
-
-        if (FAssertUtils.ASSERT) {
-            for (int i = 0; i < rules.size(); i++) {
-                final FRule rule = rules.get(i);
-                final FPair<List<FIPredicateSet>, List<FIPredicateSet>> example = examples[i];
-                final List<FIPredicateSet> ruleExamples = example._k;
-                final List<FIPredicateSet> ruleButYExamples = example._v;
-
-                FAssertUtils.require(ruleExamples.size() == Math.min(limit, rule.support),
-                        () -> "Rule(" + rule + ")'s support is " + rule.support + ", but support example number is " + ruleExamples.size());
-                FAssertUtils.require(ruleButYExamples.size() == Math.min(limit, rule.unSupport()),
-                        () -> "Rule(" + rule + ")'s unSupport is " + rule.unSupport() + ", but unSupport example number is " + ruleButYExamples.size());
-            }
-        }
-
-        return examples;
     }
 
     @Override

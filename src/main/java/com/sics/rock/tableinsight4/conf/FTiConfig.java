@@ -39,6 +39,10 @@ public class FTiConfig {
     @FConfigItem(name = "ti.rule.find.crossTableCrossLine", description = "Do cross-table (2-line) cross-line (2-line) rule finding of each two tables.")
     public Boolean crossTableCrossLineRuleFind = true;
 
+    @FConfigItem(name = "ti.rule.find.crossColumnThreshold", description = "A similarity threshold of two columns used as " +
+            "a flag determining the construction of the corresponding cross-column predicate.")
+    public Double crossColumnThreshold = 0.8;
+
     @FConfigItem(name = "ti.rule.find.constPredicateCrossLine", description = "Create constant predicates in cross line rule finding.")
     public Boolean constPredicateCrossLine = true;
 
@@ -48,7 +52,7 @@ public class FTiConfig {
     @FConfigItem(name = "ti.rule.maxNumber", description = "The max number of rules in each rule find task. The rule finding will stop when number of rules beyond this maximum.")
     public Integer maxRuleNumber = 100_0000;
 
-    @FConfigItem(name = "ti.rule.find.timeoutMinute", description = "The max processing time of rule finding in minute.")
+    @FConfigItem(name = "ti.rule.find.timeoutMinute", description = "The max processing time of each rule finding in minute.")
     public Integer ruleFindTimeoutMinute = 5;
 
     @FConfigItem(name = "ti.rule.find.maxNeedCreateChildrenRuleNumber", description = "The max number of rules that need create children. Keep the number under the limit preventing OOM.")
