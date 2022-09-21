@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * spark-sql utils
+ *
  * @author zhaorx
  */
 public class FSparkSqlUtils {

@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
  * [19]->(O)[]
  * [2]->(O)[]
  * [6]->(O)[]
+ *
+ * @author HPI-Information-Systems/Metanome
  */
 public class FBitSetSearchTree {
 

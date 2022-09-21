@@ -7,6 +7,8 @@ import java.util.Set;
 
 /**
  * The binary model predicate is a binary predicate except overriding the toString method
+ *
+ * @author zhaorx
  */
 public class FBinaryModelPredicate extends FBinaryPredicate {
 

@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * interval constant handler
+ *
  * @author zhaorx
  */
 public class FIntervalsConstantHandler implements FTiEnvironment {

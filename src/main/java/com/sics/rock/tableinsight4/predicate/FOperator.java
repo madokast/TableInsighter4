@@ -2,6 +2,11 @@ package com.sics.rock.tableinsight4.predicate;
 
 import java.io.Serializable;
 
+/**
+ * operator used in predicate
+ *
+ * @author zhaorx
+ */
 public enum FOperator implements Serializable {
 
     EQ("="),

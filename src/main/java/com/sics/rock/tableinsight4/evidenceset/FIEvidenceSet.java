@@ -10,6 +10,8 @@ import com.sics.rock.tableinsight4.rule.FRule;
 import java.util.List;
 
 /**
+ * evidence-set working as frequency-set in priori algorithm
+ *
  * @author zhaorx
  */
 public interface FIEvidenceSet {

@@ -1,5 +1,10 @@
 package com.sics.rock.tableinsight4.env;
 
+/**
+ * environment sharer
+ *
+ * @author zhaorx
+ */
 public class FEnvironmentSharer extends FAbstractEnvironmentUser implements FIEnvironmentUser {
 
     private final Thread sharer;

@@ -21,6 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * external binary-model derived column appender
+ * (appending into origin table)
+ *
+ * @author zhaorx
+ */
 public class FExternalBinaryModelDerivedColumnAppender {
 
     private static final Logger logger = LoggerFactory.getLogger(FExternalBinaryModelDerivedColumnAppender.class);

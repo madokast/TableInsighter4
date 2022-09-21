@@ -76,12 +76,13 @@ public class FPliConstructor {
      * Partition the table by FOrderedPartitioner
      */
     private void partitionAllTable(FTableDatasetMap tableDatasetMap) {
+        logger.debug("Partition all tables for PLI construction");
         tableDatasetMap.foreach((tableInfo, dataset) -> {
             final JavaRDD<Row> originRDD = dataset.toJavaRDD();
             final JavaPairRDD<Long, Row> orderedRDD = FSparkUtils.addOrderedId(originRDD);
             final long length = tableInfo.getLength(orderedRDD::count);
             final FOrderedPartitioner orderedPartitioner = new FOrderedPartitioner(length, sliceLengthForPLI);
-            logger.info("### Table {}, length {}, shuffle to {} partitions. SliceLengthForPLI = {}", tableInfo.getTableName(), length,
+            logger.info("Table {}, length {}, shuffle to {} partitions. SliceLengthForPLI = {}", tableInfo.getTableName(), length,
                     orderedPartitioner.numPartitions(), sliceLengthForPLI);
 
             final JavaRDD<Row> slicedRDD = orderedRDD.partitionBy(orderedPartitioner).map(Tuple2::_2)
@@ -98,6 +99,7 @@ public class FPliConstructor {
      * @return map valueType -> index
      */
     private FTypedOrderedIndex createTypedOrderedIndex(FTableDatasetMap tableDatasetMap) {
+        logger.debug("Create typed ordered index for PLI construction");
         // select distinct each column as rdd
         // then group by valueType
         final Map<FValueType, List<JavaRDD<Object>>> typeBasedRddList = new HashMap<>();
@@ -144,6 +146,7 @@ public class FPliConstructor {
 
 
     private void fillIndexOfConstant(FTableDatasetMap tableDatasetMap, FTypedOrderedIndex typedOrderedIndex) {
+        logger.debug("Fill index of constants in PLI construction");
         // 1. find all constants and group by its type
         final Map<FValueType, Set<Object>> typeBasedConstants = new HashMap<>();
         tableDatasetMap.foreach((tabInfo, ignore) -> {
@@ -243,7 +246,7 @@ public class FPliConstructor {
         final String tableName = tableInfo.getTableName();
 
         // each column
-        Map<FColumnName, JavaPairRDD<FPartitionId, FLocalPLI>> col2pid2pli = tableInfo.nonSkipColumnsView().stream().map(columnInfo -> {
+        final Map<FColumnName, JavaPairRDD<FPartitionId, FLocalPLI>> col2pid2pli = tableInfo.nonSkipColumnsView().stream().map(columnInfo -> {
             final String columnName = columnInfo.getColumnName();
             final Integer columnId = column2index.get(columnName);
             FAssertUtils.require(columnId != null, () -> columnName + " not found in " + Arrays.toString(schema.fieldNames()));
@@ -310,6 +313,7 @@ public class FPliConstructor {
     }
 
     private FPLI createPLI(FTableDatasetMap tableDatasetMap, FTypedOrderedIndex typedOrderedIndex) {
+        logger.debug("Create PLI");
         FPLI PLI = new FPLI();
         tableDatasetMap.foreach((tableInfo, dataset) -> {
             final String tableName = tableInfo.getTableName();
@@ -333,6 +337,7 @@ public class FPliConstructor {
      * debug
      */
     private void printPLI(FTableDatasetMap tableDatasetMap, FTypedOrderedIndex typedOrderedIndex, FPLI PLI) {
+        logger.debug("Start printing PLI");
         tableDatasetMap.foreach((tableInfo, dataset) -> {
 
             JavaRDD<Row> tableWithEleId = FRddElementIndexUtils.rddElementIndex(dataset.toJavaRDD())

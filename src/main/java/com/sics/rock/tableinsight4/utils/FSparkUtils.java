@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * spark utils
+ *
  * @author zhaorx
  */
 public class FSparkUtils {

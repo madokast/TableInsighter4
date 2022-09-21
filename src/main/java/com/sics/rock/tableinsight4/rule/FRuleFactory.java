@@ -18,6 +18,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * rule factory
+ *
+ * @author zhaorx
+ */
 public class FRuleFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(FRuleFactory.class);

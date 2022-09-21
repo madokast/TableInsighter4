@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.FIELD;
 
 /**
+ * A config item description
+ *
  * @author zhaorx
  */
 @Documented

@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
 /**
  * statistics of any rdd
+ *
+ * @author zhaorx
  */
 public class FRddStatistics {
 

@@ -16,6 +16,8 @@ import java.util.stream.Stream;
  * Value is local rowId in partition
  * <p>
  * index -1 fro null value
+ *
+ * @author zhaorx
  */
 public class FLocalPLI implements Serializable {
 

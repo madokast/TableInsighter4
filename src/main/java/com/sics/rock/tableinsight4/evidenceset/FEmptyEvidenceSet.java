@@ -9,6 +9,11 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.List;
 
+/**
+ * An empty evidence-set
+ *
+ * @author zhaorx
+ */
 public class FEmptyEvidenceSet implements FIEvidenceSet {
 
     private static final FEmptyEvidenceSet INS = new FEmptyEvidenceSet();

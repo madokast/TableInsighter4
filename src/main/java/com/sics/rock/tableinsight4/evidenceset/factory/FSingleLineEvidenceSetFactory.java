@@ -36,7 +36,11 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-
+/**
+ * single-line evidence-set factory
+ *
+ * @author zhaorx
+ */
 public class FSingleLineEvidenceSetFactory implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FSingleLineEvidenceSetFactory.class);
@@ -85,7 +89,7 @@ public class FSingleLineEvidenceSetFactory implements Serializable {
                 .setName("s_es_" + tableInfo.getTableName());
 
         FRddEvidenceSet ES = new FRddEvidenceSet(esRDD, sc, singleLinePredicates.size(), tableLength);
-        logger.info("### Table {} single line ES built. allCount is {}", tableInfo.getTableName(), ES.allCount());
+        logger.info("Table {} single line ES built. allCount is {}", tableInfo.getTableName(), ES.allCount());
 
         return ES;
     }

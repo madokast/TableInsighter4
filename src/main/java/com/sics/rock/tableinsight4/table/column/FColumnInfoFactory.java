@@ -4,6 +4,8 @@ import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinary
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 
 /**
+ * column info factory
+ *
  * @author zhaorx
  */
 public class FColumnInfoFactory {

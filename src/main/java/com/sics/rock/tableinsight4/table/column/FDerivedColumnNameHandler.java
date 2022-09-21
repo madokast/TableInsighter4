@@ -9,6 +9,15 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * derived column name handler
+ * corresponding column name <==> derived column name
+ * <p>
+ * 1. combined column
+ * 2. model column
+ *
+ * @author zhaorx
+ */
 public class FDerivedColumnNameHandler implements FTiEnvironment {
 
     private final String combineColumnLinker = config().combineColumnLinker;

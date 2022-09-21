@@ -3,6 +3,11 @@ package com.sics.rock.tableinsight4.evidenceset.factory;
 import com.sics.rock.tableinsight4.conf.FTiConfig;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 
+/**
+ * evidence-set factory builder
+ *
+ * @author zhaorx
+ */
 public class FEvidenceSetFactoryBuilder implements FTiEnvironment {
 
     public FSingleLineEvidenceSetFactory buildSingleLineEvidenceSetFactory() {

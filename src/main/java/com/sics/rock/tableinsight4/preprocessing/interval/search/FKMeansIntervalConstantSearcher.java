@@ -19,6 +19,11 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * interval constant searcher using k-means
+ *
+ * @author zhaorx
+ */
 public class FKMeansIntervalConstantSearcher implements FIIntervalConstantSearcher {
 
     private static final Logger logger = LoggerFactory.getLogger(FKMeansIntervalConstantSearcher.class);

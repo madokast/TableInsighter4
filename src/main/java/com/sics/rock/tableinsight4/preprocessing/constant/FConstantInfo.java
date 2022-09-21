@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 /**
+ * constant info
+ *
  * @author zhaorx
  */
 public class FConstantInfo {

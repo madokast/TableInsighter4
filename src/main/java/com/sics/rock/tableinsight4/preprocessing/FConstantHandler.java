@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * constant handler
+ *
+ * @author zhaorx
+ */
 public class FConstantHandler implements FTiEnvironment {
 
     private static final Logger logger = LoggerFactory.getLogger(FConstantHandler.class);

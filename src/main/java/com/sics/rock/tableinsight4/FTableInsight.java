@@ -3,7 +3,6 @@ package com.sics.rock.tableinsight4;
 import com.sics.rock.tableinsight4.conf.FTiConfig;
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
-import com.sics.rock.tableinsight4.evidenceset.factory.FBinaryLineEvidenceSetFactory;
 import com.sics.rock.tableinsight4.evidenceset.factory.FEvidenceSetFactoryBuilder;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructor;
@@ -93,7 +92,7 @@ public class FTableInsight {
                             FPredicateFactory.createSingleTableCrossLinePredicates(tableInfo, config.constPredicateCrossLine, derivedColumnNameHandler, new ArrayList<>());
                     final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder().buildBinaryLineEvidenceSetFactory()
                             .createSingleTableBinaryLineEvidenceSet(tableInfo, PLI, predicates,
-                            tableInfo.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(tableInfo.getInnerTableName()).count()));
+                                    tableInfo.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(tableInfo.getInnerTableName()).count()));
                     final FIRuleFinder ruleFinder = new FRuleFinderBuilder().build(predicates,
                             Collections.singletonList(tableInfo), evidenceSet);
 

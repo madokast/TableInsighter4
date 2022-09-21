@@ -131,7 +131,7 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
                 .setName("b_es_" + leftTableInfo.getTableName() + "_" + rightTableInfo.getTableName());
 
         final FIEvidenceSet evidenceSet = new FRddEvidenceSet(es, sc, predicates.size(), sameTableFlag ? leftTableLength * (leftTableLength - 1) : leftTableLength * rightTableLength);
-        logger.info("### Table {}-{} binary line ES built. cardinality is {}", leftTableInfo.getTableName(), rightTableInfo.getTableName(), evidenceSet.cardinality());
+        logger.info("Table {}-{} binary line ES built. cardinality is {}", leftTableInfo.getTableName(), rightTableInfo.getTableName(), evidenceSet.cardinality());
         return evidenceSet;
     }
 

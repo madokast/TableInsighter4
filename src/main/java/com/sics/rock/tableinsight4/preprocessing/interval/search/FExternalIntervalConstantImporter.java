@@ -17,6 +17,8 @@ import java.util.List;
  * 1. "a number". Create intervals (-Inf, num] and (num, +inf)
  * 2. "op number". Like ">5", ">=10", "≤20"
  * 3. "interval". Like "[3,5]", "(12,30]"
+ *
+ * @author zhaorx
  */
 public class FExternalIntervalConstantImporter implements FIIntervalConstantSearcher {
 

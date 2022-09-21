@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * k-means utils
+ *
  * @author zhaorx
  */
 public class FKMeansUtils {

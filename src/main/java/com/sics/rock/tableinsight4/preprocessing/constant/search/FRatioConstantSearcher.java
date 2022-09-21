@@ -19,6 +19,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * constant searcher using value frequency in table
+ *
+ * @author zhaorx
+ */
 public class FRatioConstantSearcher implements FIConstantSearcher {
 
     private static final Logger logger = LoggerFactory.getLogger(FRatioConstantSearcher.class);

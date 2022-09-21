@@ -13,6 +13,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * utils of element-index in rdd
+ *
+ * @author zhaorx
+ */
 public class FRddElementIndexUtils {
 
     public static <T> JavaPairRDD<FRddElementIndex, T> elementIndexRDD(JavaRDD<T> rdd) {

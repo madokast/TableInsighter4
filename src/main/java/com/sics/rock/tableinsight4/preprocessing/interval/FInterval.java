@@ -18,6 +18,8 @@ import java.util.*;
  * (left, right]
  * [left, right)
  * [left, right]
+ *
+ * @author zhaorx
  */
 public class FInterval implements Serializable {
 

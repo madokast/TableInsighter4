@@ -8,6 +8,8 @@ import com.sics.rock.tableinsight4.table.FTableInfo;
 import java.util.List;
 
 /**
+ * rule finder builder
+ *
  * @author zhaorx
  */
 public class FRuleFinderBuilder implements FTiEnvironment {

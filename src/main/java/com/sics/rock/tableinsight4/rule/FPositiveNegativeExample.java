@@ -7,6 +7,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * positive negative example recorder
+ *
+ * @author zhaorx
+ */
 public class FPositiveNegativeExample {
 
 

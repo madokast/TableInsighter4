@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 /**
+ * evidence-set impl by RDD
+ *
  * @author zhaorx
  */
 public class FRddEvidenceSet implements FIEvidenceSet {

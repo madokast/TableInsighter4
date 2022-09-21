@@ -1,5 +1,11 @@
 package com.sics.rock.tableinsight4.env;
 
+
+/**
+ * environment user
+ *
+ * @author zhaorx
+ */
 public interface FIEnvironmentUser {
 
     Object userKey();

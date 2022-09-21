@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
+ * id-column appender
+ * (appender into origin table)
+ *
  * @author zhaorx
  */
 public class FIdColumnAdder {

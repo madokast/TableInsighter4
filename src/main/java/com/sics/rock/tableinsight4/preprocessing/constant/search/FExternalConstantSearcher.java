@@ -11,6 +11,11 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * constant searcher using external constant info in columns
+ *
+ * @author zhaorx
+ */
 public class FExternalConstantSearcher implements FIConstantSearcher {
 
     private static final Logger logger = LoggerFactory.getLogger(FExternalConstantSearcher.class);

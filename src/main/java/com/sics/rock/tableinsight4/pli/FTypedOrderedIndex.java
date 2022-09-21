@@ -8,6 +8,11 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * typed ordered index
+ *
+ * @author zhaorx
+ */
 public class FTypedOrderedIndex {
 
     private static final Logger logger = LoggerFactory.getLogger(FTypedOrderedIndex.class);

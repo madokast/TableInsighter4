@@ -18,6 +18,8 @@ import java.util.List;
  * The class is used for iteration of a pair-rdd in local and batch
  * <p>
  * note: suppose the data is uniform distributed in RDD
+ *
+ * @author zhaorx
  */
 public class FLocalBatchPairRDDIterable<K, V> implements Iterable<List<Tuple2<K, V>>>, Serializable {
 

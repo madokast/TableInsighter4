@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * table loader entry
+ *
  * @author zhaorx
  */
 public class FTableLoader implements FITableLoader, FTiEnvironment {

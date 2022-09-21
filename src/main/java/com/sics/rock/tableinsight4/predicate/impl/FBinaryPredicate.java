@@ -5,6 +5,12 @@ import com.sics.rock.tableinsight4.predicate.iface.FIBinaryPredicate;
 
 import java.util.Set;
 
+/**
+ * binary-line predicate
+ * t0.age = t1.age
+ *
+ * @author zhaorx
+ */
 public class FBinaryPredicate implements FIBinaryPredicate {
 
     private final String leftTableName;

@@ -8,6 +8,8 @@ import org.apache.spark.Partitioner;
  * The FPartitionIdPartitioner worked on pair-rdd which the key is partitionId
  * <p>
  * rdd.mapToPair(e->(pid, e)).shuffle.reduce(new FPartitionIdPartitioner, func)
+ *
+ * @author zhaorx
  */
 public class FPartitionIdPartitioner extends Partitioner {
 
