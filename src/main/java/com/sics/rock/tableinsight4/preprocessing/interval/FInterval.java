@@ -55,9 +55,6 @@ public class FInterval implements Serializable {
         this.left = left == null ? FConstant.NEGATIVE_INFINITY : FConstant.of(left);
         this.right = right == null ? FConstant.POSITIVE_INFINITY : FConstant.of(right);
 
-        FAssertUtils.require(this.left.isComparable(), this + " is invalid");
-        FAssertUtils.require(this.right.isComparable(), this + " is invalid");
-
         this.leftClose = leftClose;
         this.rightClose = rightClose;
     }

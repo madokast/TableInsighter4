@@ -196,16 +196,13 @@ public class FPliConstructor {
                             .filter(FConstant::indexNotInit)
                             .forEach(cons -> {
                                 final Object consVal = cons.getConstant();
-                                if (consVal == null) {
-                                    cons.setIndex(FConstant.INDEX_OF_NULL);
-                                } else {
-                                    long index = typeBasedConstantIndexMap.getOrDefault(valueType, Collections.emptyMap())
-                                            .getOrDefault(consVal, FConstant.INDEX_NOT_FOUND);
-                                    cons.setIndex(index);
-                                    if (index == FConstant.INDEX_NOT_FOUND) {
-                                        logger.error("Column {}.{} contains constant {}, but cannot found its index",
-                                                tabInfo.getTableName(), columnInfo.getColumnName(), consVal);
-                                    }
+                                long index = typeBasedConstantIndexMap.getOrDefault(valueType, Collections.emptyMap())
+                                        .getOrDefault(consVal, FConstant.INDEX_NOT_FOUND);
+                                cons.setIndex(index);
+                                if (index == FConstant.INDEX_NOT_FOUND) {
+                                    logger.error("Column {}.{} contains constant {}, but cannot found its index",
+                                            tabInfo.getTableName(), columnInfo.getColumnName(), consVal);
+                                    throw new RuntimeException("Constant index error");
                                 }
                             });
 
@@ -219,15 +216,10 @@ public class FPliConstructor {
                                 if (index == FConstant.INDEX_NOT_FOUND) {
                                     logger.error("Column {}.{} contains interval constant {}, but cannot found its index",
                                             tabInfo.getTableName(), columnInfo.getColumnName(), consVal);
+                                    throw new RuntimeException("Constant index error");
                                 }
                             }));
                 }));
-    }
-
-    private JavaPairRDD<Row, FRddElementIndex> createEleIndexTabRDD(FTableInfo tableInfo, Dataset<Row> table) {
-        final String tableName = tableInfo.getTableName();
-        final JavaRDD<Row> tabRdd = table.toJavaRDD();
-        return FRddElementIndexUtils.rddElementIndex(tabRdd).cache().setName("Element_index_table_" + tableName);
     }
 
     /**

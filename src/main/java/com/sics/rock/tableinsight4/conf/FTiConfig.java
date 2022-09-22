@@ -109,6 +109,9 @@ public class FTiConfig {
     @FConfigItem(name = "ti.rule.constant.downLimitRatio", description = "The down limit of ratio of appear-time of constant value. The config can be overwritten in column-level")
     public Double constantDownLimitRatio = 0.1;
 
+    @FConfigItem(name = "ti.rule.constant.interval.kMeans.kMeansIntervalSearch", description = "Flag searching intervals by k-means.")
+    public Boolean kMeansIntervalSearch = true;
+
     @FConfigItem(name = "ti.rule.constant.interval.kMeans.clusterNumber", description = "Cluster number in k-means interval-constant finding. " +
             "The config can be overwritten in column-level")
     public Integer kMeansClusterNumber = 2;
@@ -118,12 +121,25 @@ public class FTiConfig {
     public Integer kMeansIterNumber = 1000;
 
     @FConfigItem(name = "ti.rule.constant.interval.leftClose", description = "The left boundary of interval-constant is close or not. " +
-            "(a, b] is default, i.e. the left boundary is open (not close). The config can be overwritten in column-level")
+            "(a, b] is default, i.e. the left boundary is open (not close). The config can be overwritten in column-level." +
+            "The config works on k-means algorithm and external interval info only.")
     public Boolean intervalLeftClose = false;
 
     @FConfigItem(name = "ti.rule.constant.interval.rightClose", description = "The right boundary of interval-constant is close or not. " +
-            "(a, b] is default, i.e. the right boundary is close. The config can be overwritten in column-level")
+            "(a, b] is default, i.e. the right boundary is close. The config can be overwritten in column-level." +
+            "The config works on k-means algorithm and external interval info only.")
     public Boolean intervalRightClose = true;
+
+    @FConfigItem(name = "ti.rule.constant.interval.usingConstantCreateInterval",
+            description = "Flag using constants (dug by ratio or external info) to create intervals")
+    public Boolean usingConstantCreateInterval = false;
+
+    @FConfigItem(name = "ti.rule.constant.interval.constantIntervalOperators",
+            description = "The operators used in  intervals created by dug constants. Candidate operators are <, <=, > and >=." +
+                    "For instance, if constant 30 and 40 dug from column 'age', " +
+                    "then intervals 'age>=30', 'age<=30', 'age>=40' and 'age<=40' will be created " +
+                    "if usingConstantCreateInterval is on and constantIntervalOperators is '>=,<='.")
+    public String constantIntervalOperators = ">=,<=";
 
     @FConfigItem(name = "ti.internal.sliceLengthForPLI", description = "Origin table splice length for PLI construction. " +
             "The value decide the PLI number and may affect the speed of ES construction. The recommended value may be 1000 ~ 2500. ")

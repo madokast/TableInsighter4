@@ -19,6 +19,7 @@ public class FConstant<T> implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FTableInfo.class);
 
+    // the negative index represents special value.
     public static final long INDEX_OF_NULL = -1L;
     public static final long INDEX_NOT_FOUND = -2L;
     public static final long INDEX_NOT_INIT = -3L;
@@ -26,18 +27,19 @@ public class FConstant<T> implements Serializable {
     public static final long INDEX_OF_NEGATIVE_INFINITY = -5L;
     public static final long INDEX_OF_NAN = -6L;
 
-    public static final FConstant NULL = new FConstant<>("null", INDEX_OF_NULL);
-    public static final FConstant<Comparable> POSITIVE_INFINITY = new FConstant<>("Inf", INDEX_OF_POSITIVE_INFINITY);
-    public static final FConstant<Comparable> NEGATIVE_INFINITY = new FConstant<>("-Inf", INDEX_OF_NEGATIVE_INFINITY);
-    public static final FConstant NAN = new FConstant<>("NaN", INDEX_OF_NAN);
+    public static final FConstant NULL = new FConstant<>(FSpecialVal.NULL, INDEX_OF_NULL);
+    public static final FConstant<Comparable> POSITIVE_INFINITY = new FConstant<>(FSpecialVal.POSITIVE_INFINITY, INDEX_OF_POSITIVE_INFINITY);
+    public static final FConstant<Comparable> NEGATIVE_INFINITY = new FConstant<>(FSpecialVal.NEGATIVE_INFINITY, INDEX_OF_NEGATIVE_INFINITY);
+    public static final FConstant NAN = new FConstant<>(FSpecialVal.NOT_A_NUMBER, INDEX_OF_NAN);
 
-    private static final Map<Long, FConstant> SPECIAL_CONST_MAP = FTiUtils.mapOf(INDEX_OF_NULL, NULL,
+    private static final Map<Long, FConstant> SPECIAL_CONST_MAP = FTiUtils.mapOf(
+            INDEX_OF_NULL, NULL,
             INDEX_OF_POSITIVE_INFINITY, POSITIVE_INFINITY,
             INDEX_OF_NEGATIVE_INFINITY, NEGATIVE_INFINITY,
             INDEX_OF_NAN, NAN);
 
     /**
-     * Nullable
+     * not null
      */
     private final T constant;
 
@@ -51,6 +53,7 @@ public class FConstant<T> implements Serializable {
      */
     private long index = INDEX_NOT_INIT;
 
+    @SuppressWarnings("unchecked")
     public static <T> FConstant<T> of(T constant) {
         long index = specialIndexOf(constant);
         return SPECIAL_CONST_MAP.getOrDefault(index, new FConstant<>(constant));
@@ -71,6 +74,10 @@ public class FConstant<T> implements Serializable {
         }
 
         return INDEX_NOT_FOUND;
+    }
+
+    public boolean isSpecialValue() {
+        return SPECIAL_CONST_MAP.containsKey(index);
     }
 
 
@@ -105,20 +112,17 @@ public class FConstant<T> implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FConstant<?> fConstant = (FConstant<?>) o;
-        if (this.constant == null) {
-            return fConstant.constant == null && this.index == fConstant.index;
-        } else {
-            return this.constant.equals(fConstant.constant);
-        }
+        final FConstant<?> fConstant = (FConstant<?>) o;
+        return index == fConstant.index &&
+                Objects.equals(constant, fConstant.constant);
     }
 
     @Override
     public int hashCode() {
-        return constant == null ? Long.hashCode(index) : constant.hashCode();
+        return Objects.hash(constant, index);
     }
 
     private FConstant(T constant, long index) {
@@ -134,9 +138,18 @@ public class FConstant<T> implements Serializable {
         return specialIndexOf(obj) == INDEX_NOT_FOUND;
     }
 
-    public boolean isComparable() {
-        return index != INDEX_OF_NAN &&
-                index != INDEX_OF_NULL &&
-                constant instanceof Comparable;
+    private enum FSpecialVal implements Serializable {
+        NULL("null"), POSITIVE_INFINITY("Inf"),
+        NEGATIVE_INFINITY("-Inf"), NOT_A_NUMBER("NaN");
+
+        private final String strVal;
+
+        FSpecialVal(final String strVal) {
+            this.strVal = strVal;
+        }
+
+        public String toString() {
+            return strVal;
+        }
     }
 }

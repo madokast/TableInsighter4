@@ -25,12 +25,12 @@ public class FExternalIntervalConstantImporter implements FIIntervalConstantSear
     @Override
     public List<FIntervalConstantInfo> search(FTableDatasetMap tableDatasetMap) {
         final List<FIntervalConstantInfo> ret = new ArrayList<>();
-        tableDatasetMap.foreach((tabInfo, data) -> {
+        tableDatasetMap.allTableInfos().forEach(tabInfo -> {
             final String tableName = tabInfo.getTableName();
             final ArrayList<FColumnInfo> columns = tabInfo.getColumns();
             for (FColumnInfo column : columns) {
                 final String columnName = column.getColumnName();
-                FValueType valueType = column.getValueType();
+                final FValueType valueType = column.getValueType();
                 final ArrayList<String> externalIntervalConstants = column.getIntervalConstantInfo().getExternalIntervalConstants();
                 for (String externalIntervalConstant : externalIntervalConstants) {
                     final List<FInterval> intervalList = FInterval.of(externalIntervalConstant, valueType);

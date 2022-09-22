@@ -27,7 +27,7 @@ public enum FOperator implements Serializable {
         this.symbol = symbol;
     }
 
-    FOperator of(String symbol) {
+    public static FOperator of(String symbol) {
         for (FOperator operator : FOperator.values()) {
             if (operator.symbol.equals(symbol)) return operator;
         }

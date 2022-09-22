@@ -126,7 +126,7 @@ public class FPredicateFactory {
         return predicateIndexer;
     }
 
-    public static FPredicateIndexer createMultiTableCrossLinePredicates(
+    public static synchronized FPredicateIndexer createMultiTableCrossLinePredicates(
             FTableInfo leftTable, FTableInfo rightTable,
             FDerivedColumnNameHandler derivedColumnNameHandler, FPLI PLI, FTableDatasetMap datasetMap,
             double crossColumnThreshold, List<FExternalPredicateInfo> otherInfos) {

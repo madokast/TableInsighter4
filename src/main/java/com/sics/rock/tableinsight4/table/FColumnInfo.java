@@ -77,10 +77,6 @@ public class FColumnInfo implements Serializable {
         this.constants.add(constant);
     }
 
-    public void addConstants(List<FConstant<?>> constants) {
-        constants.forEach(this::addConstant);
-    }
-
     public void addIntervalConstant(FInterval interval) {
         this.intervalConstants.add(interval);
     }

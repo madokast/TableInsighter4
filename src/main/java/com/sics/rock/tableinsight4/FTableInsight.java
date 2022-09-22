@@ -5,7 +5,6 @@ import com.sics.rock.tableinsight4.env.FTiEnvironment;
 import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
 import com.sics.rock.tableinsight4.evidenceset.factory.FEvidenceSetFactoryBuilder;
 import com.sics.rock.tableinsight4.pli.FPLI;
-import com.sics.rock.tableinsight4.pli.FPliConstructor;
 import com.sics.rock.tableinsight4.pli.FPliConstructorFactory;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactory;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
@@ -54,23 +53,18 @@ public class FTableInsight {
         FTypeUtils.registerSparkUDF(spark.sqlContext());
         FTiEnvironment.create(spark, config);
         try {
-            final FTableDataLoader dataLoader = new FTableDataLoader();
-            final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(tableInfos);
-
-            final FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
-            modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
-
-            final FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
-            intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
-
-            final FConstantHandler constantHandler = new FConstantHandler();
-            constantHandler.generateConstant(tableDatasetMap);
-
-            final FPliConstructor pliConstructor = new FPliConstructorFactory().create();
-            final FPLI PLI = pliConstructor.construct(tableDatasetMap);
+            // load table and preprocess
+            final FTableDatasetMap tableDatasetMap = new FTableDataLoader().prepareData(tableInfos);
+            // model derived column
+            new FExternalBinaryModelHandler().appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+            // constant
+            new FConstantHandler().generateConstant(tableDatasetMap);
+            // interval
+            new FIntervalsConstantHandler().generateIntervalConstant(tableDatasetMap);
+            // PLI
+            final FPLI PLI = new FPliConstructorFactory().create().construct(tableDatasetMap);
 
             final FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-
             final List<FTableInfo> allTableInfos = tableDatasetMap.allTableInfos();
 
             allTableInfos.forEach(tableInfo -> {
@@ -80,7 +74,8 @@ public class FTableInsight {
                     final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder()
                             .buildSingleLineEvidenceSetFactory().create(tableInfo, PLI, predicates,
                                     tableInfo.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(tableInfo.getInnerTableName()).count()));
-                    final FIRuleFinder ruleFinder = new FRuleFinderBuilder().build(predicates, Collections.singletonList(tableInfo), evidenceSet);
+                    final FIRuleFinder ruleFinder = new FRuleFinderBuilder()
+                            .build(predicates, Collections.singletonList(tableInfo), evidenceSet);
 
                     final List<FRule> rules = ruleFinder.find();
                     allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, Collections.singletonList(tableInfo),

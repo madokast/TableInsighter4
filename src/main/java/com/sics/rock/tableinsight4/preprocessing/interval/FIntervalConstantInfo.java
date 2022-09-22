@@ -1,5 +1,7 @@
 package com.sics.rock.tableinsight4.preprocessing.interval;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -11,6 +13,7 @@ public class FIntervalConstantInfo {
 
     public static final String SOURCE_EXTERNAL = "EXTERNAL";
     public static final String SOURCE_K_MEANS = "K-MEANS";
+    public static final String SOURCE_CONSTANT = "CONSTANT";
     public static final String SOURCE_DECISION_TREE = "DECISION_TREE";
 
     private final String tableName;
@@ -28,8 +31,18 @@ public class FIntervalConstantInfo {
         this.source = source;
     }
 
+    /**
+     * interval-constants found form external info of columns
+     */
     public static FIntervalConstantInfo externalColumnIntervalConstant(String tableName, String columnName, List<FInterval> intervals) {
         return new FIntervalConstantInfo(tableName, columnName, intervals, SOURCE_EXTERNAL);
+    }
+
+    /**
+     * interval-constants found form constants of columns
+     */
+    public static FIntervalConstantInfo constantIntervalConstant(String tableName, String columnName, List<FInterval> intervals) {
+        return new FIntervalConstantInfo(tableName, columnName, intervals, SOURCE_CONSTANT);
     }
 
     public String getTableName() {
