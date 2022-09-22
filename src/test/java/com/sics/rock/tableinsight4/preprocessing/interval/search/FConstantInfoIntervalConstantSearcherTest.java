@@ -11,6 +11,7 @@ import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FIntervalConstantConfig;
 import com.sics.rock.tableinsight4.test.FExamples;
 import com.sics.rock.tableinsight4.test.env.FTableInsightEnv;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -20,10 +21,8 @@ import java.util.stream.Collectors;
 
 public class FConstantInfoIntervalConstantSearcherTest extends FTableInsightEnv {
 
-    private static final Class<FConstantInfoIntervalConstantSearcher> TARGET = FConstantInfoIntervalConstantSearcher.class;
-
     static {
-        logger.info("Test {}", TARGET);
+        logger.info("Test {}", FConstantInfoIntervalConstantSearcher.class);
     }
 
     @Test
@@ -53,6 +52,17 @@ public class FConstantInfoIntervalConstantSearcherTest extends FTableInsightEnv 
                 logger.info("{} consts {}", column, constants.stream().map(FConstant::getConstant).collect(Collectors.toList()));
                 logger.info("{} intervals {}", column, intervals.stream().map(i -> i.inequalityOf("_")).collect(Collectors.toList()));
 
+                for (final FConstant<?> constant : constants) {
+                    if (!constant.isSpecialValue()) {
+                        int occ = 0;
+                        for (final FInterval interval : intervals) {
+                            final List<FConstant<?>> intervalConsts = interval.constants();
+                            Assert.assertEquals(1, intervalConsts.size());
+                            if (constant.equals(intervalConsts.get(0))) ++occ;
+                        }
+                        Assert.assertEquals(2, occ);
+                    }
+                }
             }
         }
     }

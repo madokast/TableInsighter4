@@ -66,20 +66,20 @@ public class FPredicateIndexer implements Serializable {
         return indexProvider.size();
     }
 
-    void put(FIPredicate predicate) {
+    public void put(FIPredicate predicate) {
         FAssertUtils.require(() -> !indexProvider.contain(predicate),
                 () -> "Duplicate element " + predicate + " put in indexProvider" + indexProvider);
         indexProvider.put(predicate);
         logger.info("Create predicate NO.{} {}", getIndex(predicate), predicate);
     }
 
-    void insertConstPredT01Map(FIPredicate t0ConstPredicate, FIPredicate t1ConstPredicate) {
+    public void insertConstPredT01Map(FIPredicate t0ConstPredicate, FIPredicate t1ConstPredicate) {
         constPredT01Map.put(getIndex(t0ConstPredicate), getIndex(t1ConstPredicate));
         constPredT10Map.put(getIndex(t1ConstPredicate), getIndex(t0ConstPredicate));
     }
 
-    void insertConstBiPred2DivisionPred(FIPredicate constBinaryPredicate,
-                                        FIPredicate t0ConstPredicate, FIPredicate t1ConstPredicate) {
+    public void insertConstBiPred2DivisionPred(FIPredicate constBinaryPredicate,
+                                               FIPredicate t0ConstPredicate, FIPredicate t1ConstPredicate) {
         constBiPred2DivisionPred.put(getIndex(constBinaryPredicate), new FPair<>(getIndex(t0ConstPredicate), getIndex(t1ConstPredicate)));
     }
 
@@ -111,7 +111,7 @@ public class FPredicateIndexer implements Serializable {
     /**
      * created by predicate factory
      */
-    FPredicateIndexer() {
+    public FPredicateIndexer() {
     }
 
     /**
@@ -144,5 +144,11 @@ public class FPredicateIndexer implements Serializable {
         FAssertUtils.require(() -> constPredT10Map.containsKey(index),
                 () -> "constPredT10Map does not contain key " + getPredicate(index));
         return this.constPredT10Map.get(index);
+    }
+
+    public int getUnaryPredicateT1ByT0(int index) {
+        FAssertUtils.require(() -> constPredT01Map.containsKey(index),
+                () -> "constPredT01Map does not contain key " + getPredicate(index));
+        return this.constPredT01Map.get(index);
     }
 }

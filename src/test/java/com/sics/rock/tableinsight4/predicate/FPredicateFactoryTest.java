@@ -1,8 +1,8 @@
 package com.sics.rock.tableinsight4.predicate;
 
 import com.sics.rock.tableinsight4.internal.FPair;
-import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactory;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactoryBuilder;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryConsPredicate;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryIntervalConsPredicate;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryModelPredicate;
@@ -52,8 +52,9 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicates(
-                relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+                .buildForSingleLinePredicate().use(
+                        relation, new ArrayList<>()).createPredicates();
 
         assertEquals(3, factory.size());
 
@@ -80,8 +81,9 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             break;
         }
 
-        FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicates(
-                relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+                .buildForSingleLinePredicate().use(
+                        relation, new ArrayList<>()).createPredicates();
 
         logger.info("factory {}", factory);
     }
@@ -96,8 +98,8 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         relation.getColumns().get(2).addConstant(FConstant.of("abc"));
         relation.getColumns().get(3).addConstant(FConstant.of(12.32));
 
-        FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicates(
-                relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+                .buildForSingleLinePredicate().use(relation, new ArrayList<>()).createPredicates();
 
         assertEquals(4, factory.size());
 
@@ -117,8 +119,8 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         colCombined.addConstant(FConstant.of("CITY 44312"));
         relation.getColumns().add(colCombined);
 
-        FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicates(
-                relation, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+                .buildForSingleLinePredicate().use(relation, new ArrayList<>()).createPredicates();
 
         assertEquals(1, factory.size());
 
@@ -149,8 +151,8 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         ci.addConstant(FConstant.of(1L));
         relation.getColumns().add(ci);
 
-        FPredicateIndexer factory = FPredicateFactory.createSingleLinePredicates(
-                relation, derivedColumnNameHandler, new ArrayList<>());
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(derivedColumnNameHandler).buildForSingleLinePredicate().use(
+                relation, new ArrayList<>()).createPredicates();
 
         assertEquals(1, factory.size());
 
@@ -162,6 +164,8 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
     @Test
     public void createSingleTableCrossLinePredicateFactory_normal_only() {
+        config().constPredicateCrossLine = false;
+
         FTableInfo relation = FExamples.relation();
 
         for (FColumnInfo column : relation.getColumns()) {
@@ -173,8 +177,8 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        FPredicateIndexer factory = FPredicateFactory.createSingleTableCrossLinePredicates(
-                relation, false, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
+        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+                .buildForSingleTableCrossLinePredicate().use(relation, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : factory.allPredicates()) {
             assertTrue(predicate instanceof FBinaryPredicate);
@@ -194,8 +198,8 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        FPredicateIndexer factory = FPredicateFactory.createSingleTableCrossLinePredicates(
-                relation, true, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
+        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+                .buildForSingleTableCrossLinePredicate().use(relation, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : factory.allPredicates()) {
             if (predicate instanceof FBinaryConsPredicate) {
@@ -218,8 +222,8 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        FPredicateIndexer factory = FPredicateFactory.createSingleTableCrossLinePredicates(
-                relation, true, new FDerivedColumnNameHandler(Collections.emptyList()), new ArrayList<>());
+        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+                .buildForSingleTableCrossLinePredicate().use(relation, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : factory.allPredicates()) {
             if (predicate instanceof FBinaryConsPredicate) {
@@ -268,8 +272,8 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         relationDatasetMap.getDatasetByTableName(relation.getTableName()).show();
 
-        FPredicateIndexer factory = FPredicateFactory.createSingleTableCrossLinePredicates(
-                relation, true, new FDerivedColumnNameHandler(FTiUtils.listOf(modelInfo)), new ArrayList<>());
+        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(FTiUtils.listOf(modelInfo)))
+                .buildForSingleTableCrossLinePredicate().use(relation, Collections.emptyList()).createPredicates();
 
         assertTrue(factory.allPredicates().stream().anyMatch(p -> p instanceof FBinaryModelPredicate));
 

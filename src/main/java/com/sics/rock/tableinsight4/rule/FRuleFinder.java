@@ -231,7 +231,7 @@ public class FRuleFinder implements FIRuleFinder {
             // which is invalid. However, its offspring may be valid. The evaluation of these rules is necessary.
             if (xs.cardinality() == 1) {
                 FAssertUtils.require(
-                        () -> predicateIndexer.getUnaryPredicateT0ByT1(xs.nextSetBit(0)) == y,
+                        () -> predicateIndexer.getUnaryPredicateT1ByT0(xs.nextSetBit(0)) == y,
                         () -> "Bad rule " + rule);
                 return false;
             }

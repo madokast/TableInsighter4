@@ -6,7 +6,7 @@ import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
 import com.sics.rock.tableinsight4.evidenceset.factory.FEvidenceSetFactoryBuilder;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructorFactory;
-import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactory;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactoryBuilder;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.preprocessing.FConstantHandler;
 import com.sics.rock.tableinsight4.preprocessing.FExternalBinaryModelHandler;
@@ -69,8 +69,8 @@ public class FTableInsight {
 
             allTableInfos.forEach(tableInfo -> {
                 if (config.singleLineRuleFind) {// single-line
-                    final FPredicateIndexer predicates =
-                            FPredicateFactory.createSingleLinePredicates(tableInfo, derivedColumnNameHandler, new ArrayList<>());
+                    final FPredicateIndexer predicates = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+                            .buildForSingleLinePredicate().use(tableInfo, Collections.emptyList()).createPredicates();
                     final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder()
                             .buildSingleLineEvidenceSetFactory().create(tableInfo, PLI, predicates,
                                     tableInfo.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(tableInfo.getInnerTableName()).count()));
@@ -83,8 +83,8 @@ public class FTableInsight {
                 }
 
                 if (config.singleTableCrossLineRuleFind) {// single-table-cross-line
-                    final FPredicateIndexer predicates =
-                            FPredicateFactory.createSingleTableCrossLinePredicates(tableInfo, config.constPredicateCrossLine, derivedColumnNameHandler, new ArrayList<>());
+                    final FPredicateIndexer predicates = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+                            .buildForSingleTableCrossLinePredicate().use(tableInfo, Collections.emptyList()).createPredicates();
                     final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder().buildBinaryLineEvidenceSetFactory()
                             .createSingleTableBinaryLineEvidenceSet(tableInfo, PLI, predicates,
                                     tableInfo.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(tableInfo.getInnerTableName()).count()));
@@ -103,9 +103,10 @@ public class FTableInsight {
                     final FTableInfo leftTable = allTableInfos.get(i);
                     for (int j = i + 1; j < allTableInfos.size(); j++) {
                         final FTableInfo rightTable = allTableInfos.get(j);
-                        final FPredicateIndexer predicates = FPredicateFactory.createMultiTableCrossLinePredicates(
-                                leftTable, rightTable, derivedColumnNameHandler, PLI, tableDatasetMap,
-                                config.crossColumnThreshold, Collections.emptyList());
+                        final FPredicateIndexer predicates = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+                                .buildForBinaryTableCrossLinePredicate(tableDatasetMap, PLI)
+                                .use(leftTable, rightTable, Collections.emptyList()).createPredicates();
+
                         final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder().buildBinaryLineEvidenceSetFactory()
                                 .createBinaryTableBinaryLineEvidenceSet(leftTable, rightTable, PLI, predicates,
                                         leftTable.getLength(() -> tableDatasetMap.getDatasetByInnerTableName(leftTable.getInnerTableName()).count()),
