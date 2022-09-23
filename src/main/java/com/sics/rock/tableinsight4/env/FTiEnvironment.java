@@ -32,6 +32,9 @@ public interface FTiEnvironment {
         return Objects.requireNonNull(spark, "Current environment has not been created/shared or has been closed");
     }
 
+    /**
+     * create a environment belongs to current thread
+     */
     static void create(SparkSession spark, FTiConfig config) {
         final FEnvironmentOwner owner = FEnvironmentOwner.current();
         logger.info("Create environment of {}", owner);

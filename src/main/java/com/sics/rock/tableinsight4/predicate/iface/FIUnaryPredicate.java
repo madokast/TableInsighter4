@@ -14,4 +14,5 @@ public interface FIUnaryPredicate extends FIPredicate {
     String columnName();
 
     int tupleIndex();
+
 }

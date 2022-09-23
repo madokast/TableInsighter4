@@ -6,8 +6,10 @@ import com.sics.rock.tableinsight4.evidenceset.predicateset.FIPredicateSet;
 import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.internal.FRddElementIndex;
 import com.sics.rock.tableinsight4.pli.FPLI;
+import com.sics.rock.tableinsight4.predicate.FPredicateToString;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.table.FTableInfo;
+import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import com.sics.rock.tableinsight4.utils.FSparkUtils;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -52,6 +54,7 @@ public class FRuleVO {
 
     public static List<FRuleVO> create(final List<FRule> rules, final FPLI PLI, final FIEvidenceSet evidenceSet,
                                        final FPredicateIndexer predicateIndexer,
+                                       final FPredicateToString predicateToString,
                                        final List<FTableInfo> tableInfoList,
                                        final String conjunctionSymbol, final String implicationSymbol,
                                        final int positiveNegativeExampleNumber) {
@@ -71,7 +74,8 @@ public class FRuleVO {
         final long rowSize = evidenceSet.allCount();
         return IntStream.range(0, ruleSize).mapToObj(ruleId -> {
             final FRule rule = rules.get(ruleId);
-            final String ruleStr = rule.toString(predicateIndexer, conjunctionSymbol, implicationSymbol);
+            final String ruleStr = toRuleString(rule, tableInfoList, predicateIndexer, predicateToString, conjunctionSymbol,
+                    implicationSymbol);
             final FPositiveNegativeExample supportExamples = supportExamplesList[ruleId];
             final FPositiveNegativeExample unSupportExamples = unSupportExamplesList[ruleId];
             return new FRuleVO(ruleStr, rule.support, rule.unSupport(), rule.ySupport(evidenceSet),
@@ -79,8 +83,31 @@ public class FRuleVO {
         }).collect(Collectors.toList());
     }
 
+    private static String toRuleString(final FRule rule, final List<FTableInfo> tableInfoList,
+                                       final FPredicateIndexer predicateIndexer,
+                                       final FPredicateToString predicateToString,
+                                       final String conjunctionSymbol, final String implicationSymbol) {
 
-    private static void fillExamplesList(final List<FRule> rules, final FPLI PLI, final FIEvidenceSet evidenceSet, final List<FTableInfo> tableInfoList, final int positiveNegativeExampleNumber, final int ruleSize, final FPositiveNegativeExample[] supportExamplesList, final FPositiveNegativeExample[] unSupportExamplesList) {
+        final String tableDescription = IntStream.range(0, tableInfoList.size()).mapToObj(tupleId -> {
+            final String tableName = tableInfoList.get(tupleId).getTableName();
+            return tableName + "(" + tupleId + ")";
+        }).collect(Collectors.joining(" " + conjunctionSymbol + " "));
+
+        final String lhs = rule.xs.stream().mapToObj(predicateIndexer::getPredicate).map(predicateToString::toString)
+                .collect(Collectors.joining(" " + conjunctionSymbol + " "));
+
+        final String rh = predicateToString.toString(predicateIndexer.getPredicate(rule.y));
+
+
+        return tableDescription + " " + conjunctionSymbol + " " + lhs + " " + implicationSymbol + " " + rh;
+    }
+
+
+    private static void fillExamplesList(final List<FRule> rules, final FPLI PLI,
+                                         final FIEvidenceSet evidenceSet, final List<FTableInfo> tableInfoList,
+                                         final int positiveNegativeExampleNumber, final int ruleSize,
+                                         final FPositiveNegativeExample[] supportExamplesList,
+                                         final FPositiveNegativeExample[] unSupportExamplesList) {
         final FPair<List<FIPredicateSet>, List<FIPredicateSet>>[] examplesList = evidenceSet.examples(rules, positiveNegativeExampleNumber);
         final Map<FTableInfo, Map<FRddElementIndex, Long>> tab2eleId2ColIdMap = createTable2ElementId2ColumnIdMap(PLI, tableInfoList, examplesList);
 
@@ -139,7 +166,8 @@ public class FRuleVO {
 
     @SuppressWarnings("unchecked")
     private static Map<FTableInfo, Map<FRddElementIndex, Long>> createTable2ElementId2ColumnIdMap(
-            final FPLI PLI, final List<FTableInfo> tableInfoList, final FPair<List<FIPredicateSet>, List<FIPredicateSet>>[] examplesList) {
+            final FPLI PLI, final List<FTableInfo> tableInfoList,
+            final FPair<List<FIPredicateSet>, List<FIPredicateSet>>[] examplesList) {
         return IntStream.range(0, tableInfoList.size()).mapToObj(tupleId -> {
             final FTableInfo tableInfo = tableInfoList.get(tupleId);
             final Optional<JavaPairRDD<FRddElementIndex, Long>> tableIDColumnMapOp = PLI.getTableIDColumnMap(tableInfo);

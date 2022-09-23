@@ -99,6 +99,15 @@ public class FConstant<T> implements Serializable {
         return "'" + constant + "'";
     }
 
+    public String toUserString(int maxDecimalPlace, boolean allowExponentialForm) {
+        if (constant instanceof Float || constant instanceof Double) {
+            final String round = FTiUtils.round(((Number) constant).doubleValue(), maxDecimalPlace, allowExponentialForm);
+            return "'" + round + "'";
+        } else {
+            return toUserString();
+        }
+    }
+
     public void setIndex(long index) {
         this.index = index;
     }

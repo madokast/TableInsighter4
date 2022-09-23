@@ -29,12 +29,12 @@ public class FBinaryIntervalConsPredicate implements FIBinaryPredicate, FIInterv
     }
 
     @Override
-    public String leftTable() {
+    public String leftTableName() {
         return tableName;
     }
 
     @Override
-    public String rightTable() {
+    public String rightTableName() {
         return tableName;
     }
 
@@ -65,7 +65,7 @@ public class FBinaryIntervalConsPredicate implements FIBinaryPredicate, FIInterv
 
     @Override
     public String toString() {
-        return toString(-1, true, "^");
+        return toString(-1, true, "⋀");
     }
 
     public String toString(int maxDecimalPlace, boolean allowExponentialForm, String syntaxConjunction) {

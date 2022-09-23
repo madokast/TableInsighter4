@@ -39,26 +39,26 @@ public class FBinaryConsPredicate implements FIConstantPredicate, FIBinaryPredic
 
     @Override
     public String toString() {
-        return toString("^");
+        return toString("⋀", -1, false);
     }
 
     /**
      * ti.col op const ^ tj.col op const
      */
-    public String toString(String syntaxConjunction) {
+    public String toString(String syntaxConjunction, int maxDecimalPlace, boolean allowExponentialForm) {
         return String.format("t%d.%s %s %s %s t%d.%s %s %s",
-                leftTableIndex(), columnName, operator.symbol, constant.toUserString(),
+                leftTableIndex(), columnName, operator.symbol, constant.toUserString(maxDecimalPlace, allowExponentialForm),
                 syntaxConjunction,
-                rightTableIndex(), columnName, operator.symbol, constant.toUserString());
+                rightTableIndex(), columnName, operator.symbol, constant.toUserString(maxDecimalPlace, allowExponentialForm));
     }
 
     @Override
-    public String leftTable() {
+    public String leftTableName() {
         return tableName;
     }
 
     @Override
-    public String rightTable() {
+    public String rightTableName() {
         return tableName;
     }
 

@@ -36,12 +36,12 @@ public class FBinaryPredicate implements FIBinaryPredicate {
     }
 
     @Override
-    public String leftTable() {
+    public String leftTableName() {
         return leftTableName;
     }
 
     @Override
-    public String rightTable() {
+    public String rightTableName() {
         return rightTableName;
     }
 

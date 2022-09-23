@@ -6,6 +6,7 @@ import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
 import com.sics.rock.tableinsight4.evidenceset.factory.FEvidenceSetFactoryBuilder;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructorFactory;
+import com.sics.rock.tableinsight4.predicate.FPredicateToString;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactoryBuilder;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.preprocessing.FConstantHandler;
@@ -65,6 +66,7 @@ public class FTableInsight {
             final FPLI PLI = new FPliConstructorFactory().create().construct(tableDatasetMap);
 
             final FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+            final FPredicateToString predicateToString = new FPredicateToString(derivedColumnNameHandler);
             final List<FTableInfo> allTableInfos = tableDatasetMap.allTableInfos();
 
             allTableInfos.forEach(tableInfo -> {
@@ -78,8 +80,9 @@ public class FTableInsight {
                             .build(predicates, Collections.singletonList(tableInfo), evidenceSet);
 
                     final List<FRule> rules = ruleFinder.find();
-                    allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, Collections.singletonList(tableInfo),
-                            config.syntaxConjunction, config.syntaxImplication, config.positiveNegativeExampleNumber));
+                    allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, predicateToString, Collections.singletonList(tableInfo),
+                            config.syntaxConjunction, config.syntaxImplication, config.positiveNegativeExampleNumber
+                    ));
                 }
 
                 if (config.singleTableCrossLineRuleFind) {// single-table-cross-line
@@ -92,8 +95,9 @@ public class FTableInsight {
                             Collections.singletonList(tableInfo), evidenceSet);
 
                     final List<FRule> rules = ruleFinder.find();
-                    allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, FTiUtils.listOf(tableInfo, tableInfo),
-                            config.syntaxConjunction, config.syntaxImplication, config.positiveNegativeExampleNumber));
+                    allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, predicateToString,
+                            FTiUtils.listOf(tableInfo, tableInfo), config.syntaxConjunction, config.syntaxImplication,
+                            config.positiveNegativeExampleNumber));
 
                 }
             });
@@ -114,9 +118,10 @@ public class FTableInsight {
                         final FIRuleFinder ruleFinder = new FRuleFinderBuilder().build(predicates, FTiUtils.listOf(leftTable, rightTable), evidenceSet);
                         final List<FRule> rules = ruleFinder.find();
 
-                        allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates,
+                        allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, predicateToString,
                                 FTiUtils.listOf(leftTable, rightTable),
-                                config.syntaxConjunction, config.syntaxImplication, config.positiveNegativeExampleNumber));
+                                config.syntaxConjunction, config.syntaxImplication, config.positiveNegativeExampleNumber
+                        ));
                     }
                 }
             }

@@ -46,6 +46,10 @@ public class FUnaryConsPredicate implements FIConstantPredicate, FIUnaryPredicat
         return "t" + tupleId + "." + columnName + " " + operator.symbol + " " + constant.toUserString();
     }
 
+    public String toString(int maxDecimalPlace, boolean allowExponentialForm) {
+        return "t" + tupleId + "." + columnName + " " + operator.symbol + " " + constant.toUserString(maxDecimalPlace, allowExponentialForm);
+    }
+
     @Override
     public List<FConstant<?>> allConstants() {
         return Collections.singletonList(constant);

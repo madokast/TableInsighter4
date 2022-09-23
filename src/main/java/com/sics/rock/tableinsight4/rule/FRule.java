@@ -70,7 +70,8 @@ public class FRule {
     }
 
     public String toString(FPredicateIndexer indexer, String conjunctionSymbol, String implicationSymbol) {
-        String rhs = xs.stream().mapToObj(indexer::getPredicate).map(Object::toString).collect(Collectors.joining(" " + conjunctionSymbol + " "));
+        String rhs = xs.stream().mapToObj(indexer::getPredicate).map(Object::toString)
+                .collect(Collectors.joining(" " + conjunctionSymbol + " "));
         return rhs + " " + implicationSymbol + " " + indexer.getPredicate(y).toString();
     }
 
