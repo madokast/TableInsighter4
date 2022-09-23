@@ -135,11 +135,19 @@ public class FTiConfig {
     public Boolean usingConstantCreateInterval = false;
 
     @FConfigItem(name = "ti.rule.constant.interval.constantIntervalOperators",
-            description = "The operators used in  intervals created by dug constants. Candidate operators are <, <=, > and >=." +
+            description = "The operators used in intervals created by dug constants. Candidate operators are <, <=, > and >=." +
                     "For instance, if constant 30 and 40 dug from column 'age', " +
                     "then intervals 'age>=30', 'age<=30', 'age>=40' and 'age<=40' will be created " +
                     "if usingConstantCreateInterval is on and constantIntervalOperators is '>=,<='.")
     public String constantIntervalOperators = ">=,<=";
+
+    @FConfigItem(name = "ti.rule.comparableColumnOperators",
+            description = "The operators used in binary-predicate if the value-type of corresponding columns are comparable. " +
+                    "Candidate operators are <, <=, > and >=. For instance, if the value-type of column 'age' is integer, " +
+                    "then binary predicates t0.age>=t1.age and t0.age<=t1.age will be created " +
+                    "if comparableColumnOperators '>=,<='. The default value is empty ' ' (blank space is required). " +
+                    "Note, the binary-predicate with operator equal is created in any case.")
+    public String comparableColumnOperators = " ";
 
     @FConfigItem(name = "ti.internal.sliceLengthForPLI", description = "Origin table splice length for PLI construction. " +
             "The value decide the PLI number and may affect the speed of ES construction. The recommended value may be 1000 ~ 2500. ")
@@ -158,7 +166,6 @@ public class FTiConfig {
     public static FTiConfig defaultConfig() {
         return new FTiConfig();
     }
-
 
     @SuppressWarnings("unchecked")
     public List<String> toConfigString() {
@@ -206,7 +213,8 @@ public class FTiConfig {
                 String key = conf.substring(0, assign);
                 String val = conf.substring(assign + 1);
                 if (StringUtils.isBlank(key)) throw new FConfigParseException("Conf key is blank");
-                if (StringUtils.isBlank(val)) throw new FConfigParseException("Conf value is blank");
+                // blank is ok
+                // if (StringUtils.isBlank(val)) throw new FConfigParseException("Conf value is blank");
 
                 if (keyFieldMap.containsKey(key)) {// normal
                     Field field = keyFieldMap.get(key);
@@ -261,4 +269,7 @@ public class FTiConfig {
         }
     }
 
+
+    private FTiConfig() {
+    }
 }

@@ -48,7 +48,7 @@ public class FPredicateFactoryBuilder implements FTiEnvironment {
     public class FSingleTableCrossLinePredicateFactoryBase {
         public FIPredicateFactory use(FTableInfo tableInfo, List<FExternalPredicateInfo> otherInfos) {
             return new FSingleTableCrossLinePredicateFactory(tableInfo, otherInfos, derivedColumnNameHandler,
-                    config().constPredicateCrossLine);
+                    config().constPredicateCrossLine, config().comparableColumnOperators);
         }
     }
 

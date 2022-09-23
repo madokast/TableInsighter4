@@ -9,9 +9,12 @@ import com.sics.rock.tableinsight4.predicate.info.FExternalPredicateInfo;
 import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FColumnType;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * create single-table cross-line (2-line) predicates like t0.name = t1.name
@@ -68,8 +71,11 @@ public class FSingleTableCrossLinePredicateFactory implements FIPredicateFactory
 
             if (columnInfo.getColumnType().equals(FColumnType.NORMAL)) {
                 predicateIndexer.put(new FBinaryPredicate(tabName, tabName, columnName, columnName, FOperator.EQ, innerTabCols));
-//                predicateIndexer.put(new FBinaryPredicate(tabName, tabName, columnName, columnName, FOperator.LET, innerTabCols));
-//                predicateIndexer.put(new FBinaryPredicate(tabName, tabName, columnName, columnName, FOperator.GET, innerTabCols));
+                if (columnInfo.getValueType().isComparable()) {
+                    for (final FOperator op : comparableColumnOperators) {
+                        predicateIndexer.put(new FBinaryPredicate(tabName, tabName, columnName, columnName, op, innerTabCols));
+                    }
+                }
             }
 
             if (columnInfo.getColumnType().equals(FColumnType.EXTERNAL_BINARY_MODEL)) {
@@ -98,12 +104,22 @@ public class FSingleTableCrossLinePredicateFactory implements FIPredicateFactory
 
     private final boolean constantPredicateFlag;
 
+    private final List<FOperator> comparableColumnOperators;
+
+    /**
+     * @param comparableColumnOperators like ">=,<="
+     */
     public FSingleTableCrossLinePredicateFactory(
             final FTableInfo table, final List<FExternalPredicateInfo> otherInfos,
-            final FDerivedColumnNameHandler derivedColumnNameHandler, final boolean constantPredicateFlag) {
+            final FDerivedColumnNameHandler derivedColumnNameHandler, final boolean constantPredicateFlag,
+            final String comparableColumnOperators) {
         this.table = table;
         this.otherInfos = otherInfos;
         this.derivedColumnNameHandler = derivedColumnNameHandler;
         this.constantPredicateFlag = constantPredicateFlag;
+        this.comparableColumnOperators = Arrays.stream(comparableColumnOperators.split(","))
+                .filter(StringUtils::isNotBlank).map(String::trim).map(FOperator::of)
+                .filter(op -> !op.equals(FOperator.EQ))
+                .distinct().collect(Collectors.toList());
     }
 }

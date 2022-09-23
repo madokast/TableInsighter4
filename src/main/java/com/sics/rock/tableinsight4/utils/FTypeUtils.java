@@ -55,7 +55,7 @@ public class FTypeUtils {
         if (val == null) return null;
         else {
             String str = val.toString();
-            if (StringUtils.isBlank(str)) return null;
+            if (str.isEmpty()) return null;
             else return str;
         }
     }
