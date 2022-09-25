@@ -9,7 +9,9 @@ import java.io.File;
 import java.util.Random;
 
 /**
- * Example data
+ * FExample data
+ *
+ * @author zhaorx
  */
 public class FExamples {
 

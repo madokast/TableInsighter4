@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 public class FPositiveNegativeExample {
 
 
-    private final List<Example> examples = new ArrayList<>();
+    private final List<FExample> examples = new ArrayList<>();
 
-    public void addExample(Example example) {
+    public void addExample(FExample example) {
         examples.add(example);
     }
 
@@ -27,53 +27,53 @@ public class FPositiveNegativeExample {
 
     @Override
     public String toString() {
-        return examples.stream().map(Example::toString).collect(Collectors.joining(",", "[", "]"));
+        return examples.stream().map(FExample::toString).collect(Collectors.joining(",", "[", "]"));
     }
 
 
-    public static class Example {
-        private final List<Row> rows;
+    public static class FExample {
+        private final List<FRow> rows;
 
-        private Example(final List<Row> rows) {
+        private FExample(final List<FRow> rows) {
             this.rows = rows;
         }
 
-        public static Example of(List<Row> rows) {
+        public static FExample of(List<FRow> rows) {
             if (rows.size() == 1) return of(rows.get(0));
             if (rows.size() == 2) return of(rows.get(0), rows.get(1));
 
-            throw new IllegalArgumentException("Example length should be 1 or 2. rows = " + rows);
+            throw new IllegalArgumentException("FExample length should be 1 or 2. rows = " + rows);
         }
 
-        public static Example of(Row row) {
-            return new Example(Collections.singletonList(row));
+        public static FExample of(FRow row) {
+            return new FExample(Collections.singletonList(row));
         }
 
-        public static Example of(Row leftRow, Row rightRow) {
-            return new Example(FTiUtils.listOf(leftRow, rightRow));
+        public static FExample of(FRow leftRow, FRow rightRow) {
+            return new FExample(FTiUtils.listOf(leftRow, rightRow));
         }
 
-        public List<Row> getRows() {
+        public List<FRow> getRows() {
             return rows;
         }
 
         @Override
         public String toString() {
-            return rows.stream().map(Row::toString).collect(Collectors.joining(",", "[", "]"));
+            return rows.stream().map(FRow::toString).collect(Collectors.joining(",", "[", "]"));
         }
     }
 
-    public static class Row {
+    public static class FRow {
         private final String table;
         private final String rowId;
 
-        private Row(final String table, final String rowId) {
+        private FRow(final String table, final String rowId) {
             this.table = table;
             this.rowId = rowId;
         }
 
-        public static Row of(String tableName, String rowId) {
-            return new Row(tableName, rowId);
+        public static FRow of(String tableName, String rowId) {
+            return new FRow(tableName, rowId);
         }
 
         public String getTable() {
@@ -86,7 +86,7 @@ public class FPositiveNegativeExample {
 
         @Override
         public String toString() {
-            return String.format("\"table\":\"%s\",\"rowId\":\"%s\"", table, rowId);
+            return String.format("{\"table\":\"%s\",\"rowId\":\"%s\"}", table, rowId);
         }
     }
 

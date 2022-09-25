@@ -9,7 +9,6 @@ import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.predicate.FPredicateToString;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.table.FTableInfo;
-import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import com.sics.rock.tableinsight4.utils.FSparkUtils;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -90,7 +89,7 @@ public class FRuleVO {
 
         final String tableDescription = IntStream.range(0, tableInfoList.size()).mapToObj(tupleId -> {
             final String tableName = tableInfoList.get(tupleId).getTableName();
-            return tableName + "(" + tupleId + ")";
+            return tableName + "(t" + tupleId + ")";
         }).collect(Collectors.joining(" " + conjunctionSymbol + " "));
 
         final String lhs = rule.xs.stream().mapToObj(predicateIndexer::getPredicate).map(predicateToString::toString)
@@ -149,16 +148,16 @@ public class FRuleVO {
             }
             final List<FRddElementIndex[]> supportIdsList = ((FExamplePredicateSet) predicateSet).getSupportIdsList();
             for (final FRddElementIndex[] elementIndices : supportIdsList) {
-                final List<FPositiveNegativeExample.Row> rows = IntStream.range(0, elementIndices.length).mapToObj(tupleId -> {
+                final List<FPositiveNegativeExample.FRow> rows = IntStream.range(0, elementIndices.length).mapToObj(tupleId -> {
                     final FRddElementIndex elementIndex = elementIndices[tupleId];
                     final FTableInfo tableInfo = tableInfoList.get(tupleId);
                     final Long colId = tab2eleId2ColIdMap.get(tableInfo).getOrDefault(elementIndex, null);
                     FAssertUtils.require(colId != null, () ->
                             "Cannot extract column-id from elementIndex. " +
                                     "Table[" + tableInfo.getTableName() + "], elementIndex[" + elementIndex + "]");
-                    return FPositiveNegativeExample.Row.of(tableInfo.getTableName(), Objects.toString(colId));
+                    return FPositiveNegativeExample.FRow.of(tableInfo.getTableName(), Objects.toString(colId));
                 }).collect(Collectors.toList());
-                example.addExample(FPositiveNegativeExample.Example.of(rows));
+                example.addExample(FPositiveNegativeExample.FExample.of(rows));
                 if (example.size() >= positiveNegativeExampleNumber) break FILL_LOOP;
             }
         }

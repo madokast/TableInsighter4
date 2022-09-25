@@ -32,6 +32,9 @@ public class FTableDataLoader implements FTiEnvironment {
 
     private final FTableLoader tableLoader = new FTableLoader();
 
+    private final FDatasetSampler datasetSampler = new FDatasetSampler(
+            config().sampleSwitch, config().sampleWithReplacement, config().sampleSeed, config().sampleRatio);
+
     private final FIdColumnAdder idColumnAdder = new FIdColumnAdder(idColumnName);
 
     private final FDatasetCastHandler datasetCastHandler = new FDatasetCastHandler();
@@ -51,8 +54,8 @@ public class FTableDataLoader implements FTiEnvironment {
             logger.info("Load table {} data from {}", tableName, tableDataPath);
             Dataset<Row> dataset = tableLoader.load(tableDataPath);
 
-            // TODO auto-detect columns if column list is null or empty
-            // TODO auto-detect column value type
+            logger.info("Sample table {} if configured", tableName);
+            dataset = datasetSampler.sample(dataset, tableName);
 
             logger.info("Add row_id {} if absent on {}", idColumnName, tableName);
             dataset = idColumnAdder.addOnDatasetIfAbsent(dataset);

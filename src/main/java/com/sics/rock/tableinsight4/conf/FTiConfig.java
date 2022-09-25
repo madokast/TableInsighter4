@@ -82,6 +82,18 @@ public class FTiConfig {
     @FConfigItem(name = "ti.data.load.jdbc.options", description = "Options in table loaded by jdbc in spark")
     public Map<String, String> jdbcTableLoadOptions = FTiUtils.mapOf("url", "jdbc:", "user", "root", "password", "root");
 
+    @FConfigItem(name = "ti.data.sample.sampleSwitch", description = "Table data sample switcher.")
+    public Boolean sampleSwitch = false;
+
+    @FConfigItem(name = "ti.data.sample.withReplacement", description = "Sample with replacement or not.")
+    public Boolean sampleWithReplacement = false;
+
+    @FConfigItem(name = "ti.data.sample.sampleRatio", description = "Sample ratio 0~1")
+    public Double sampleRatio = 0.1;
+
+    @FConfigItem(name = "ti.data.sample.sampleSeed", description = "Sample random seed.")
+    public Long sampleSeed = 1234L;
+
     @FConfigItem(name = "ti.data.idColumnName", description = "ID column name. Used in identify positive/negative examples of rules")
     public String idColumnName = "row_id";
 

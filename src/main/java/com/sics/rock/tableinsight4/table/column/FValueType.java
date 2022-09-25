@@ -60,6 +60,39 @@ public class FValueType implements Serializable {
         }
     }
 
+    public static FValueType of(final String type) {
+        if ("STRING".equals(type.toUpperCase())
+                || "VARCHAR".equals(type.toUpperCase())
+                || "CHAR".equals(type.toUpperCase())
+                || "TEXT".equals(type.toUpperCase())
+                || type.toLowerCase().matches("^varchar\\([1-9][0-9]*\\)")    //varchar(n)
+                || type.toLowerCase().matches("^char\\([1-9][0-9]*\\)")) {     //char(n)
+            return STRING;
+        } else if ("DOUBLE".equals(type.toUpperCase())
+                || "FLOAT".equals(type.toUpperCase())
+                || "DECIMAL".equals(type.toUpperCase())
+                || "REAL".equals(type.toUpperCase())
+                || "NUMBER".equals(type.toUpperCase())
+                || type.toLowerCase().matches("^float[48]")) {
+            return DOUBLE;
+        } else if ("INTEGER".equals(type.toUpperCase())
+                || "INT".equals(type.toUpperCase())
+                || "TINYINT".equals(type.toUpperCase())
+                || "SMALLINT".equals(type.toUpperCase())
+                || "MEDIUMINT".equals(type.toUpperCase())
+                || "BIGINT".equals(type.toUpperCase())
+                || type.toLowerCase().matches("^int[248]")
+                || type.toLowerCase().matches("^serial[248]")) {
+            return LONG;
+        } else if ("DATE".equals(type.toUpperCase())
+                || "TIMESTAMP".equals(type.toUpperCase())) {
+            return DATE;
+        } else {
+            logger.warn("Unknown type {}", type);
+            return STRING;
+        }
+    }
+
     public Object cast(Object val) {
         if (typeType.equals(FTypeType.BASIC) && typeInfo[0] instanceof FBasicType) {
             return FTypeUtils.cast(val, ((FBasicType) typeInfo[0]).jType).orElse(null);
