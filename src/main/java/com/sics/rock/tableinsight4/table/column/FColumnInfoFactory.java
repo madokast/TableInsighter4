@@ -24,9 +24,7 @@ public class FColumnInfoFactory {
             String externalDerivedColumnName, FExternalBinaryModelInfo externalBinaryModelInfo) {
         FColumnInfo externalDerivedColumn = new FColumnInfo(externalDerivedColumnName, FValueType.LONG);
         externalDerivedColumn.setColumnType(FColumnType.EXTERNAL_BINARY_MODEL);
-        final FConstantConfig constantConfig = FConstantConfig.findConstantValue();
-        constantConfig.config(FConstantConfig.CONFIG_DOWN_LIMIT_RATIO, 0.0);
-        constantConfig.config(FConstantConfig.CONFIG_UPPER_LIMIT_RATIO, 1.0);
+        final FConstantConfig constantConfig = FConstantConfig.notFindConstantValue();
         externalDerivedColumn.setConstantConfig(constantConfig);
         externalDerivedColumn.setIntervalConstantInfo(FIntervalConstantConfig.notFindIntervalConstant());
         externalDerivedColumn.setSkip(false);
