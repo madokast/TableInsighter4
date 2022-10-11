@@ -87,20 +87,28 @@ public class FDerivedColumnNameHandler implements FTiEnvironment {
     /**
      * create a identifier/identifiers of the column
      *
+     * bug-fix: 2022-10-11
+     * Derived columns should be included either. The derived columns holds infos like Column::target
+     * which used in RHSs filtering.
+     *
      * @see FIPredicate#innerTabCols()
      */
     public Set<String> innerTabCols(String tabName, String innerTableName, String columnName) {
+        final Set<String> identifiers = new HashSet<>();
+        identifiers.add(innerTableName + tableColumnLinker + columnName);
         if (isDerivedBinaryModelColumnName(columnName)) {
             FExternalBinaryModelInfo modelInfo = extractModelInfo(columnName);
             if (modelInfo.getLeftTableName().equals(tabName)) {
-                return modelInfo.getLeftColumns().stream().map(c -> innerTableName + tableColumnLinker + c).collect(Collectors.toSet());
+                modelInfo.getLeftColumns().stream().map(c -> innerTableName + tableColumnLinker + c).forEach(identifiers::add);
             } else if (modelInfo.getRightTableName().equals(tabName)) {
-                return modelInfo.getRightColumns().stream().map(c -> innerTableName + tableColumnLinker + c).collect(Collectors.toSet());
+                modelInfo.getRightColumns().stream().map(c -> innerTableName + tableColumnLinker + c).forEach(identifiers::add);
             } else {
                 throw new IllegalArgumentException(columnName + " is a derived model column but not belong to model " + modelInfo);
             }
+        } else {
+            tryParseCombinedColumn(columnName).stream().map(c -> innerTableName + tableColumnLinker + c).forEach(identifiers::add);
         }
 
-        return tryParseCombinedColumn(columnName).stream().map(c -> innerTableName + tableColumnLinker + c).collect(Collectors.toSet());
+        return identifiers;
     }
 }
