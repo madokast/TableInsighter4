@@ -77,7 +77,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
                                 FOperator.LT, a))
                 )).createPredicates();
 
-        final int lt = singleLinePredicateFactory.findIndex("<").get(0);
+        final int lt = singleLinePredicateFactory.findIndex("a < b").get(0);
 
         final FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -157,7 +157,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
                                 FOperator.GT, a))
                 )).createPredicates();
 
-        final int lt = singleLinePredicateFactory.findIndex(FOperator.GT.symbol).get(0);
+        final int lt = singleLinePredicateFactory.findIndex("a > b").get(0);
 
         final FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -238,7 +238,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
                                 FOperator.GET, a))
                 )).createPredicates();
 
-        final int lt = singleLinePredicateFactory.findIndex(FOperator.GET.symbol).get(0);
+        final int lt = singleLinePredicateFactory.findIndex("a >= b").get(0);
 
         final FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -319,7 +319,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
                                 FOperator.LET, a))
                 )).createPredicates();
 
-        final int lt = singleLinePredicateFactory.findIndex(FOperator.LET.symbol).get(0);
+        final int lt = singleLinePredicateFactory.findIndex("a <= b").get(0);
 
         final FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
@@ -401,7 +401,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
                                 FOperator.EQ, a))
                 )).createPredicates();
 
-        final int lt = singleLinePredicateFactory.findIndex("a=b").get(0);
+        final int lt = singleLinePredicateFactory.findIndex("a = b").get(0);
 
         final FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
                 spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);

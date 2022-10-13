@@ -113,22 +113,22 @@ public class FInterval implements Serializable {
         if (intervalLike.startsWith(LEFT_OPEN) || intervalLike.startsWith(LEFT_CLOSE)) {
             return Collections.singletonList(parse(intervalLike, type));
         } else if (intervalLike.startsWith(LEQ)) {
-            Comparable number = (Comparable) type.cast(intervalLike.substring(LEQ.length()));
+            Comparable number = (Comparable) type.cast(intervalLike.substring(LEQ.length()).trim());
             return Collections.singletonList(new FInterval(Double.NEGATIVE_INFINITY, number, false, true));
         } else if (intervalLike.startsWith(GEQ)) {
-            Comparable number = (Comparable) type.cast(intervalLike.substring(GEQ.length()));
+            Comparable number = (Comparable) type.cast(intervalLike.substring(GEQ.length()).trim());
             return Collections.singletonList(new FInterval(number, Double.POSITIVE_INFINITY, true, false));
         } else if (intervalLike.startsWith(__LEQ)) {
-            Comparable number = (Comparable) type.cast(intervalLike.substring(__LEQ.length()));
+            Comparable number = (Comparable) type.cast(intervalLike.substring(__LEQ.length()).trim());
             return Collections.singletonList(new FInterval(Double.NEGATIVE_INFINITY, number, false, true));
         } else if (intervalLike.startsWith(__GEQ)) {
-            Comparable number = (Comparable) type.cast(intervalLike.substring(__GEQ.length()));
+            Comparable number = (Comparable) type.cast(intervalLike.substring(__GEQ.length()).trim());
             return Collections.singletonList(new FInterval(number, Double.POSITIVE_INFINITY, true, false));
         } else if (intervalLike.startsWith(LE)) {
-            Comparable number = (Comparable) type.cast(intervalLike.substring(LE.length()));
+            Comparable number = (Comparable) type.cast(intervalLike.substring(LE.length()).trim());
             return Collections.singletonList(new FInterval(Double.NEGATIVE_INFINITY, number, false, false));
         } else if (intervalLike.startsWith(GT)) {
-            Comparable number = (Comparable) type.cast(intervalLike.substring(GT.length()));
+            Comparable number = (Comparable) type.cast(intervalLike.substring(GT.length()).trim());
             return Collections.singletonList(new FInterval(number, Double.POSITIVE_INFINITY, false, false));
         } else {
             Comparable number = (Comparable) type.cast(intervalLike);

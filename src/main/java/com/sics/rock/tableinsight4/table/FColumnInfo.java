@@ -56,7 +56,7 @@ public class FColumnInfo implements Serializable {
      * Relative config info especially for each column
      * if there configs are null, back to upper config
      */
-    private FIntervalConstantConfig intervalConstantInfo = FIntervalConstantConfig.notFindIntervalConstant();
+    private FIntervalConstantConfig intervalConstantInfo = FIntervalConstantConfig.findIntervalConstant();
 
     /**
      * Constants found in the column

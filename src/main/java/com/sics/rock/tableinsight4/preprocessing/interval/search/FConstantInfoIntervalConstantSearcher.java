@@ -4,7 +4,6 @@ import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;
 import com.sics.rock.tableinsight4.preprocessing.interval.FInterval;
 import com.sics.rock.tableinsight4.preprocessing.interval.FIntervalConstantInfo;
-import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.column.FValueType;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
@@ -28,12 +27,9 @@ public class FConstantInfoIntervalConstantSearcher implements FIIntervalConstant
 
         tableDatasetMap.allTableInfos().forEach(tableInfo -> {
             final String tableName = tableInfo.getTableName();
-            final ArrayList<FColumnInfo> columns = tableInfo.getColumns();
-            for (FColumnInfo column : columns) {
+            tableInfo.intervalRequiredColumnsView().forEach(column -> {
                 final String columnName = column.getColumnName();
-                if (!column.getIntervalConstantInfo().isFindIntervalConstant()) continue;
                 final FValueType valueType = column.getValueType();
-                if (!valueType.isComparable()) continue;
 
                 for (final FConstant<?> constant : column.getConstants()) {
                     if (constant.isSpecialValue()) continue;
@@ -48,7 +44,7 @@ public class FConstantInfoIntervalConstantSearcher implements FIIntervalConstant
                     }
                     ret.add(FIntervalConstantInfo.constantIntervalConstant(tableName, columnName, intervals));
                 }
-            }
+            });
         });
 
         return ret;

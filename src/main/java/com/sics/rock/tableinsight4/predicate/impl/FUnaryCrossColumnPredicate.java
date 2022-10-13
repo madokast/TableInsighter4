@@ -70,6 +70,6 @@ public class FUnaryCrossColumnPredicate implements FIUnaryPredicate {
 
     @Override
     public String toString() {
-        return "t0." + leftColumnName + " " + operator.symbol + " t1." + rightColumnName;
+        return "t" + tupleIndex + "." + leftColumnName + " " + operator.symbol + " t" + tupleIndex + "." + rightColumnName;
     }
 }

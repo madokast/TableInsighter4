@@ -65,7 +65,7 @@ public class FTableInfo implements Serializable {
     /*---------------------- column view -----------------------*/
 
     public List<FColumnInfo> intervalRequiredColumnsView() {
-        return columnsView(c -> !c.isSkip() && c.getIntervalConstantInfo().isFindIntervalConstant());
+        return columnsView(c -> !c.isSkip() && c.getIntervalConstantInfo().isFindIntervalConstant() && c.getValueType().isComparable());
     }
 
     public List<FColumnInfo> nonSkipColumnsView() {

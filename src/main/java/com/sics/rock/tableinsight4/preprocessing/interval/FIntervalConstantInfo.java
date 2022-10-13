@@ -59,6 +59,6 @@ public class FIntervalConstantInfo {
 
     @Override
     public String toString() {
-        return String.format("%s.%s interval %s in from %s", tableName, columnName, intervals.toString(), source);
+        return String.format("%s.%s interval %s by %s", tableName, columnName, intervals.toString(), source);
     }
 }
