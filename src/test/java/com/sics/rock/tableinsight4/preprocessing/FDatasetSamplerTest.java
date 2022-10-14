@@ -22,7 +22,7 @@ public class FDatasetSamplerTest extends FTableInsightEnv {
         dataset.show();
 
         final FDatasetSampler sampler = new FDatasetSampler(config().sampleSwitch,
-                config().sampleWithReplacement, config().randomSeed, config().sampleRatio);
+                config().sampleWithReplacement, config().samplingRandomSeed, config().sampleRatio);
 
         sampler.sample(dataset, relation.getTableName()).show();
     }

@@ -20,8 +20,9 @@ import java.util.List;
 public class FKMeansUtils {
 
 
-    public static List<FPair<Double, Double>> findIntervals(JavaRDD<Double> doubleRDD, int clusterNumber, int iterNumber) {
-        final List<Double> boundaries = findBoundariesByKMeans(doubleRDD, clusterNumber, iterNumber);
+    public static List<FPair<Double, Double>> findIntervals(JavaRDD<Double> doubleRDD, int clusterNumber,
+                                                            int iterNumber, long kMeansRandomSeed) {
+        final List<Double> boundaries = findBoundariesByKMeans(doubleRDD, clusterNumber, iterNumber, kMeansRandomSeed);
 
         // -inf +inf
         if (boundaries.size() <= 2) return Collections.emptyList();
@@ -38,14 +39,18 @@ public class FKMeansUtils {
     }
 
 
-    public static List<Double> findBoundariesByKMeans(JavaRDD<Double> doubleRDD, int clusterNumber, int iterNumber) {
+    public static List<Double> findBoundariesByKMeans(JavaRDD<Double> doubleRDD, int clusterNumber, int iterNumber, long kMeansRandomSeed) {
         final RDD<Vector> data = doubleRDD
                 .map(num -> Vectors.dense(new double[]{num}))
                 .rdd()
                 .cache()
                 .setName("KMeans_" + System.currentTimeMillis());
 
-        final KMeansModel result = KMeans.train(data, clusterNumber, iterNumber);
+        final KMeansModel result = new KMeans()
+                .setK(clusterNumber)
+                .setMaxIterations(iterNumber)
+                .setSeed(kMeansRandomSeed)
+                .run(data);
 
         final Vector[] centers = result.clusterCenters();
 

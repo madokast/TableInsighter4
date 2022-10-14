@@ -33,7 +33,8 @@ public class FIntervalsConstantHandler implements FTiEnvironment {
 
         // kMeans algorithm finding intervals
         if (config().kMeansIntervalSearch) intervalConstantSearchers.add(new FKMeansIntervalConstantSearcher(
-                config().kMeansClusterNumber, config().kMeansIterNumber, config().intervalLeftClose, config().intervalRightClose));
+                config().kMeansClusterNumber, config().kMeansIterNumber,
+                config().intervalLeftClose, config().intervalRightClose, config().kMeansRandomSeed));
 
         // create intervals form constant
         if (config().usingConstantCreateInterval) intervalConstantSearchers.add(

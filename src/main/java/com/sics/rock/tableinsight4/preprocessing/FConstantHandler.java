@@ -1,12 +1,14 @@
 package com.sics.rock.tableinsight4.preprocessing;
 
 import com.sics.rock.tableinsight4.env.FTiEnvironment;
+import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;
 import com.sics.rock.tableinsight4.preprocessing.constant.FConstantInfo;
 import com.sics.rock.tableinsight4.preprocessing.constant.search.FExternalConstantSearcher;
 import com.sics.rock.tableinsight4.preprocessing.constant.search.FIConstantSearcher;
 import com.sics.rock.tableinsight4.preprocessing.constant.search.FRatioConstantSearcher;
 import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
+import com.sics.rock.tableinsight4.table.FTableInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +68,14 @@ public class FConstantHandler implements FTiEnvironment {
                 break;
             }
             columnInfo.addConstant(constantInfo.getConstant());
+        }
+
+        // sort constants for consistency
+        for (final FTableInfo tableInfo : tableDatasetMap.allTableInfos()) {
+            for (final FColumnInfo column : tableInfo.getColumns()) {
+                final ArrayList<FConstant<?>> constants = column.getConstants();
+                constants.sort(Comparator.comparing(FConstant::toUserString));
+            }
         }
     }
 }

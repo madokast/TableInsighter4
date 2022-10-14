@@ -172,8 +172,11 @@ public class FTiConfig {
             "the internal data structure evidence set. Number -1 means automatic determining.")
     public Integer evidenceSetPartitionNumber = -1;
 
-    @FConfigItem(name = "ti.internal.randomSeed", description = "The random seed used in sampling.")
-    public Long randomSeed = 1L;
+    @FConfigItem(name = "ti.internal.randomSeed.sampling", description = "The random seed used in sampling.")
+    public Long samplingRandomSeed = 1L;
+
+    @FConfigItem(name = "ti.internal.randomSeed.kMeans", description = "The random seed used in k-means.")
+    public Long kMeansRandomSeed = 1L;
 
     public static FTiConfig defaultConfig() {
         return new FTiConfig();

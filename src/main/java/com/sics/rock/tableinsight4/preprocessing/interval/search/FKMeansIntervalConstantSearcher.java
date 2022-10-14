@@ -36,6 +36,8 @@ public class FKMeansIntervalConstantSearcher implements FIIntervalConstantSearch
 
     private final boolean rightClose;
 
+    private final long kMeansRandomSeed;
+
     @Override
     public List<FIntervalConstantInfo> search(FTableDatasetMap tableDatasetMap) {
         List<FIntervalConstantInfo> ret = new ArrayList<>();
@@ -76,7 +78,7 @@ public class FKMeansIntervalConstantSearcher implements FIIntervalConstantSearch
         final int clusterNumber = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_K_MEANS_CLUSTER_NUMBER, this.clusterNumber);
         final boolean leftEq = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_LEFT_CLOSE, this.leftClose);
         final boolean rightEq = intervalConstantInfo.getConfig(FIntervalConstantConfig.CONFIG_RIGHT_CLOSE, this.rightClose);
-        final List<FInterval> intervals = FKMeansUtils.findIntervals(doubleRDD, clusterNumber, iterNumber).stream()
+        final List<FInterval> intervals = FKMeansUtils.findIntervals(doubleRDD, clusterNumber, iterNumber, kMeansRandomSeed).stream()
                 .map(lr -> new FInterval(lr._k, lr._v, leftEq, rightEq).typeCast(valueType))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -90,10 +92,11 @@ public class FKMeansIntervalConstantSearcher implements FIIntervalConstantSearch
         return Optional.of(new FIntervalConstantInfo(tableName, columnName, intervals, FIntervalConstantInfo.SOURCE_K_MEANS));
     }
 
-    public FKMeansIntervalConstantSearcher(int clusterNumber, int iterNumber, boolean leftClose, boolean rightClose) {
+    public FKMeansIntervalConstantSearcher(int clusterNumber, int iterNumber, boolean leftClose, boolean rightClose, long kMeansRandomSeed) {
         this.clusterNumber = clusterNumber;
         this.iterNumber = iterNumber;
         this.leftClose = leftClose;
         this.rightClose = rightClose;
+        this.kMeansRandomSeed = kMeansRandomSeed;
     }
 }
