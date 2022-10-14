@@ -60,6 +60,52 @@ public class FTableInsightTest extends FSparkEnv {
     }
 
     @Test
+    public void single_line_cross_column_number() {
+        FTableInfo relation = FExamples.doubleNumberNullColumn7("d1","tab1");
+        FTiConfig config = FTiConfig.defaultConfig();
+        config.confidence = 0.8;
+        config.cover = 0.001;
+        config.singleLineRuleFind = true;
+        config.singleLineCrossColumn = true;
+        config.singleTableCrossLineRuleFind = false;
+        config.crossTableCrossLineRuleFind = false;
+        config.comparableColumnOperators = ">=,<";
+
+        final FTableInsight TI = new FTableInsight(FTiUtils.listOf(relation),
+                Collections.emptyList(), config, spark);
+        List<FRuleVO> rules = TI.findRule();
+
+        for (final FRuleVO rule : rules) {
+            logger.info("{}", rule);
+        }
+
+        logger.info("rules.size() = {}", rules.size());
+    }
+
+    // @Test
+    public void cross_number() {
+        FTableInfo relation1 = FExamples.doubleNumberNullColumn7("d1","tab1");
+        FTableInfo relation2 = FExamples.doubleNumberNullColumn7("d2","tab2");
+        FTiConfig config = FTiConfig.defaultConfig();
+        config.confidence = 0.8;
+        config.cover = 0.001;
+        config.singleLineRuleFind = false;
+        config.singleTableCrossLineRuleFind = false;
+        config.crossTableCrossLineRuleFind = true;
+        config.comparableColumnOperators = ">=,<";
+
+        final FTableInsight TI = new FTableInsight(FTiUtils.listOf(relation1, relation2),
+                Collections.emptyList(), config, spark);
+        List<FRuleVO> rules = TI.findRule();
+
+        for (final FRuleVO rule : rules) {
+            logger.info("{}", rule);
+        }
+
+        logger.info("rules.size() = {}", rules.size());
+    }
+
+    @Test
     public void test_number() {
         String tabName = "number";
         String header = "a1,a2";

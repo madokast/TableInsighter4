@@ -33,6 +33,9 @@ public class FTiConfig {
     @FConfigItem(name = "ti.rule.find.singleLine", description = "Do single-line rule finding of each table.")
     public Boolean singleLineRuleFind = true;
 
+    @FConfigItem(name = "ti.rule.find.singleLine.crossColumn", description = "Create single-line cross-column predicate in single-line rule finding.")
+    public Boolean singleLineCrossColumn = false;
+
     @FConfigItem(name = "ti.rule.find.singleTableCrossLine", description = "Do single-table cross-line (2-line) rule finding of each table.")
     public Boolean singleTableCrossLineRuleFind = true;
 

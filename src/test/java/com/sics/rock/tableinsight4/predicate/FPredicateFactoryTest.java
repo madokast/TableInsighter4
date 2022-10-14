@@ -1,13 +1,17 @@
 package com.sics.rock.tableinsight4.predicate;
 
 import com.sics.rock.tableinsight4.internal.FPair;
-import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
+import com.sics.rock.tableinsight4.pli.FPLI;
+import com.sics.rock.tableinsight4.pli.FPliConstructor;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactoryBuilder;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryConsPredicate;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryIntervalConsPredicate;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryModelPredicate;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryPredicate;
+import com.sics.rock.tableinsight4.preprocessing.FConstantHandler;
 import com.sics.rock.tableinsight4.preprocessing.FExternalBinaryModelHandler;
+import com.sics.rock.tableinsight4.preprocessing.FIntervalsConstantHandler;
 import com.sics.rock.tableinsight4.preprocessing.FTableDataLoader;
 import com.sics.rock.tableinsight4.preprocessing.constant.FConstant;
 import com.sics.rock.tableinsight4.preprocessing.external.binary.FExternalBinaryModelInfo;
@@ -26,10 +30,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -52,7 +53,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()), null, null)
                 .buildForSingleLinePredicate().use(
                         relation, new ArrayList<>()).createPredicates();
 
@@ -81,7 +82,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             break;
         }
 
-        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()), null, null)
                 .buildForSingleLinePredicate().use(
                         relation, new ArrayList<>()).createPredicates();
 
@@ -98,7 +99,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         relation.getColumns().get(2).addConstant(FConstant.of("abc"));
         relation.getColumns().get(3).addConstant(FConstant.of(12.32));
 
-        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()), null, null)
                 .buildForSingleLinePredicate().use(relation, new ArrayList<>()).createPredicates();
 
         assertEquals(4, factory.size());
@@ -119,7 +120,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         colCombined.addConstant(FConstant.of("CITY 44312"));
         relation.getColumns().add(colCombined);
 
-        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()), null, null)
                 .buildForSingleLinePredicate().use(relation, new ArrayList<>()).createPredicates();
 
         assertEquals(1, factory.size());
@@ -151,7 +152,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         ci.addConstant(FConstant.of(1L));
         relation.getColumns().add(ci);
 
-        FPredicateIndexer factory = new FPredicateFactoryBuilder(derivedColumnNameHandler).buildForSingleLinePredicate().use(
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(derivedColumnNameHandler, null, null).buildForSingleLinePredicate().use(
                 relation, new ArrayList<>()).createPredicates();
 
         assertEquals(1, factory.size());
@@ -159,6 +160,51 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
         FIPredicate predicate = factory.getPredicate(0);
 
         logger.info("innerTabCols = {}", predicate.innerTabCols());
+
+    }
+
+    @Test
+    public void createSingleLinePredicateFactory_single_line_cross_column() {
+
+        config().sliceLengthForPLI = 1;
+        config().singleLineCrossColumn = true;
+        config().comparableColumnOperators = "<=,<";
+
+        final FTableInfo table = FExamples.create("tab1", new String[]{"age1", "age2"},
+                new FValueType[]{FValueType.INTEGER, FValueType.INTEGER}, new String[]{
+                        "22,21",
+                        "23,22",
+                        "24,23",
+                        "25,24"
+                });
+
+        final FTableDatasetMap tableDatasetMap = new FTableDataLoader().prepareData(Collections.singletonList(table));
+
+        final FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(Collections.emptyList());
+
+        final FPLI PLI = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark).construct(tableDatasetMap);
+
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
+                .buildForSingleLinePredicate().use(table, new ArrayList<>()).createPredicates();
+
+        final List<FIPredicate> allPredicates = factory.allPredicates();
+
+        for (final FIPredicate predicate : allPredicates) {
+            logger.info("{}", predicate);
+        }
+
+        final Optional<FIPredicate> lt = allPredicates.stream().filter(p -> p.operator().equals(FOperator.LT)).findAny();
+        final Optional<FIPredicate> lte = allPredicates.stream().filter(p -> p.operator().equals(FOperator.LET)).findAny();
+
+        assertTrue(lt.isPresent());
+        assertTrue(lte.isPresent());
+
+        assertTrue(lt.get().toString().contains("t0.age1"));
+        assertTrue(lt.get().toString().contains("t0.age2"));
+
+        assertTrue(lte.get().toString().contains("t0.age1"));
+        assertTrue(lte.get().toString().contains("t0.age2"));
 
     }
 
@@ -177,7 +223,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()), null, null)
                 .buildForSingleTableCrossLinePredicate().use(relation, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : factory.allPredicates()) {
@@ -198,7 +244,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()), null, null)
                 .buildForSingleTableCrossLinePredicate().use(relation, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : factory.allPredicates()) {
@@ -222,7 +268,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
             }
         }
 
-        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()))
+        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(Collections.emptyList()), null, null)
                 .buildForSingleTableCrossLinePredicate().use(relation, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : factory.allPredicates()) {
@@ -272,7 +318,7 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
 
         relationDatasetMap.getDatasetByTableName(relation.getTableName()).show();
 
-        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(FTiUtils.listOf(modelInfo)))
+        final FPredicateIndexer factory = new FPredicateFactoryBuilder(new FDerivedColumnNameHandler(FTiUtils.listOf(modelInfo)), null, null)
                 .buildForSingleTableCrossLinePredicate().use(relation, Collections.emptyList()).createPredicates();
 
         assertTrue(factory.allPredicates().stream().anyMatch(p -> p instanceof FBinaryModelPredicate));
@@ -282,5 +328,70 @@ public class FPredicateFactoryTest extends FTableInsightEnv {
                 assertTrue(predicate.innerTabCols().contains(relation.getInnerTableName() + config().tableColumnLinker + "cc"));
             }
         }
+    }
+
+    @Test
+    public void test_binary_number_cross_pred() {
+        config().sliceLengthForPLI = 1;
+        config().comparableColumnOperators = "<,>=";
+
+        final FTableInfo table1 = FExamples.create("tab1", new String[]{"name", "age"},
+                new FValueType[]{FValueType.STRING, FValueType.INTEGER}, new String[]{
+                        "zhangsan,21",
+                        "zhangsan,22",
+                        "zhangsan1,23",
+                        "zhangsan1,24"
+                });
+
+        final FTableInfo table2 = FExamples.create("tab2", new String[]{"name", "age"},
+                new FValueType[]{FValueType.STRING, FValueType.INTEGER}, new String[]{
+                        "zhangsan,21",
+                        "zhangsan,22",
+                        "zhangsan1,23",
+                        "zhangsan1,24"
+                });
+
+        final FTableDataLoader dataLoader = new FTableDataLoader();
+        final FTableDatasetMap tableDatasetMap = dataLoader.prepareData(FTiUtils.listOf(table1, table2));
+
+        final List<FExternalBinaryModelInfo> externalBinaryModelInfos = Collections.emptyList();
+        final FExternalBinaryModelHandler modelHandler = new FExternalBinaryModelHandler();
+        modelHandler.appendDerivedColumn(tableDatasetMap, externalBinaryModelInfos);
+
+        final FIntervalsConstantHandler intervalsConstantHandler = new FIntervalsConstantHandler();
+        intervalsConstantHandler.generateIntervalConstant(tableDatasetMap);
+
+        final FConstantHandler constantHandler = new FConstantHandler();
+        constantHandler.generateConstant(tableDatasetMap);
+
+        final FPliConstructor pliConstructor = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark);
+        final FPLI PLI = pliConstructor.construct(tableDatasetMap);
+
+        FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
+
+        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
+                .buildForBinaryTableCrossLinePredicate()
+                .use(table1, table2, Collections.emptyList()).createPredicates();
+
+        //18:15:05.900 [main] INFO  TEST - predicate = t0.name = t1.name
+        //18:15:05.900 [main] INFO  TEST - predicate = t0.age = t1.age
+        //18:15:05.900 [main] INFO  TEST - predicate = t0.age < t1.age
+        //18:15:05.900 [main] INFO  TEST - predicate = t0.age >= t1.age
+        for (FIPredicate predicate : singleLinePredicateFactory.allPredicates()) {
+            logger.info("predicate = " + predicate);
+        }
+
+        final Optional<FIPredicate> ageLT = singleLinePredicateFactory.allPredicates().stream().filter(p -> p.operator().equals(FOperator.LT)).findAny();
+        final Optional<FIPredicate> ageGET = singleLinePredicateFactory.allPredicates().stream().filter(p -> p.operator().equals(FOperator.GET)).findAny();
+
+        assertTrue(ageLT.isPresent());
+        assertTrue(ageGET.isPresent());
+
+        assertTrue(ageLT.get().toString().contains("t0.age"));
+        assertTrue(ageLT.get().toString().contains("t1.age"));
+        assertTrue(ageGET.get().toString().contains("t0.age"));
+        assertTrue(ageGET.get().toString().contains("t1.age"));
+
     }
 }

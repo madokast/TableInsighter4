@@ -62,7 +62,7 @@ public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
 
-        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleTableCrossLinePredicate().use(table, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : singleLinePredicateFactory.allPredicates()) {
@@ -129,7 +129,7 @@ public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
 
-        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleTableCrossLinePredicate().use(table, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : singleLinePredicateFactory.allPredicates()) {
@@ -234,7 +234,7 @@ public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
 
-        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleTableCrossLinePredicate().use(table, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : singleLinePredicateFactory.allPredicates()) {
@@ -324,7 +324,7 @@ public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
 
-        final FPredicateIndexer crossLinePredicates = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        final FPredicateIndexer crossLinePredicates = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleTableCrossLinePredicate().use(table, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : crossLinePredicates.allPredicates()) {
@@ -438,7 +438,7 @@ public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
 
-        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleTableCrossLinePredicate().use(table, Collections.emptyList()).createPredicates();
 
         for (FIPredicate predicate : singleLinePredicateFactory.allPredicates()) {

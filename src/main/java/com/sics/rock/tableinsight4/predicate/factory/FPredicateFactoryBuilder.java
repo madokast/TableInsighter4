@@ -21,6 +21,10 @@ public class FPredicateFactoryBuilder implements FTiEnvironment {
 
     private final FDerivedColumnNameHandler derivedColumnNameHandler;
 
+    private final FTableDatasetMap datasetMap;
+
+    private final FPLI PLI;
+
     public FSingleLinePredicateFactoryBase buildForSingleLinePredicate() {
         return new FSingleLinePredicateFactoryBase();
     }
@@ -29,19 +33,23 @@ public class FPredicateFactoryBuilder implements FTiEnvironment {
         return new FSingleTableCrossLinePredicateFactoryBase();
     }
 
-    public FBinaryTableCrossLinePredicateFactoryBase buildForBinaryTableCrossLinePredicate(FTableDatasetMap datasetMap, FPLI PLI) {
-        return new FBinaryTableCrossLinePredicateFactoryBase(datasetMap, PLI);
+    public FBinaryTableCrossLinePredicateFactoryBase buildForBinaryTableCrossLinePredicate() {
+        return new FBinaryTableCrossLinePredicateFactoryBase();
     }
 
-    public FPredicateFactoryBuilder(final FDerivedColumnNameHandler derivedColumnNameHandler) {
+    public FPredicateFactoryBuilder(final FDerivedColumnNameHandler derivedColumnNameHandler, final FTableDatasetMap datasetMap, final FPLI PLI) {
         this.derivedColumnNameHandler = derivedColumnNameHandler;
+        this.datasetMap = datasetMap;
+        this.PLI = PLI;
     }
 
     /*============================ inner classes =====================================*/
 
     public class FSingleLinePredicateFactoryBase {
         public FIPredicateFactory use(FTableInfo tableInfo, List<FExternalPredicateInfo> otherInfos) {
-            return new FSingleLinePredicateFactory(tableInfo, otherInfos, derivedColumnNameHandler);
+            return new FSingleLinePredicateFactory(tableInfo, otherInfos,
+                    derivedColumnNameHandler, config().singleLineCrossColumn, config().crossColumnThreshold,
+                    config().comparableColumnOperators, datasetMap, PLI);
         }
     }
 
@@ -53,19 +61,10 @@ public class FPredicateFactoryBuilder implements FTiEnvironment {
     }
 
     public class FBinaryTableCrossLinePredicateFactoryBase {
-
-        private final FTableDatasetMap datasetMap;
-
-        private final FPLI PLI;
-
-        private FBinaryTableCrossLinePredicateFactoryBase(final FTableDatasetMap datasetMap, final FPLI PLI) {
-            this.datasetMap = datasetMap;
-            this.PLI = PLI;
-        }
-
         public FIPredicateFactory use(FTableInfo leftTableInfo, FTableInfo rightTableInfo, List<FExternalPredicateInfo> otherInfos) {
             return new FBinaryTableCrossLinePredicateFactory(leftTableInfo, rightTableInfo, otherInfos,
-                    derivedColumnNameHandler, datasetMap, PLI, config().crossColumnThreshold);
+                    derivedColumnNameHandler, datasetMap, PLI, config().crossColumnThreshold,
+                    config().comparableColumnOperators);
         }
     }
 

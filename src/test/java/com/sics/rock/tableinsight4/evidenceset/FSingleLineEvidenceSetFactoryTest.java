@@ -5,8 +5,9 @@ import com.sics.rock.tableinsight4.internal.bitset.FBitSet;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructor;
 import com.sics.rock.tableinsight4.predicate.FIPredicate;
-import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
+import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactoryBuilder;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.preprocessing.FConstantHandler;
 import com.sics.rock.tableinsight4.preprocessing.FExternalBinaryModelHandler;
 import com.sics.rock.tableinsight4.preprocessing.FIntervalsConstantHandler;
@@ -55,7 +56,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -97,7 +98,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -138,7 +139,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -205,7 +206,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -272,7 +273,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -338,7 +339,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -408,7 +409,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -478,7 +479,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -548,7 +549,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -616,7 +617,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -665,7 +666,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -718,7 +719,7 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         FPLI PLI = pliConstructor.construct(tableDatasetMap);
 
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
-        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, new ArrayList<>()).createPredicates();
 
         FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
@@ -744,6 +745,87 @@ public class FSingleLineEvidenceSetFactoryTest extends FTableInsightEnv {
         assertEquals(one.getLength(null), info.length + 2);
 
         assertEquals(ES.cardinality() + 2, ES.allCount());
+
+        logger.info("cardinality = {}", ES.cardinality());
+        logger.info("allCount = {}", ES.allCount());
+
+        for (String ps : info) {
+            logger.info(ps);
+        }
+    }
+
+    @Test
+    public void test_single_line_cross_column() {
+        config().sliceLengthForPLI = 1;
+        config().singleLineCrossColumn = true;
+        config().comparableColumnOperators = ">=,>";
+
+        final FTableInfo table = FExamples.create("tab1", new String[]{"age1", "age2"},
+                new FValueType[]{FValueType.INTEGER, FValueType.INTEGER}, new String[]{
+                        "22,22",
+                        "23,22",
+                        "24,23",
+                        "25,26"
+                });
+
+        final FTableDatasetMap tableDatasetMap = new FTableDataLoader().prepareData(Collections.singletonList(table));
+
+        final FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(Collections.emptyList());
+
+        final FPLI PLI = new FPliConstructor(config().idColumnName,
+                config().sliceLengthForPLI, config().positiveNegativeExampleSwitch, spark).construct(tableDatasetMap);
+
+        FPredicateIndexer factory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
+                .buildForSingleLinePredicate().use(table, new ArrayList<>()).createPredicates();
+
+        final List<FIPredicate> allPredicates = factory.allPredicates();
+
+        for (final FIPredicate predicate : allPredicates) {
+            logger.info("{}", predicate);
+        }
+
+        FSingleLineEvidenceSetFactory evidenceSetFactory = new FSingleLineEvidenceSetFactory(
+                spark, config().evidenceSetPartitionNumber, config().positiveNegativeExampleSwitch, config().positiveNegativeExampleNumber);
+
+        final FIEvidenceSet ES = evidenceSetFactory.create(table, PLI, factory, table.getLength(null));
+
+        //+--------------+----+----+
+        //|        row_id|age1|age2|
+        //+--------------+----+----+
+        //|65869765904431|  22|  22|
+        //|65869765904432|  23|  22|
+        //|65869765904433|  24|  23|
+        //|65869765904434|  25|  26|
+        //+--------------+----+----+
+
+        //+--------------+----------+----+-------+----+-------+
+        //|row_id        |pid:offset|age1|age1_id|age2|age2_id|
+        //+--------------+----------+----+-------+----+-------+
+        //|65869765904431|0:0       |22  |0      |22  |0      |
+        //|65869765904432|1:0       |23  |1      |22  |0      |
+        //|65869765904433|2:0       |24  |2      |23  |1      |
+        //|65869765904434|3:0       |25  |3      |26  |4      |
+        //+--------------+----------+----+-------+----+-------+
+
+        // ES
+        // [t0.age1 = t0.age2 t0.age1 >= t0.age2]↑1[(0:0)]
+        // [t0.age1 >= t0.age2 t0.age1 > t0.age2]↑2[(1:0),(2:0)]
+
+        int eq = factory.getIndex(allPredicates.stream().filter(p -> p.operator().equals(FOperator.EQ)).findAny().get());
+        int get = factory.getIndex(allPredicates.stream().filter(p -> p.operator().equals(FOperator.GET)).findAny().get());
+        int gt = factory.getIndex(allPredicates.stream().filter(p -> p.operator().equals(FOperator.GT)).findAny().get());
+
+        ES.foreach(ps -> {
+            FBitSet bs = ps.getBitSet();
+            if (bs.get(eq)) assertTrue(bs.get(get));
+            if (bs.get(gt)) assertTrue(bs.get(get));
+        });
+
+        String[] info = ES.info(factory, 100);
+
+        assertEquals(table.getLength(null), info.length + 1 + 1);
+
+        assertEquals(ES.cardinality() + 1 + 1, ES.allCount());
 
         logger.info("cardinality = {}", ES.cardinality());
         logger.info("allCount = {}", ES.allCount());

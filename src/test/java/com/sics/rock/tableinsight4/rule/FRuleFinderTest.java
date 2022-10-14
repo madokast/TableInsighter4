@@ -1,12 +1,12 @@
 package com.sics.rock.tableinsight4.rule;
 
-import com.sics.rock.tableinsight4.evidenceset.factory.FEvidenceSetFactoryBuilder;
 import com.sics.rock.tableinsight4.evidenceset.FIEvidenceSet;
+import com.sics.rock.tableinsight4.evidenceset.factory.FEvidenceSetFactoryBuilder;
 import com.sics.rock.tableinsight4.evidenceset.factory.FSingleLineEvidenceSetFactory;
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.pli.FPliConstructorFactory;
-import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateFactoryBuilder;
+import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.preprocessing.FConstantHandler;
 import com.sics.rock.tableinsight4.preprocessing.FExternalBinaryModelHandler;
 import com.sics.rock.tableinsight4.preprocessing.FIntervalsConstantHandler;
@@ -39,8 +39,8 @@ public class FRuleFinderTest extends FTableInsightEnv {
         FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(Collections.emptyList());
 
         tableDatasetMap.foreach((tabInfo, dataset) -> {
-            FPredicateIndexer singleLinePredicateIndexer =
-                    new FPredicateFactoryBuilder(derivedColumnNameHandler).buildForSingleLinePredicate()
+            FPredicateIndexer singleLinePredicateIndexer = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
+                    .buildForSingleLinePredicate()
                     .use(tabInfo, Collections.emptyList()).createPredicates();
 
             FSingleLineEvidenceSetFactory singleLineEvidenceSetFactory = new FEvidenceSetFactoryBuilder().buildSingleLineEvidenceSetFactory();

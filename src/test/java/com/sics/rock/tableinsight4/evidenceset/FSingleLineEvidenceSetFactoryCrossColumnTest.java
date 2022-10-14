@@ -70,7 +70,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
         final Set<String> b = derivedColumnNameHandler.innerTabCols(tableName, innerTableName, "b");
         a.addAll(b);
 
-        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, Collections.singletonList(() -> Collections.singletonList(
                         new FUnaryCrossColumnPredicate(
                                 tableName, "a", "b", 0,
@@ -150,7 +150,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
         final Set<String> b = derivedColumnNameHandler.innerTabCols(tableName, innerTableName, "b");
         a.addAll(b);
 
-        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, Collections.singletonList(() -> Collections.singletonList(
                         new FUnaryCrossColumnPredicate(
                                 tableName, "a", "b", 0,
@@ -231,7 +231,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
         final Set<String> b = derivedColumnNameHandler.innerTabCols(tableName, innerTableName, "b");
         a.addAll(b);
 
-        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, Collections.singletonList(() -> Collections.singletonList(
                         new FUnaryCrossColumnPredicate(
                                 tableName, "a", "b", 0,
@@ -312,7 +312,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
         final Set<String> b = derivedColumnNameHandler.innerTabCols(tableName, innerTableName, "b");
         a.addAll(b);
 
-        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, Collections.singletonList(() -> Collections.singletonList(
                         new FUnaryCrossColumnPredicate(
                                 tableName, "a", "b", 0,
@@ -394,7 +394,7 @@ public class FSingleLineEvidenceSetFactoryCrossColumnTest extends FTableInsightE
         a.addAll(b);
 
 
-        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+        final FPredicateIndexer singleLinePredicateFactory = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                 .buildForSingleLinePredicate().use(one, Collections.singletonList(() -> Collections.singletonList(
                         new FUnaryCrossColumnPredicate(
                                 tableName, "a", "b", 0,

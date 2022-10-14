@@ -213,7 +213,9 @@ public class FTiUtils {
 
     public static <E extends Comparable<? super E>> boolean isOrdered(List<E> list) {
         for (int i = 1; i < list.size(); i++) {
-            if (list.get(0).compareTo(list.get(1)) < 0) return false;
+            if (list.get(i - 1).compareTo(list.get(i)) > 0) {
+                return false;
+            }
         }
         return true;
     }

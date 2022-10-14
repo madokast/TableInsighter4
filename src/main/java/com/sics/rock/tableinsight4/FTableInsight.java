@@ -71,7 +71,7 @@ public class FTableInsight {
 
             allTableInfos.forEach(tableInfo -> {
                 if (config.singleLineRuleFind) {// single-line
-                    final FPredicateIndexer predicates = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+                    final FPredicateIndexer predicates = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                             .buildForSingleLinePredicate().use(tableInfo, Collections.emptyList()).createPredicates();
                     final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder()
                             .buildSingleLineEvidenceSetFactory().create(tableInfo, PLI, predicates,
@@ -86,7 +86,7 @@ public class FTableInsight {
                 }
 
                 if (config.singleTableCrossLineRuleFind) {// single-table-cross-line
-                    final FPredicateIndexer predicates = new FPredicateFactoryBuilder(derivedColumnNameHandler)
+                    final FPredicateIndexer predicates = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
                             .buildForSingleTableCrossLinePredicate().use(tableInfo, Collections.emptyList()).createPredicates();
                     final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder().buildBinaryLineEvidenceSetFactory()
                             .createSingleTableBinaryLineEvidenceSet(tableInfo, PLI, predicates,
@@ -107,8 +107,8 @@ public class FTableInsight {
                     final FTableInfo leftTable = allTableInfos.get(i);
                     for (int j = i + 1; j < allTableInfos.size(); j++) {
                         final FTableInfo rightTable = allTableInfos.get(j);
-                        final FPredicateIndexer predicates = new FPredicateFactoryBuilder(derivedColumnNameHandler)
-                                .buildForBinaryTableCrossLinePredicate(tableDatasetMap, PLI)
+                        final FPredicateIndexer predicates = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
+                                .buildForBinaryTableCrossLinePredicate()
                                 .use(leftTable, rightTable, Collections.emptyList()).createPredicates();
 
                         final FIEvidenceSet evidenceSet = new FEvidenceSetFactoryBuilder().buildBinaryLineEvidenceSetFactory()

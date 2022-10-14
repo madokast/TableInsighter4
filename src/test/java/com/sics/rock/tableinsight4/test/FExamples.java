@@ -55,7 +55,10 @@ public class FExamples {
 
 
     public static FTableInfo doubleNumberNullColumn7() {
-        String tabName = "doubleNumberColumn7";
+        return doubleNumberNullColumn7("doubleNumberColumn7", "tab01");
+    }
+
+    public static FTableInfo doubleNumberNullColumn7(String tabName, String innerTabName) {
         String header = "allsalary,realsalary,alltax,tax1,tax2,tax3,tax4";
 
         String[] contents = ("10,7,2.5,0.5,1.55,0.50,\n" +
@@ -74,7 +77,7 @@ public class FExamples {
 
         File tab = FTableCreator.createCsv(header, contents);
 
-        FTableInfo tableInfo = new FTableInfo(tabName, "tab01", tab.getAbsolutePath());
+        FTableInfo tableInfo = new FTableInfo(tabName, innerTabName, tab.getAbsolutePath());
         for (String colName : header.split(",")) {
             tableInfo.addColumnInfo(new FColumnInfo(colName, FValueType.DOUBLE));
         }

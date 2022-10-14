@@ -1,27 +1,26 @@
 package com.sics.rock.tableinsight4.predicate.factory.impl;
 
-import com.sics.rock.tableinsight4.internal.FPair;
-import com.sics.rock.tableinsight4.internal.FPartitionId;
-import com.sics.rock.tableinsight4.pli.FLocalPLI;
 import com.sics.rock.tableinsight4.pli.FPLI;
+import com.sics.rock.tableinsight4.predicate.FColumnComparator;
 import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.predicate.factory.FIPredicateFactory;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryModelPredicate;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryPredicate;
 import com.sics.rock.tableinsight4.predicate.info.FExternalPredicateInfo;
-import com.sics.rock.tableinsight4.table.FColumnInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
-import com.sics.rock.tableinsight4.table.column.FColumnName;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
+import com.sics.rock.tableinsight4.table.column.FValueType;
 import com.sics.rock.tableinsight4.utils.FTiUtils;
-import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.storage.StorageLevel;
-import scala.Tuple2;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 
 /**
@@ -32,7 +31,7 @@ import java.util.function.Supplier;
  *
  * @author zhaorx
  */
-public class FBinaryTableCrossLinePredicateFactory implements FIPredicateFactory {
+public class FBinaryTableCrossLinePredicateFactory implements FIPredicateFactory, Serializable {
 
     @Override
     public FPredicateIndexer createPredicates() {
@@ -44,11 +43,12 @@ public class FBinaryTableCrossLinePredicateFactory implements FIPredicateFactory
 
         leftTable.nonSkipColumnsView().forEach(leftColumnInfo -> {
             final String leftColumnName = leftColumnInfo.getColumnName();
+            final FValueType leftValueType = leftColumnInfo.getValueType();
             final Supplier<Set<String>> leftInnerTabCols = () -> derivedColumnNameHandler.innerTabCols(leftTableName, leftInnerTableName, leftColumnName);
 
             rightTable.nonSkipColumnsView().forEach(rightColumnInfo -> {
                 // value type should be identical
-                if (!leftColumnInfo.getValueType().equals(rightColumnInfo.getValueType())) return;
+                if (!leftValueType.equals(rightColumnInfo.getValueType())) return;
 
                 final String rightColumnName = rightColumnInfo.getColumnName();
                 final Supplier<Set<String>> rightInnerTabCols = () -> derivedColumnNameHandler.innerTabCols(rightTableName, rightInnerTableName, rightColumnName);
@@ -62,12 +62,15 @@ public class FBinaryTableCrossLinePredicateFactory implements FIPredicateFactory
                     if (FTiUtils.setOf(leftTableName, rightTableName).equals(FTiUtils.setOf(leftTable_, rightTable_))) {
                         predicateIndexer.put(new FBinaryModelPredicate(leftTableName, rightTableName, leftColumnName, innerTabCols.get()));
                     }
-                    return;
                 }
-
                 // normal column. check similarity
-                if (columnSimilarity(leftColumnInfo, rightColumnInfo) >= crossColumnThreshold) {
+                else if (leftValueType.equals(FValueType.STRING) && columnSimilarity.columnSimilarity(leftColumnInfo, rightColumnInfo) >= crossColumnThreshold) {
                     predicateIndexer.put(new FBinaryPredicate(leftTableName, rightTableName, leftColumnName, rightColumnName, FOperator.EQ, innerTabCols.get()));
+                } else if (leftValueType.isComparable() && columnSimilarity.columnComparable(leftColumnInfo, rightColumnInfo)) {
+                    predicateIndexer.put(new FBinaryPredicate(leftTableName, rightTableName, leftColumnName, rightColumnName, FOperator.EQ, innerTabCols.get()));
+                    for (final FOperator operator : comparableColumnOperators) {
+                        predicateIndexer.put(new FBinaryPredicate(leftTableName, rightTableName, leftColumnName, rightColumnName, operator, innerTabCols.get()));
+                    }
                 }
 
             }); // end right loop
@@ -76,49 +79,6 @@ public class FBinaryTableCrossLinePredicateFactory implements FIPredicateFactory
         otherInfos.stream().map(FExternalPredicateInfo::predicates).flatMap(List::stream).forEach(predicateIndexer::put);
 
         return predicateIndexer;
-    }
-
-    private Map<FPair<FTableInfo, FColumnName>, JavaPairRDD<Long, Long>> FREQUENT_TABLE_CACHE = new HashMap<>();
-
-    private double columnSimilarity(final FColumnInfo leftColumnInfo,
-                                    final FColumnInfo rightColumnInfo) {
-        final FColumnName leftColumnName = new FColumnName(leftColumnInfo.getColumnName());
-        final FColumnName rightColumnName = new FColumnName(rightColumnInfo.getColumnName());
-
-        final JavaPairRDD<Long, Long> leftFrequentTable = FREQUENT_TABLE_CACHE.computeIfAbsent(
-                new FPair<>(leftTable, leftColumnName), this::findFrequentTable);
-
-        final JavaPairRDD<Long, Long> rightFrequentTable = FREQUENT_TABLE_CACHE.computeIfAbsent(
-                new FPair<>(rightTable, rightColumnName), this::findFrequentTable);
-
-        if (leftFrequentTable.count() == 0L || rightFrequentTable.count() == 0L) return 0D;
-
-        final double shareNumber = leftFrequentTable.join(rightFrequentTable)
-                .map(Tuple2::_2).map(ff -> Math.min(ff._1, ff._2))
-                .fold(0L, Long::sum).doubleValue();
-        if (shareNumber == 0L) return 0D;
-
-        final long leftLength = leftTable.getLength(() -> datasetMap.getDatasetByTableName(leftTable.getTableName()).count());
-        final long rightLength = rightTable.getLength(() -> datasetMap.getDatasetByTableName(rightTable.getTableName()).count());
-
-        return Math.max(shareNumber / leftLength, shareNumber / rightLength);
-
-    }
-
-    private JavaPairRDD<Long, Long> findFrequentTable(FPair<FTableInfo, FColumnName> tabCol) {
-        final FTableInfo tableInfo = tabCol._k;
-        final String tableName = tableInfo.getTableName();
-        final FColumnName columnName = tabCol._v;
-        final JavaPairRDD<FPartitionId, Map<FColumnName, FLocalPLI>> tablePLI = PLI.getTablePLI(tableInfo);
-
-        return tablePLI.map(Tuple2::_2)
-                .map(m -> m.getOrDefault(columnName, null))
-                .filter(Objects::nonNull)
-                .flatMap(FLocalPLI::indexRowIdsIterator)
-                .mapToPair(idRowIds -> new Tuple2<>(idRowIds.getKey(), (long) idRowIds.getValue().size()))
-                .reduceByKey(Long::sum)
-                .persist(StorageLevel.MEMORY_AND_DISK())
-                .setName("FREQ_" + tableName + "_" + columnName);
     }
 
     /*===================== materials =====================*/
@@ -134,24 +94,28 @@ public class FBinaryTableCrossLinePredicateFactory implements FIPredicateFactory
 
     private final FDerivedColumnNameHandler derivedColumnNameHandler;
 
-    private final FTableDatasetMap datasetMap;
-
-    private final FPLI PLI;
-
     private final double crossColumnThreshold;
+
+    private final List<FOperator> comparableColumnOperators;
+
+    private final FColumnComparator columnSimilarity;
 
 
     public FBinaryTableCrossLinePredicateFactory(
             final FTableInfo leftTable, final FTableInfo rightTable,
             final List<FExternalPredicateInfo> otherInfos,
             final FDerivedColumnNameHandler derivedColumnNameHandler, final FTableDatasetMap datasetMap,
-            final FPLI PLI, final double crossColumnThreshold) {
+            final FPLI PLI, final double crossColumnThreshold,
+            final String comparableColumnOperators) {
         this.leftTable = leftTable;
         this.rightTable = rightTable;
         this.otherInfos = otherInfos;
         this.derivedColumnNameHandler = derivedColumnNameHandler;
-        this.datasetMap = datasetMap;
-        this.PLI = PLI;
+        this.columnSimilarity = new FColumnComparator(PLI, datasetMap, leftTable, rightTable);
         this.crossColumnThreshold = crossColumnThreshold;
+        this.comparableColumnOperators = Arrays.stream(comparableColumnOperators.split(","))
+                .filter(StringUtils::isNotBlank).map(String::trim).map(FOperator::of)
+                .filter(op -> !op.equals(FOperator.EQ))
+                .distinct().collect(Collectors.toList());
     }
 }
