@@ -18,6 +18,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Column similarity and comparable calculation.
+ *
+ * @author zhaorx
+ */
 public class FColumnComparator {
 
     private final FPLI PLI;
@@ -59,7 +64,7 @@ public class FColumnComparator {
 
 
     public double columnSimilarity(final FColumnInfo leftColumnInfo,
-                                    final FColumnInfo rightColumnInfo) {
+                                   final FColumnInfo rightColumnInfo) {
         final FColumnName leftColumnName = new FColumnName(leftColumnInfo.getColumnName());
         final FColumnName rightColumnName = new FColumnName(rightColumnInfo.getColumnName());
 
