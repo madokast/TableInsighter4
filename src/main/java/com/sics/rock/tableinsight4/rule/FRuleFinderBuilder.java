@@ -21,7 +21,8 @@ public class FRuleFinderBuilder implements FTiEnvironment {
 
         return new FRuleFinder(ruleFactory, evidenceSet, config().cover, config().confidence,
                 config().maxRuleNumber, config().maxNeedCreateChildrenRuleNumber,
-                config().ruleFindTimeoutMinute * 60 * 1000, config().ruleFindBatchSizeMB);
+                config().ruleFindTimeoutMinute * 60 * 1000, config().ruleFindBatchSizeMB,
+                config().ruleFindMaxBatchNumber);
     }
 
 }

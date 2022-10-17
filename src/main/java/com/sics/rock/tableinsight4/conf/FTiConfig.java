@@ -64,6 +64,9 @@ public class FTiConfig {
     @FConfigItem(name = "ti.rule.find.batchSizeMB", description = "The batch size of rules for validation in each loop, in MB.")
     public Integer ruleFindBatchSizeMB = 30;
 
+    @FConfigItem(name = "ti.rule.find.maxBatchNumber", description = "The maximum batch number in one rule-find.")
+    public Integer ruleFindMaxBatchNumber = 50;
+
     @FConfigItem(name = "ti.rule.positiveNegativeExample.switch", description = "The switch of positive/negative examples.")
     public Boolean positiveNegativeExampleSwitch = true;
 

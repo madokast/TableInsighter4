@@ -40,6 +40,11 @@ public class FRuleFinder implements FIRuleFinder {
     private final int maxRuleNumber;
 
     /**
+     * The maximum batch number in one rule-find.
+     */
+    private final int ruleFindMaxBatchNumber;
+
+    /**
      * max running time in ms
      */
     private final long timeout;
@@ -67,7 +72,8 @@ public class FRuleFinder implements FIRuleFinder {
 
 
     FRuleFinder(FRuleFactory ruleFactory, FIEvidenceSet evidenceSet, double cover, double confidence,
-                int maxRuleNumber, int maxNeedCreateChildrenRuleNumber, long timeout, long batchHeapSizeMB) {
+                int maxRuleNumber, int maxNeedCreateChildrenRuleNumber, long timeout, long batchHeapSizeMB,
+                int ruleFindMaxBatchNumber) {
         this.ruleFactory = ruleFactory;
         this.predicateIndexer = ruleFactory.getPredicateIndexer();
         this.maxLhsSize = ruleFactory.getMaxLhsSize();
@@ -76,6 +82,7 @@ public class FRuleFinder implements FIRuleFinder {
         this.leastConfidence = (float) confidence;
         this.maxNeedCreateChildrenRuleNumber = maxNeedCreateChildrenRuleNumber;
         this.maxRuleNumber = maxRuleNumber;
+        this.ruleFindMaxBatchNumber = ruleFindMaxBatchNumber;
         this.timeout = timeout;
         this.batchRuleNumber = (int) (batchHeapSizeMB * 1024 * 1024 / ruleFactory.ruleSize());
         logger.info("Staring rule find");
@@ -111,7 +118,7 @@ public class FRuleFinder implements FIRuleFinder {
             // update results、resultTree、lessSupportPs、needCreateChildren
             postProcess(running, needCreateChildren);
 
-            if (stop(startTime)) break;
+            if (stop(startTime, batchIndex)) break;
             batchIndex++;
         }
 
@@ -248,7 +255,7 @@ public class FRuleFinder implements FIRuleFinder {
         return true;
     }
 
-    private boolean stop(long startTime) {
+    private boolean stop(long startTime, final int batchIndex) {
         if (results.size() > maxRuleNumber) {
             logger.info("Stop rule finding as the number of result rule {} exceeds {}", results.size(), maxRuleNumber);
             return true;
@@ -256,6 +263,11 @@ public class FRuleFinder implements FIRuleFinder {
 
         if ((System.currentTimeMillis() - startTime) > timeout) {
             logger.info("Stop rule finding as running time exceeds {} min", timeout / 1000. / 60.);
+            return true;
+        }
+
+        if (batchIndex >= ruleFindMaxBatchNumber) {
+            logger.info("Stop rule finding as batch number reaches {}", ruleFindMaxBatchNumber);
             return true;
         }
 

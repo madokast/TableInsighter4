@@ -50,7 +50,10 @@ public class FRuleFinderTest extends FTableInsightEnv {
 
             FRuleFactory ruleFactory = new FRuleFactory(singleLinePredicateIndexer, Collections.singletonList(tabInfo), 20, config().tableColumnLinker);
 
-            FRuleFinder ruleFinder = new FRuleFinder(ruleFactory, singleLineEvidenceSet, 0.0001, 0.8, 1000, 100000, 1000000, 100);
+            FRuleFinder ruleFinder = new FRuleFinder(ruleFactory, singleLineEvidenceSet, 0.0001,
+                    0.8, 1000,
+                    100000, 1000000,
+                    100, 50);
 
             List<FRule> rules = ruleFinder.find();
 
