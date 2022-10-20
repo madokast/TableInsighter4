@@ -23,6 +23,8 @@ public class FLocalPLIUtils {
         switch (operator) {
             case EQ:
                 return leftPLI.entrySet().stream()
+                        // special values are not the same
+                        .filter(e -> e.getKey() >= 0L)
                         .filter(e -> rightPLI.containsKey(e.getKey()))
                         .map(e -> {
                             final Long index = e.getKey();
