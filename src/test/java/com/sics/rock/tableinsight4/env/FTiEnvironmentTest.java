@@ -2,6 +2,7 @@ package com.sics.rock.tableinsight4.env;
 
 import com.sics.rock.tableinsight4.conf.FTiConfig;
 import com.sics.rock.tableinsight4.test.env.FSparkEnv;
+import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,15 +70,19 @@ public class FTiEnvironmentTest extends FSparkEnv {
 
     @Test(expected = AssertionError.class)
     public void test_share_but_not_return() {
-        final FTiConfig config = FTiConfig.defaultConfig();
-        FTiEnvironment.create(spark, config);
-        final FEnvironmentOwner owner = FEnvironmentOwner.current();
-        IntStream.range(0, 400).parallel().forEach(i -> {
-            FTiEnvironment.shareFrom(owner);
-            // FTiEnvironment.returnBack(owner);
-        });
+        if (FAssertUtils.ASSERT) {
+            final FTiConfig config = FTiConfig.defaultConfig();
+            FTiEnvironment.create(spark, config);
+            final FEnvironmentOwner owner = FEnvironmentOwner.current();
+            IntStream.range(0, 400).parallel().forEach(i -> {
+                FTiEnvironment.shareFrom(owner);
+                // FTiEnvironment.returnBack(owner);
+            });
 
-        FTiEnvironment.destroy();
+            FTiEnvironment.destroy();
+        } else {
+            throw new AssertionError("The test works only in FAssertUtils.ASSERT on");
+        }
     }
 
     @Test(expected = Exception.class)

@@ -17,6 +17,7 @@ public final class FAssertUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(FAssertUtils.class);
 
+    // little effect on performance
     public static final boolean ASSERT = true;
 
     public static void require(BooleanSupplier object, Supplier<String> msg) {
