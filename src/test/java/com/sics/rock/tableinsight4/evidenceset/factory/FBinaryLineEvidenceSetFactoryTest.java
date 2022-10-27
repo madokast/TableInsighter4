@@ -36,7 +36,7 @@ public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
         config().constPredicateCrossLine = false;
 
         final FTableInfo table = FExamples.create("two-row", new String[]{"name", "age"},
-                new FValueType[]{FValueType.STRING, FValueType.STRING}, new String[]{
+                new FValueType[]{FValueType.STRING, FValueType.INTEGER}, new String[]{
                         "zhangsan,26",
                         "zhangsan,26",
                         "zhangsan,26",
@@ -103,7 +103,7 @@ public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
         config().sliceLengthForPLI = 3;
 
         final FTableInfo table = FExamples.create("two-row", new String[]{"name", "age"},
-                new FValueType[]{FValueType.STRING, FValueType.STRING}, new String[]{
+                new FValueType[]{FValueType.STRING, FValueType.INTEGER}, new String[]{
                         "zhangsan,26",
                         "zhangsan,26",
                         "zhangsan,26",
@@ -201,7 +201,7 @@ public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
         config().sliceLengthForPLI = 1;
 
         final FTableInfo table = FExamples.create("two-row", new String[]{"name", "age"},
-                new FValueType[]{FValueType.STRING, FValueType.STRING}, new String[]{
+                new FValueType[]{FValueType.STRING, FValueType.INTEGER}, new String[]{
                         "zhangsan,21",
                         "zhangsan,22",
                         "zhangsan1,23",
@@ -405,7 +405,7 @@ public class FBinaryLineEvidenceSetFactoryTest extends FTableInsightEnv {
         config().sliceLengthForPLI = 1;
 
         final FTableInfo table = FExamples.create("two-row", new String[]{"name", "age"},
-                new FValueType[]{FValueType.STRING, FValueType.STRING}, new String[]{
+                new FValueType[]{FValueType.STRING, FValueType.INTEGER}, new String[]{
                         "zhangsan,21",
                         "zhangsan,22",
                         "zhangsan1,23",

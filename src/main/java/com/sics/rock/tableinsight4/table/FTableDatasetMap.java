@@ -1,5 +1,6 @@
 package com.sics.rock.tableinsight4.table;
 
+import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.utils.FAssertUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 /**
  * Key is inner tableName
@@ -76,6 +78,11 @@ public class FTableDatasetMap {
             final Dataset<Row> dataset = datasetMap.get(key);
             biConsumer.accept(tableInfo, dataset);
         }
+    }
+
+    public Stream<FPair<FTableInfo, Dataset<Row>>> stream() {
+        return innerTableInfoMap.keySet().stream().map(innerTabName ->
+                new FPair<>(innerTableInfoMap.get(innerTabName), innerTableDatasetMap.get(innerTabName)));
     }
 
     public List<FTableInfo> allTableInfos() {

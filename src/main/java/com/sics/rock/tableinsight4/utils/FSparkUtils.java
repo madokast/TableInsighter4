@@ -44,19 +44,30 @@ public class FSparkUtils {
      * b -> {a -> 3}
      */
     public static <MK, RK, V> JavaPairRDD<RK, Map<MK, V>> swapKey(Map<MK, JavaPairRDD<RK, V>> rddMap) {
+        final UUID uuid = UUID.randomUUID();
+
         // 1. Put MK into RDD.
         // RK -> {MK, V}
         final List<JavaPairRDD<RK, Tuple2<MK, V>>> RDDs = rddMap.entrySet().stream().map(e -> {
             final MK mk = e.getKey();
-            return e.getValue().mapToPair(t -> new Tuple2<>(t._1, new Tuple2<>(mk, t._2)));
+            final String keyStr = mk.toString();
+            final JavaPairRDD<RK, Tuple2<MK, V>> rdd = e.getValue().mapToPair(t -> new Tuple2<>(t._1, new Tuple2<>(mk, t._2)))
+                    .cache().setName("swapKey_" + uuid + "_origin_" + keyStr);
+            final long count = rdd.count();
+            logger.info("Prepare swapping key {} in a {}-count rdd", keyStr, count);
+            return rdd;
         }).collect(Collectors.toList());
 
         // 2.Union all RDDs
         JavaPairRDD<RK, Tuple2<MK, V>> unionRDD = RDDs.get(0);
         for (int i = 1; i < RDDs.size(); i++) {
-            unionRDD = unionRDD.union(RDDs.get(i));
+            final JavaPairRDD<RK, Tuple2<MK, V>> other = RDDs.get(i).cache().setName("swapKey_" + uuid + "_union_" + i);
+            final long count = other.count();
+            unionRDD = unionRDD.union(other).cache().setName("swapKey_" + uuid + "_temp_" + i);
+            final long allCount = unionRDD.count();
+            logger.info("{}-st union {}-count rdd results in count {}", i, count, allCount);
         }
-        unionRDD = unionRDD.cache().setName("swapKey_" + UUID.randomUUID());
+        unionRDD = unionRDD.cache().setName("swapKey_" + uuid);
 
         // 3. Get the number of RK keys
         final List<RK> keys = unionRDD.map(t -> t._1).distinct().collect();
@@ -157,6 +168,17 @@ public class FSparkUtils {
     public static <E> JavaRDD<E> union(SparkSession spark, List<JavaRDD<E>> RDDs) {
         if (RDDs.isEmpty()) return JavaSparkContext.fromSparkContext(spark.sparkContext()).emptyRDD();
         JavaRDD<E> one = RDDs.get(0);
+        for (int i = 1; i < RDDs.size(); i++) {
+            one = one.union(RDDs.get(i));
+        }
+        return one;
+    }
+
+    public static <K, V> JavaPairRDD<K, V> unionPairRDD(SparkSession spark, List<JavaPairRDD<K, V>> RDDs) {
+        if (RDDs.isEmpty()) {
+            return JavaSparkContext.fromSparkContext(spark.sparkContext()).emptyRDD().mapToPair(any -> null);
+        }
+        JavaPairRDD<K, V> one = RDDs.get(0);
         for (int i = 1; i < RDDs.size(); i++) {
             one = one.union(RDDs.get(i));
         }

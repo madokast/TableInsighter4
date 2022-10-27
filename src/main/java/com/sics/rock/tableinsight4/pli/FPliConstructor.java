@@ -1,5 +1,6 @@
 package com.sics.rock.tableinsight4.pli;
 
+import com.sics.rock.tableinsight4.internal.FNull;
 import com.sics.rock.tableinsight4.internal.FPair;
 import com.sics.rock.tableinsight4.internal.FPartitionId;
 import com.sics.rock.tableinsight4.internal.FRddElementIndex;
@@ -13,6 +14,7 @@ import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FColumnName;
 import com.sics.rock.tableinsight4.table.column.FValueType;
 import com.sics.rock.tableinsight4.utils.*;
+import org.apache.spark.HashPartitioner;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -30,6 +32,11 @@ import scala.Tuple2;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Create FLocalPLI (Position List Indexes) fro each column
+ *
+ * @author zhaorx
+ */
 /**
  * Create FLocalPLI (Position List Indexes) fro each column
  *
@@ -100,27 +107,41 @@ public class FPliConstructor {
      */
     private FTypedOrderedIndex createTypedOrderedIndex(FTableDatasetMap tableDatasetMap) {
         logger.debug("Create typed ordered index for PLI construction");
+        final long allElementNumber = tableDatasetMap.stream().map(p -> p._k.getLength(p._v::count) * p._k.nonSkipColumnsView().size()).reduce(Long::sum).orElse(0L);
+        logger.info("The number of all elements in all tables is {}", allElementNumber);
+        final int partitionNum = Math.max(sc.defaultParallelism(), (int) (allElementNumber / sliceLengthForPLI));
         // select distinct each column as rdd
         // then group by valueType
-        final Map<FValueType, List<JavaRDD<Object>>> typeBasedRddList = new HashMap<>();
+        final Map<FValueType, List<JavaPairRDD<Object, FNull>>> typeBasedRddList = new HashMap<>();
         tableDatasetMap.foreach((tableInfo, dataset) -> {
             tableInfo.nonSkipColumnsView().forEach(columnInfo -> {
                 final String columnName = columnInfo.getColumnName();
                 final FValueType valueType = columnInfo.getValueType();
                 // rdd of column values
-                final JavaRDD<Object> distinctRDD = dataset.select(columnName).toJavaRDD().map(row -> row.get(0))
-                        .filter(FConstant::normalValue).distinct();
+                final JavaPairRDD<Object, FNull> distinctRDD = dataset.select(columnName).toJavaRDD().map(row -> row.get(0))
+                        /*
+                        implement distinct operator manually obtaining a pair-rdd with a HashPartitioner
+                        so later the union operator has a special implementation using shuffle instead of accumulating partitions.
+                         */
+                        .filter(FConstant::normalValue).mapToPair(val -> new Tuple2<>(val, FNull.VALUE))
+                        .reduceByKey(FNull::merge, partitionNum /*hash partitioner*/);
+                FAssertUtils.require(() -> distinctRDD.partitioner().isPresent(), "distinctRDD should be a HashPartitioner");
+                FAssertUtils.require(() -> distinctRDD.partitioner().get() instanceof HashPartitioner, "distinctRDD should be a HashPartitioner");
                 // rdd of constant in this column
-                final JavaRDD<Object> constantValRDD = FSparkUtils.rddOf(columnInfo.getConstants().stream()
+                final JavaPairRDD<Object, FNull> constantValRDD = FSparkUtils.rddOf(columnInfo.getConstants().stream()
                         .filter(FConstant::indexNotInit)
                         .map(FConstant::getConstant)
-                        .collect(Collectors.toList()), spark);
+                        .collect(Collectors.toList()), spark)
+                        .mapToPair(val -> new Tuple2<Object, FNull>(val, FNull.VALUE))
+                        .reduceByKey(FNull::merge, partitionNum /*hash partitioner*/);
                 // rdd of interval constant in this column
-                final JavaRDD<Object> intervalConstantValRDD = FSparkUtils.rddOf(columnInfo.getIntervalConstants().stream()
+                final JavaPairRDD<Object, FNull> intervalConstantValRDD = FSparkUtils.rddOf(columnInfo.getIntervalConstants().stream()
                         .flatMap(i -> i.constants().stream()).map(FConstant::getConstant)
-                        .collect(Collectors.toList()), spark);
+                        .collect(Collectors.toList()), spark)
+                        .mapToPair(val -> new Tuple2<Object, FNull>(val, FNull.VALUE))
+                        .reduceByKey(FNull::merge, partitionNum /*hash partitioner*/);
 
-                JavaRDD<Object> allData = FSparkUtils.union(spark, FTiUtils.listOf(distinctRDD, constantValRDD, intervalConstantValRDD));
+                JavaPairRDD<Object, FNull> allData = FSparkUtils.unionPairRDD(spark, FTiUtils.listOf(distinctRDD, constantValRDD, intervalConstantValRDD));
 
                 typeBasedRddList.putIfAbsent(valueType, new ArrayList<>());
                 typeBasedRddList.get(valueType).add(allData);
@@ -132,10 +153,10 @@ public class FPliConstructor {
         // then create ordered index
         Map<FValueType, JavaPairRDD<Object, Long>> indexMap = typeBasedRddList.entrySet().stream().map(e -> {
             final FValueType type = e.getKey();
-            final List<JavaRDD<Object>> RDDs = e.getValue();
-            JavaRDD<Object> distinctRDD = FSparkUtils.union(spark, RDDs).distinct();
+            final List<JavaPairRDD<Object, FNull>> RDDs = e.getValue();
+            JavaRDD<Object> distinctRDD = FSparkUtils.unionPairRDD(spark, RDDs).reduceByKey(FNull::merge, partitionNum).map(t -> t._1);
             if (type.isComparable()) {
-                distinctRDD = distinctRDD.sortBy(v -> v, true, distinctRDD.getNumPartitions());
+                distinctRDD = distinctRDD.sortBy(v -> v, true, partitionNum);
             }
             final JavaPairRDD<Object, Long> indexRdd = FSparkUtils.orderedIndex(distinctRDD).cache().setName("Index_of_" + type);
             return new FPair<>(type, indexRdd);
