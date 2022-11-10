@@ -69,6 +69,7 @@ public class FTableInsight {
             final FPredicateToString predicateToString = new FPredicateToString(derivedColumnNameHandler);
             final List<FTableInfo> allTableInfos = tableDatasetMap.allTableInfos();
 
+            final int positiveNegativeExampleNumber = config.positiveNegativeExampleSwitch ? config.positiveNegativeExampleNumber : 0;
             allTableInfos.forEach(tableInfo -> {
                 if (config.singleLineRuleFind) {// single-line
                     final FPredicateIndexer predicates = new FPredicateFactoryBuilder(derivedColumnNameHandler, tableDatasetMap, PLI)
@@ -81,7 +82,7 @@ public class FTableInsight {
 
                     final List<FRule> rules = ruleFinder.find();
                     allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, predicateToString, Collections.singletonList(tableInfo),
-                            config.syntaxConjunction, config.syntaxImplication, config.positiveNegativeExampleNumber
+                            config.syntaxConjunction, config.syntaxImplication, positiveNegativeExampleNumber
                     ));
                 }
 
@@ -97,7 +98,7 @@ public class FTableInsight {
                     final List<FRule> rules = ruleFinder.find();
                     allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, predicateToString,
                             FTiUtils.listOf(tableInfo, tableInfo), config.syntaxConjunction, config.syntaxImplication,
-                            config.positiveNegativeExampleNumber));
+                            positiveNegativeExampleNumber));
 
                 }
             });
@@ -120,7 +121,7 @@ public class FTableInsight {
 
                         allRules.addAll(FRuleVO.create(rules, PLI, evidenceSet, predicates, predicateToString,
                                 FTiUtils.listOf(leftTable, rightTable),
-                                config.syntaxConjunction, config.syntaxImplication, config.positiveNegativeExampleNumber
+                                config.syntaxConjunction, config.syntaxImplication, positiveNegativeExampleNumber
                         ));
                     }
                 }
