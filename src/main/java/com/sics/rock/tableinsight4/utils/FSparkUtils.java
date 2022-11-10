@@ -7,6 +7,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.storage.StorageLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Tuple2;
@@ -51,8 +52,10 @@ public class FSparkUtils {
         final List<JavaPairRDD<RK, Tuple2<MK, V>>> RDDs = rddMap.entrySet().stream().map(e -> {
             final MK mk = e.getKey();
             final String keyStr = mk.toString();
-            final JavaPairRDD<RK, Tuple2<MK, V>> rdd = e.getValue().mapToPair(t -> new Tuple2<>(t._1, new Tuple2<>(mk, t._2)))
-                    .cache().setName("swapKey_" + uuid + "_origin_" + keyStr);
+            JavaPairRDD<RK, Tuple2<MK, V>> rdd = e.getValue().mapToPair(t -> new Tuple2<>(t._1, new Tuple2<>(mk, t._2)))
+                    .setName("swapKey_" + uuid + "_origin_" + keyStr);
+            if (rdd.context().getCheckpointDir().isDefined()) rdd.checkpoint(); // remove parent RDDs for gc
+            rdd = rdd.cache();
             final long count = rdd.count();
             logger.info("Prepare swapping key {} in a {}-count rdd", keyStr, count);
             return rdd;
@@ -175,14 +178,23 @@ public class FSparkUtils {
     }
 
     public static <K, V> JavaPairRDD<K, V> unionPairRDD(SparkSession spark, List<JavaPairRDD<K, V>> RDDs) {
-        if (RDDs.isEmpty()) {
-            return JavaSparkContext.fromSparkContext(spark.sparkContext()).emptyRDD().mapToPair(any -> null);
-        }
-        JavaPairRDD<K, V> one = RDDs.get(0);
-        for (int i = 1; i < RDDs.size(); i++) {
-            one = one.union(RDDs.get(i));
-        }
-        return one;
+
+        return RDDs.parallelStream().map(rdd -> {
+            if (rdd.context().getCheckpointDir().isDefined()) rdd.checkpoint();
+            final String name = "unionPairRDD_" + System.currentTimeMillis();
+            final JavaPairRDD<K, V> cpRDD = rdd.setName(name).persist(StorageLevel.MEMORY_AND_DISK());
+            final long count = cpRDD.count();
+            logger.info("Checkpoint {} count {}", name, count);
+            return cpRDD;
+        }).reduce(JavaPairRDD::union).orElseGet(() ->
+                // empty
+                JavaSparkContext.fromSparkContext(spark.sparkContext()).emptyRDD().mapToPair(any -> null));
+
+//        JavaPairRDD<K, V> one = RDDs.get(0);
+//        for (int i = 1; i < RDDs.size(); i++) {
+//            one = one.union(RDDs.get(i));
+//        }
+//        return one;
     }
 
     public static <E> JavaRDD<E> rddOf(List<E> elements, SparkSession spark) {

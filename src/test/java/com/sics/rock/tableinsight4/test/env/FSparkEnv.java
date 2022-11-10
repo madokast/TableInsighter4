@@ -2,6 +2,7 @@ package com.sics.rock.tableinsight4.test.env;
 
 import com.sics.rock.tableinsight4.utils.FSparkUtils;
 import com.sics.rock.tableinsight4.utils.FTiUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;

@@ -209,7 +209,7 @@ public class FRuleFinder implements FIRuleFinder {
 
         long time = (System.currentTimeMillis() - startTime) / 1000;
 
-        logger.info("post process {} rules in {} s. result (tree) + {} = {}，need-create children + {} = {}, " +
+        logger.info("post process {} rules in {} s. result (tree) + {} = {}, need-create children + {} = {}, " +
                         "lessSupportPs + {}(X) + {}(XY)",
                 verifiedRules.size(), time, resultsCt, results.size(),
                 needCreateChildrenCt, needCreateChildren.size(),

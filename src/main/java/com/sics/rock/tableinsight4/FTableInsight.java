@@ -23,6 +23,7 @@ import com.sics.rock.tableinsight4.table.FTableInfo;
 import com.sics.rock.tableinsight4.table.column.FDerivedColumnNameHandler;
 import com.sics.rock.tableinsight4.utils.FTiUtils;
 import com.sics.rock.tableinsight4.utils.FTypeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,5 +143,8 @@ public class FTableInsight {
         this.externalBinaryModelInfos = externalBinaryModelInfos;
         this.config = config;
         this.spark = spark;
+
+        // Some intricate RDDs are checkpoint to remove parents reducing memory
+        if (!StringUtils.isBlank(config.checkpointDir)) spark.sparkContext().setCheckpointDir(config.checkpointDir);
     }
 }

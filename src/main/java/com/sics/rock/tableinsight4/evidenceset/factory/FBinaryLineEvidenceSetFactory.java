@@ -117,14 +117,22 @@ public class FBinaryLineEvidenceSetFactory implements Serializable {
                             .persist(StorageLevel.MEMORY_AND_DISK())
                             .setName("b_section_es_" + leftLocalPLIPartitionId + "_" + leftTableInfo.getTableName() + "_" + rightTableInfo.getTableName());
                     // compute ahead otherwise the spark will fail in reduction phase.
+                    // checkpoint to gc the parent rdd
+                    if (sc.getCheckpointDir().isPresent()) localESRDD.checkpoint();
                     logger.info("Binary-line local es count = {}", localESRDD.count());
                     return localESRDD;
 
                 }).collect(Collectors.toList());
         if (localESRDDList.isEmpty()) return FEmptyEvidenceSet.getInstance();
 
-        final JavaRDD<FIPredicateSet> es = FTiUtils.mergeReduce(localESRDDList, (r1, r2) ->
-                r1.union(r2).reduceByKey(predicateSetMerger(), numPartitions))
+        final JavaRDD<FIPredicateSet> es = FTiUtils.mergeReduce(localESRDDList, (r1, r2) -> {
+            JavaPairRDD<FBitSet, FIPredicateSet> merged = r1.union(r2).reduceByKey(predicateSetMerger(), numPartitions);
+            if (sc.getCheckpointDir().isPresent()) merged.checkpoint();
+            merged = merged.persist(StorageLevel.DISK_ONLY()).setName("b_sub_merged_es_" + System.currentTimeMillis());
+            // compute ahead
+            logger.info("Binary-line local es count = {}", merged.count());
+            return merged;
+        })
                 .orElse(JavaPairRDD.fromJavaRDD((JavaRDD<Tuple2<FBitSet, FIPredicateSet>>) (JavaRDD) sc.emptyRDD()))
                 .map(Tuple2::_2)
                 .persist(StorageLevel.MEMORY_AND_DISK())

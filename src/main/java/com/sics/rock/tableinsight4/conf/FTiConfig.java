@@ -184,6 +184,12 @@ public class FTiConfig {
     @FConfigItem(name = "ti.internal.randomSeed.kMeans", description = "The random seed used in k-means.")
     public Long kMeansRandomSeed = 1L;
 
+    @FConfigItem(name = "ti.internal.spark.checkpointDir", description = "The checkpointDir of spark. " +
+            "In large data rule-finding, some intricate RDDs should be checkpoint to remove parents reducing memory." +
+            "However, this also limits performance due to IO operations." +
+            "In default, the checkpointDir is empty ' ' meaning do no checkpoint.")
+    public String checkpointDir = " ";
+
     public static FTiConfig defaultConfig() {
         return new FTiConfig();
     }
