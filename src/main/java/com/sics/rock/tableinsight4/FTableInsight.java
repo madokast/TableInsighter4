@@ -68,7 +68,7 @@ public class FTableInsight {
 
             final FDerivedColumnNameHandler derivedColumnNameHandler = new FDerivedColumnNameHandler(externalBinaryModelInfos);
             final FPredicateToString predicateToString = new FPredicateToString(derivedColumnNameHandler);
-            final List<FTableInfo> allTableInfos = tableDatasetMap.allTableInfos();
+            final List<FTableInfo> allTableInfos = tableDatasetMap.allNonEmptyTableInfos();
 
             final int positiveNegativeExampleNumber = config.positiveNegativeExampleSwitch ? config.positiveNegativeExampleNumber : 0;
             allTableInfos.forEach(tableInfo -> {

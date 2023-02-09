@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -88,6 +89,11 @@ public class FTableDatasetMap {
     public List<FTableInfo> allTableInfos() {
         return new ArrayList<>(tableInfoMap.values());
     }
+
+    public List<FTableInfo> allNonEmptyTableInfos() {
+        return tableInfoMap.values().stream().filter(t->t.getLength(()->innerTableDatasetMap.get(t.getInnerTableName()).count()) > 0).collect(Collectors.toList());
+    }
+
 
     @Override
     public String toString() {

@@ -10,6 +10,7 @@ import org.apache.spark.sql.types.DataTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -168,7 +169,7 @@ public class FTypeUtils {
         return KLASS_CASTER_MAP.get(klass).targetType;
     }
 
-    private static class FCaster<T> {
+    private static class FCaster<T> implements Serializable {
         private final String castFuncName;
         private final Class<T> targetClass;
         private final FValueType valueType;

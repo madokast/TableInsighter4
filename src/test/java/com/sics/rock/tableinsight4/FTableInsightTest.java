@@ -142,4 +142,33 @@ public class FTableInsightTest extends FSparkEnv {
 
         logger.info("rules.size() = {}", rules.size());
     }
+
+    @Test
+    public void test_empty() {
+        String tabName = "number";
+        String header = "a1,a2";
+
+        String[] contents = new String[]{};
+
+        File tab = FTableCreator.createCsv(header, contents);
+
+        FTableInfo tableInfo = new FTableInfo(tabName, "tab01", tab.getAbsolutePath());
+        for (String colName : header.split(",")) {
+            tableInfo.addColumnInfo(new FColumnInfo(colName, FValueType.DOUBLE));
+        }
+
+        FTiConfig config = FTiConfig.defaultConfig();
+        config.confidence = 0.0;
+        config.cover = 0.001;
+        config.usingConstantCreateInterval = true;
+        config.comparableColumnOperators = ">=,<=";
+
+        final FTableInsight TI = new FTableInsight(Collections.singletonList(tableInfo),
+                Collections.emptyList(), config, spark);
+        List<FRuleVO> rules = TI.findRule();
+
+        Assert.assertTrue(rules.isEmpty());
+
+        logger.info("rules.size() = {}", rules.size());
+    }
 }
