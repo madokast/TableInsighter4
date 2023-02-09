@@ -86,14 +86,15 @@ public class FRuleFactory {
      * There are also some special 2 lhs-size rules in multi-line (2-line) rule finding,
      * like t0.ahe=1 ^ t1.age=1 -> Y. see class {FBinaryConsPredicate} and {FBinaryIntervalConsPredicate}
      */
-    public List<FRule> firstGeneration() {
+    List<FRule> firstGeneration() {
         List<FRule> rules = new ArrayList<>();
         IntStream.of(RHSs).forEach(y -> {
             FIPredicate yp = predicateIndexer.getPredicate(y);
             // if rhs/y is single line predicate and its tuple-id is 1
             // then lhs must be the relative tuple-id = 0 predicate
             // like t0.age = 10 -> t1.age = 10
-            if (yp instanceof FIUnaryPredicate && ((FIUnaryPredicate) yp).tupleIndex() == 1) {
+            // bug-fix 20230209: Only in non-crossTable, the rule valid
+            if (!crossTable && yp instanceof FIUnaryPredicate && ((FIUnaryPredicate) yp).tupleIndex() == 1) {
                 int x = predicateIndexer.getUnaryPredicateT0ByT1(y);
                 FBitSet xBitSet = new FBitSet(predicateSize);
                 xBitSet.set(x);
@@ -103,6 +104,7 @@ public class FRuleFactory {
                 // case 1: rhs/y is single line predicate and its tuple-id is 0
                 //         which means current rule finding is single line rule finding.
                 // case 2: rhs/y is a binary predicate
+                // case 3: rhs/y is single line predicate and its tuple-id is 1 in crossTable rule-finding (bug-fix 20230209)
                 // In any case, the lhs/x predicates are the compatible and addable predicates of rhs/y
                 FBitSet xs = compatiblePredicatesMap.get(y);
                 xs.stream().forEach(x -> {
@@ -353,6 +355,10 @@ public class FRuleFactory {
 
     public FBitSet getAddablePredicates() {
         return addablePredicates;
+    }
+
+    public boolean isCrossTable() {
+        return crossTable;
     }
 
     /**

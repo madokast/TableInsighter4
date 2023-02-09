@@ -80,15 +80,16 @@ public class FBinaryTableCrossLinePredicateFactory implements FIPredicateFactory
         }); // end left loop
 
         // constant predicate
-        createConstantPredicates(predicateIndexer, leftTableName, leftInnerTableName, leftTable);
-        createConstantPredicates(predicateIndexer, rightTableName, rightInnerTableName, rightTable);
+        createConstantPredicates(predicateIndexer, leftTableName, leftInnerTableName, leftTable, true);
+        createConstantPredicates(predicateIndexer, rightTableName, rightInnerTableName, rightTable, false);
         otherInfos.stream().map(FExternalPredicateInfo::predicates).flatMap(List::stream).forEach(predicateIndexer::put);
 
         return predicateIndexer;
     }
 
-    private void createConstantPredicates(final FPredicateIndexer predicateIndexer, final String tableName, final String innerTableName, final FTableInfo rightTable) {
-        rightTable.nonSkipColumnsView().forEach(columnInfo -> {
+    private void createConstantPredicates(final FPredicateIndexer predicateIndexer, final String tableName,
+                                          final String innerTableName, final FTableInfo tableInfo, final boolean left) {
+        tableInfo.nonSkipColumnsView().forEach(columnInfo -> {
             final String columnName = columnInfo.getColumnName();
             final Set<String> innerTabCols = derivedColumnNameHandler.innerTabCols(tableName, innerTableName, columnName);
 
@@ -97,20 +98,20 @@ public class FBinaryTableCrossLinePredicateFactory implements FIPredicateFactory
                 FIPredicate t1 = new FUnaryConsPredicate(tableName, columnName, 1, FOperator.EQ, cons, innerTabCols);
 
                 // order matters!!
-                predicateIndexer.put(t0);
-                predicateIndexer.put(t1);
+                if (left) predicateIndexer.put(t0);
+                else predicateIndexer.put(t1);
 
-                predicateIndexer.insertConstPredT01Map(t0, t1);
+                // predicateIndexer.insertConstPredT01Map(t0, t1);
 
             });
             columnInfo.getIntervalConstants().forEach(interval -> {
                 FIPredicate t0 = new FUnaryIntervalConsPredicate(tableName, columnName, 0, interval, innerTabCols);
                 FIPredicate t1 = new FUnaryIntervalConsPredicate(tableName, columnName, 1, interval, innerTabCols);
 
-                predicateIndexer.put(t0);
-                predicateIndexer.put(t1);
+                if (left) predicateIndexer.put(t0);
+                else predicateIndexer.put(t1);
 
-                predicateIndexer.insertConstPredT01Map(t0, t1);
+                // predicateIndexer.insertConstPredT01Map(t0, t1);
             });
         });
     }

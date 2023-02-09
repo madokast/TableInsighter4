@@ -232,10 +232,11 @@ public class FRuleFinder implements FIRuleFinder {
         FBitSet xs = rule.xs;
 
         FIPredicate yp = predicateIndexer.getPredicate(y);
-        if (yp instanceof FIUnaryPredicate && ((FIUnaryPredicate) yp).tupleIndex() == 1) {
+        if (!ruleFactory.isCrossTable() && yp instanceof FIUnaryPredicate && ((FIUnaryPredicate) yp).tupleIndex() == 1) {
             // if yp is single line predicate and tuple-id is 1, this is multi-line rule finding
             // if there only one predicate in xs, it must be the tuple-id = 0 predicate correspond to yp
             // which is invalid. However, its offspring may be valid. The evaluation of these rules is necessary.
+            // bug-fix 20230209: this rule only validate in non-cross table rule finding.
             if (xs.cardinality() == 1) {
                 FAssertUtils.require(
                         () -> predicateIndexer.getUnaryPredicateT1ByT0(xs.nextSetBit(0)) == y,
