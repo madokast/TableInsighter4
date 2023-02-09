@@ -68,6 +68,8 @@ public class FColumnComparator {
         final FColumnName leftColumnName = new FColumnName(leftColumnInfo.getColumnName());
         final FColumnName rightColumnName = new FColumnName(rightColumnInfo.getColumnName());
 
+        if (leftColumnName.equals(rightColumnName)) return 1D;
+
         final JavaPairRDD<Long /*Index*/, Long /*Count*/> leftFrequentTable = frequentColumnCache.computeIfAbsent(
                 new FPair<>(leftTable, leftColumnName), this::findFrequentTable);
 

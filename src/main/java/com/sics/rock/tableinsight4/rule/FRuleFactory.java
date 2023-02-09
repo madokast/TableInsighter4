@@ -46,6 +46,12 @@ public class FRuleFactory {
     private final boolean multiLinePredicateExistence;
 
     /**
+     * is cross table rule-finding
+     * left-table != right-table
+     */
+    private final boolean crossTable;
+
+    /**
      * predicates that are able to be use at right hand side (rhs/y)
      * <p>
      * these predicates are record in an int array for iteration
@@ -104,6 +110,8 @@ public class FRuleFactory {
                     if (addablePredicates.get(x)) {
                         // check length of lhs/predicate if maxLhsSize is 1
                         if (maxLhsSize == 1 && predicateIndexer.getPredicate(x).length() > 1) return;
+                        // for cross table, the first x should be binary
+                        if (crossTable && (!(predicateIndexer.getPredicate(x) instanceof FIBinaryPredicate))) return;
                         FBitSet xBitSet = new FBitSet(predicateSize);
                         xBitSet.set(x);
                         FRule rule = new FRule(xBitSet, y);
@@ -148,7 +156,7 @@ public class FRuleFactory {
         // The single-line & tuple-id = 0 should be always ignore in the beginIndex determination.
         // The check need no iteration because there are only one single-line & tuple-id = 0 predicate when multi-line rule finding
         final int beginIndex;
-        if (multiLinePredicateExistence && highestPredicate instanceof FIUnaryPredicate && ((FIUnaryPredicate) highestPredicate).tupleIndex() == 0) {
+        if ((!crossTable) && multiLinePredicateExistence && highestPredicate instanceof FIUnaryPredicate && ((FIUnaryPredicate) highestPredicate).tupleIndex() == 0) {
             // check something for debug
             FAssertUtils.require(() -> checkUnaryTuple1Rule(father), () -> "Bad rule " + father);
             beginIndex = xs.previousSetBit(highest - 1);
@@ -234,18 +242,20 @@ public class FRuleFactory {
                         int maxLeftHandSidePredicateSize, String tableColumnLinker) {
         this.predicateIndexer = predicateIndexer;
         this.predicateSize = predicateIndexer.size();
+        this.crossTable = tableInfos.size() == 2 && (!tableInfos.get(0).equals(tableInfos.get(1)));
         this.multiLinePredicateExistence = predicateIndexer.allPredicates().stream().anyMatch(p -> p instanceof FIBinaryPredicate);
         this.maxLhsSize = maxLeftHandSidePredicateSize < 1 ? predicateSize : maxLeftHandSidePredicateSize;
 
         this.RHSs = createRHSs(predicateIndexer, tableInfos, tableColumnLinker, this.multiLinePredicateExistence);
         this.compatiblePredicatesMap = createCompatiblePredicatesMap(predicateIndexer);
-        this.addablePredicates = createAddablePredicates(predicateIndexer, this.multiLinePredicateExistence);
+        this.addablePredicates = createAddablePredicates(predicateIndexer, this.multiLinePredicateExistence, this.crossTable);
     }
 
-    private static FBitSet createAddablePredicates(FPredicateIndexer predicateIndexer, boolean multiLinePredicateExistence) {
+    private static FBitSet createAddablePredicates(FPredicateIndexer predicateIndexer, boolean multiLinePredicateExistence,
+                                                   final boolean crossTab) {
         final int size = predicateIndexer.size();
         final FBitSet addable = new FBitSet(size);
-        if (multiLinePredicateExistence) {
+        if (multiLinePredicateExistence && (!crossTab)) {
             predicateIndexer.allPredicates().stream().filter(
                     // normal binary predicate and binary const/interval predicate
                     predicate -> predicate instanceof FIBinaryPredicate

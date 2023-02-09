@@ -2,11 +2,14 @@ package com.sics.rock.tableinsight4.predicate.factory.impl;
 
 import com.sics.rock.tableinsight4.pli.FPLI;
 import com.sics.rock.tableinsight4.predicate.FColumnComparator;
+import com.sics.rock.tableinsight4.predicate.FIPredicate;
 import com.sics.rock.tableinsight4.predicate.FOperator;
 import com.sics.rock.tableinsight4.predicate.factory.FIPredicateFactory;
 import com.sics.rock.tableinsight4.predicate.factory.FPredicateIndexer;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryModelPredicate;
 import com.sics.rock.tableinsight4.predicate.impl.FBinaryPredicate;
+import com.sics.rock.tableinsight4.predicate.impl.FUnaryConsPredicate;
+import com.sics.rock.tableinsight4.predicate.impl.FUnaryIntervalConsPredicate;
 import com.sics.rock.tableinsight4.predicate.info.FExternalPredicateInfo;
 import com.sics.rock.tableinsight4.table.FTableDatasetMap;
 import com.sics.rock.tableinsight4.table.FTableInfo;
@@ -76,9 +79,40 @@ public class FBinaryTableCrossLinePredicateFactory implements FIPredicateFactory
             }); // end right loop
         }); // end left loop
 
+        // constant predicate
+        createConstantPredicates(predicateIndexer, leftTableName, leftInnerTableName, leftTable);
+        createConstantPredicates(predicateIndexer, rightTableName, rightInnerTableName, rightTable);
         otherInfos.stream().map(FExternalPredicateInfo::predicates).flatMap(List::stream).forEach(predicateIndexer::put);
 
         return predicateIndexer;
+    }
+
+    private void createConstantPredicates(final FPredicateIndexer predicateIndexer, final String tableName, final String innerTableName, final FTableInfo rightTable) {
+        rightTable.nonSkipColumnsView().forEach(columnInfo -> {
+            final String columnName = columnInfo.getColumnName();
+            final Set<String> innerTabCols = derivedColumnNameHandler.innerTabCols(tableName, innerTableName, columnName);
+
+            columnInfo.getConstants().forEach(cons -> {
+                FIPredicate t0 = new FUnaryConsPredicate(tableName, columnName, 0, FOperator.EQ, cons, innerTabCols);
+                FIPredicate t1 = new FUnaryConsPredicate(tableName, columnName, 1, FOperator.EQ, cons, innerTabCols);
+
+                // order matters!!
+                predicateIndexer.put(t0);
+                predicateIndexer.put(t1);
+
+                predicateIndexer.insertConstPredT01Map(t0, t1);
+
+            });
+            columnInfo.getIntervalConstants().forEach(interval -> {
+                FIPredicate t0 = new FUnaryIntervalConsPredicate(tableName, columnName, 0, interval, innerTabCols);
+                FIPredicate t1 = new FUnaryIntervalConsPredicate(tableName, columnName, 1, interval, innerTabCols);
+
+                predicateIndexer.put(t0);
+                predicateIndexer.put(t1);
+
+                predicateIndexer.insertConstPredT01Map(t0, t1);
+            });
+        });
     }
 
     /*===================== materials =====================*/
